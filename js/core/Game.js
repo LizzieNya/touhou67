@@ -179,6 +179,13 @@ export default class Game {
             const frameTime = (timestamp - this.lastTime) / 1000;
             this.lastTime = timestamp;
 
+            // Calculate Real FPS
+            if (frameTime > 0) {
+                this.fps = 1 / frameTime;
+            } else {
+                this.fps = 60;
+            }
+
             // Cap frameTime to prevent spiral of death if lag occurs
             const safeFrameTime = Math.min(frameTime, 0.1);
 
@@ -192,6 +199,11 @@ export default class Game {
 
             // Interpolation factor
             const alpha = this.accumulator / this.deltaTime;
+
+            // Update SoundManager every frame (realtime) to prevent music lag
+            if (this.soundManager) {
+                this.soundManager.update(safeFrameTime);
+            }
 
             // Render happens after updates
             this.render(alpha);
@@ -211,7 +223,6 @@ export default class Game {
         if (this.input.isPressed('UP')) console.log("Game: UP pressed");
 
         this.sceneManager.update(dt);
-        if (this.soundManager) this.soundManager.update(dt);
         if (this.floatingTextManager) this.floatingTextManager.update(dt);
     }
 

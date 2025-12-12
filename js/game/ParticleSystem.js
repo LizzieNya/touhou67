@@ -130,18 +130,29 @@ export default class ParticleSystem {
     constructor(game) {
         this.game = game;
         this.pool = [];
-        this.poolSize = 1000; // Increased pool
+        this.poolSize = 2000; // Increased pool capacity
+        this.activeCount = 0;
+        
         for (let i = 0; i < this.poolSize; i++) {
             this.pool.push(new Particle());
         }
     }
 
-    // Generic spawn
+    // Generic spawn O(1)
     emit(x, y, options) {
-        const p = this.pool.find(p => !p.active);
-        if (p) {
-            p.spawn(x, y, options);
+        if (this.activeCount >= this.poolSize) {
+             // Optional: Expand pool or just recycle oldest (at index 0)?
+             // For particles, recycling oldest (index 0) is often better visually than freezing
+             // But simpler to expand or ignore. Let's expand slightly or ignore.
+             // Ignoring to prevent infinite memory growth if leak. 
+             // Actually, swap-remove means index 0 is just "some particle".
+             // Let's cap it at poolSize to prevent lag.
+             return; 
         }
+
+        const p = this.pool[this.activeCount];
+        this.activeCount++;
+        p.spawn(x, y, options);
     }
 
     // Helper for legacy/simple calls
@@ -313,8 +324,7 @@ export default class ParticleSystem {
             friction: 1
         });
         
-        // Secondary inverted pulse (simulated with black ring? No, additive lighter on white makes it bright)
-        // Let's do a color pulse, maybe Cyan
+        // Secondary inverted pulse
          this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.8,
@@ -333,14 +343,25 @@ export default class ParticleSystem {
     }
 
     update(dt) {
-        for (const p of this.pool) {
-            if (p.active) p.update(dt);
+        for (let i = 0; i < this.activeCount; i++) {
+            const p = this.pool[i];
+            p.update(dt);
+            
+            // Check if dead (Particle.update handles life cleanup internally but sets active=false? 
+            // The logic inside Particle.update is: if (life <= 0) this.active = false.
+            if (!p.active) {
+                this.activeCount--;
+                const last = this.pool[this.activeCount];
+                this.pool[i] = last;
+                this.pool[this.activeCount] = p;
+                i--;
+            }
         }
     }
 
     render(renderer, alpha = 1.0) {
-        for (const p of this.pool) {
-            if (p.active) p.render(renderer, alpha);
+        for (let i = 0; i < this.activeCount; i++) {
+            this.pool[i].render(renderer, alpha);
         }
     }
 }

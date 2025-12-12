@@ -365,6 +365,9 @@ export default class SoundManager {
         if (this.notificationTimer > 0) {
             this.notificationTimer -= dt;
         }
+        if (this.leitmotifManager) {
+            this.leitmotifManager.update(dt);
+        }
     }
 
     renderNotification(ctx, width, height) {

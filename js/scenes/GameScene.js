@@ -385,7 +385,7 @@ export default class GameScene {
 
         // Debug FPS
         if (this.game.config.showFps) {
-            renderer.drawText(`FPS: ${Math.round(1 / dt)}`, 600, 20, 12, '#0f0');
+            renderer.drawText(`FPS: ${Math.round(this.game.fps || 0)}`, 600, 20, 12, '#0f0');
         }
     }
 

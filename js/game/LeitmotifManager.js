@@ -18,6 +18,7 @@ export default class LeitmotifManager {
         });
         this.activeNodes = [];
         this.isPlaying = false;
+        this.currentSequence = null;
         if (this.timeoutId) clearTimeout(this.timeoutId);
     }
 
@@ -26,6 +27,23 @@ export default class LeitmotifManager {
         this.currentTheme = null;
         this.savedStates = {};
         this.currentIndex = 0;
+    }
+
+    update(dt) {
+        if (!this.isPlaying || !this.currentSequence) return;
+        
+        // Ensure context is running
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+
+        const scheduleAheadTime = 0.1; // Schedule 100ms ahead
+
+        // Schedule notes
+        while (this.nextNoteTime < this.ctx.currentTime + scheduleAheadTime) {
+            this.scheduleCurrentStep(this.nextNoteTime);
+            this.advanceStep();
+        }
     }
 
     async playTheme(characterName) {
@@ -38,14 +56,9 @@ export default class LeitmotifManager {
 
         this.stop();
         this.currentTheme = characterName;
-        this.isPlaying = true;
-
+        
         const themeData = this.getTheme(characterName);
         if (!themeData) return;
-
-        if (themeData.audioUrl) {
-            // ...
-        }
 
         this.tempo = themeData.tempo || 120;
 
@@ -53,34 +66,22 @@ export default class LeitmotifManager {
         let startIndex = 0;
         if (this.savedStates[characterName] !== undefined) {
             startIndex = this.savedStates[characterName];
-            // console.log(`Resuming ${characterName} from index ${startIndex}`);
         }
 
-        this.playSequence(themeData.sequence, startIndex);
+        this.startSequence(themeData.sequence, startIndex);
     }
 
-    playSequence(sequence, index) {
-        if (!this.isPlaying) return;
-
-        // Handle Looping
-        if (index >= sequence.length) {
-            const themeData = this.getTheme(this.currentTheme);
-            if (themeData && themeData.loopStart !== undefined) {
-                index = themeData.loopStart;
-            } else {
-                index = 0;
-            }
-        }
-
+    startSequence(sequence, index) {
+        this.currentSequence = sequence;
         this.currentIndex = index;
+        this.nextNoteTime = this.ctx.currentTime + 0.05; // Start slightly delayed to avoid click
+        this.isPlaying = true;
+    }
 
-        const step = sequence[index];
-        if (!step) {
-             // Fallback or stop
-             this.isPlaying = false;
-             return;
-        }
+    scheduleCurrentStep(time) {
+        if (!this.currentSequence || !this.currentSequence[this.currentIndex]) return;
 
+        const step = this.currentSequence[this.currentIndex];
         const stepDuration = (60 / this.tempo) * step.duration;
         const notes = Array.isArray(step.notes) ? step.notes : [step.notes];
 
@@ -94,33 +95,62 @@ export default class LeitmotifManager {
                 type = noteDef.type || 'square';
                 vol = noteDef.vol || 0.1;
             }
-            if (freq) this.playNote(freq, stepDuration * 0.9, type, vol);
+            if (freq) this.playNote(freq, stepDuration * 0.9, type, vol, time);
         });
-
-        this.timeoutId = setTimeout(() => {
-            this.playSequence(sequence, index + 1);
-        }, stepDuration * 1000);
     }
 
-    playNote(freq, duration, type, volume) {
-        if (this.ctx.state === 'suspended') return;
+    advanceStep() {
+        if (!this.currentSequence || !this.currentSequence[this.currentIndex]) {
+            this.isPlaying = false;
+            return;
+        }
+
+        const step = this.currentSequence[this.currentIndex];
+        const stepDuration = (60 / this.tempo) * step.duration;
+        this.nextNoteTime += stepDuration;
+
+        this.currentIndex++;
+
+        // Handle Looping
+        if (this.currentIndex >= this.currentSequence.length) {
+            const themeData = this.getTheme(this.currentTheme);
+            if (themeData && themeData.loopStart !== undefined) {
+                this.currentIndex = themeData.loopStart;
+            } else {
+                this.currentIndex = 0;
+            }
+        }
+    }
+
+    playNote(freq, duration, type, volume, startTime) {
+        // Create nodes
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
+        
         osc.type = type;
         osc.frequency.value = freq;
-        const now = this.ctx.currentTime;
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(volume, now + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        // Envelope
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        // Connect
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(now + duration + 0.1);
+        
+        // Schedule start/stop
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.1);
+        
+        // Track
         this.activeNodes.push(osc);
-        setTimeout(() => {
-            const idx = this.activeNodes.indexOf(osc);
-            if (idx > -1) this.activeNodes.splice(idx, 1);
-        }, (duration + 0.1) * 1000);
+        
+        // Cleanup using onended (better than setTimeout)
+        osc.onended = () => {
+             const idx = this.activeNodes.indexOf(osc);
+             if (idx > -1) this.activeNodes.splice(idx, 1);
+        };
     }
 
     noteToFreq(note) {

@@ -110,7 +110,8 @@ export default class BulletManager {
     constructor(game) {
         this.game = game;
         this.pool = [];
-        this.poolSize = 2000; // Start with 2000 bullets
+        this.poolSize = 2000;
+        this.activeCount = 0; // Number of currently active bullets
         this.spriteCache = {};
 
         for (let i = 0; i < this.poolSize; i++) {
@@ -119,9 +120,11 @@ export default class BulletManager {
     }
 
     getBulletSprite(color, radius) {
+        // ... (Same implementation, can copy-paste or keep)
+        // For brevity in this thought, I will include the full method.
         const key = `${color}-${radius}`;
         if (!this.spriteCache[key]) {
-            const glowSize = Math.max(6, radius * 1.5); // Larger glow
+            const glowSize = Math.max(6, radius * 1.5);
             const size = Math.ceil((radius + glowSize) * 2);
             const canvas = document.createElement('canvas');
             canvas.width = size;
@@ -130,13 +133,13 @@ export default class BulletManager {
             const cx = size / 2;
             const cy = size / 2;
 
-            // Soft Glow (Radial Gradient)
+            // Soft Glow
             const grad = ctx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius + glowSize);
             grad.addColorStop(0, color);
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             
             ctx.fillStyle = grad;
-            ctx.globalAlpha = 0.8; // Stronger initial alpha
+            ctx.globalAlpha = 0.8;
             ctx.beginPath();
             ctx.arc(cx, cy, radius + glowSize, 0, Math.PI * 2);
             ctx.fill();
@@ -148,11 +151,11 @@ export default class BulletManager {
             ctx.arc(cx, cy, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // White center (Soft highlight)
+            // White center
             const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.7);
             centerGrad.addColorStop(0, '#fff');
             centerGrad.addColorStop(0.8, '#fff');
-            centerGrad.addColorStop(1, color); // Blend edge of white to color
+            centerGrad.addColorStop(1, color);
             
             ctx.fillStyle = centerGrad;
             ctx.beginPath();
@@ -165,29 +168,27 @@ export default class BulletManager {
     }
 
     getBullet() {
-        for (let i = 0; i < this.poolSize; i++) {
-            if (!this.pool[i].active) {
-                return this.pool[i];
-            }
+        if (this.activeCount >= this.poolSize) {
+            // Expand pool
+            const newBullet = new Bullet(this.game);
+            this.pool.push(newBullet);
+            this.poolSize++;
         }
-        // Expand pool if needed (optional, but good for safety)
-        const newBullet = new Bullet(this.game);
-        this.pool.push(newBullet);
-        this.poolSize++;
-        return newBullet;
+        const bullet = this.pool[this.activeCount];
+        this.activeCount++;
+        return bullet;
     }
 
     spawn(x, y, vx, vy, color, radius, accel = 0, angularVelocity = 0) {
         const b = this.getBullet();
         b.spawn(x, y, vx, vy, color, radius, accel, angularVelocity);
         
-        // Muzzle Flash / Spawn Pop (Tiny optimization: only if needed)
+        // Muzzle Flash
         const scene = this.game.sceneManager.currentScene;
         if (scene && scene.particleSystem) {
-             // Just a tiny pop
              scene.particleSystem.emit(x, y, {
                 vx: 0, vy: 0,
-                life: 0.1, // very short
+                life: 0.1,
                 color: color,
                 size: radius + 5,
                 type: 'circle',
@@ -198,18 +199,27 @@ export default class BulletManager {
     }
 
     update(dt) {
-        for (let i = 0; i < this.poolSize; i++) {
-            if (this.pool[i].active) {
-                this.pool[i].update(dt);
+        for (let i = 0; i < this.activeCount; i++) {
+            const b = this.pool[i];
+            b.update(dt);
+
+            if (!b.active) {
+                // Remove (Swap with last active)
+                this.activeCount--;
+                // Swap current (dead) with last active
+                const lastActive = this.pool[this.activeCount];
+                this.pool[i] = lastActive;
+                this.pool[this.activeCount] = b; // Move dead one to end (not strictly necessary but keeps array cleanish)
+                
+                // Decrement i to re-process the bullet we just swapped in
+                i--;
             }
         }
     }
 
     render(renderer, alpha) {
-        for (let i = 0; i < this.poolSize; i++) {
-            if (this.pool[i].active) {
-                this.pool[i].render(renderer, alpha);
-            }
+        for (let i = 0; i < this.activeCount; i++) {
+            this.pool[i].render(renderer, alpha);
         }
     }
 
@@ -217,16 +227,25 @@ export default class BulletManager {
         const scene = this.game.sceneManager.currentScene;
         const ps = (scene && scene.particleSystem) ? scene.particleSystem : null;
 
-        for (let i = 0; i < this.poolSize; i++) {
-            if (this.pool[i].active) {
-                this.pool[i].active = false;
-                if (ps) {
-                    // Only spawn a few particles to avoid lag if 2000 bullets clear at once
-                    if (Math.random() < 0.3) {
-                         ps.createBulletClear(this.pool[i].x, this.pool[i].y, this.pool[i].color);
-                    }
-                }
+        // Visual effects for clear
+        if (ps) {
+            // Cap particles to avoid massive lag spike
+            let particlesSpawned = 0;
+            const maxParticles = 50; 
+            
+            for (let i = 0; i < this.activeCount; i++) {
+               if (particlesSpawned < maxParticles && Math.random() < 0.1) {
+                   ps.createBulletClear(this.pool[i].x, this.pool[i].y, this.pool[i].color);
+                   particlesSpawned++;
+               }
+               this.pool[i].active = false;
             }
+        } else {
+             for (let i = 0; i < this.activeCount; i++) {
+                 this.pool[i].active = false;
+             }
         }
+        
+        this.activeCount = 0;
     }
 }

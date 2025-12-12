@@ -31,24 +31,32 @@ export default class MusicRoomScene {
         this.blinkTimer += dt;
         const input = this.game.input;
 
-        if (input.isDown('UP')) {
-            input.keys['ArrowUp'] = false;
+        if (input.isPressed('UP')) {
             this.selectedIndex = (this.selectedIndex - 1 + this.tracks.length) % this.tracks.length;
+            this.updateScroll();
         }
-        if (input.isDown('DOWN')) {
-            input.keys['ArrowDown'] = false;
+        if (input.isPressed('DOWN')) {
             this.selectedIndex = (this.selectedIndex + 1) % this.tracks.length;
+            this.updateScroll();
         }
-        if (input.isDown('SHOOT')) { // Play/Stop
-            input.keys['KeyZ'] = false;
+        if (input.isPressed('SHOOT') || input.isPressed('Confirm')) { // Play/Stop
             this.toggleTrack();
         }
-        if (input.isDown('BOMB')) { // Back
-            input.keys['KeyX'] = false;
+        if (input.isPressed('BOMB')) { // Back
             this.stopCurrentTrack();
             import('./TitleScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
+        }
+    }
+
+    updateScroll() {
+        // Keep selected index in view
+        const maxVisible = 10;
+        if (this.selectedIndex < this.scrollOffset) {
+            this.scrollOffset = this.selectedIndex;
+        } else if (this.selectedIndex >= this.scrollOffset + maxVisible) {
+            this.scrollOffset = this.selectedIndex - maxVisible + 1;
         }
     }
 
@@ -105,18 +113,28 @@ export default class MusicRoomScene {
         // Track list
         const startY = 120;
         const spacing = 35;
+        const maxVisible = 10;
+        
+        // Ensure scrollOffset is initialized
+        if (typeof this.scrollOffset === 'undefined') this.scrollOffset = 0;
 
-        this.tracks.forEach((track, index) => {
+        const endIndex = Math.min(this.scrollOffset + maxVisible, this.tracks.length);
+
+        for (let i = this.scrollOffset; i < endIndex; i++) {
+            const track = this.tracks[i];
+            const relativeIndex = i - this.scrollOffset;
+            const y = startY + relativeIndex * spacing;
+            
             let color = '#888';
             let prefix = '  ';
 
-            if (index === this.selectedIndex) {
+            if (i === this.selectedIndex) {
                 const alpha = 0.5 + Math.abs(Math.sin(this.blinkTimer * 5)) * 0.5;
                 color = `rgba(255, 255, 255, ${alpha})`;
                 prefix = '> ';
             }
 
-            if (this.currentlyPlaying === index) {
+            if (this.currentlyPlaying === i) {
                 color = '#0f0';
                 prefix = '♪ ';
             }
@@ -124,12 +142,30 @@ export default class MusicRoomScene {
             ctx.font = 'bold 18px "Times New Roman", serif';
             ctx.fillStyle = color;
             ctx.textAlign = 'left';
-            ctx.fillText(`${prefix}${track.name}`, 80, startY + index * spacing);
+            ctx.fillText(`${prefix}${track.name}`, 80, y);
 
             ctx.font = '14px "Times New Roman", serif';
             ctx.fillStyle = '#666';
-            ctx.fillText(track.composer, 400, startY + index * spacing);
-        });
+            ctx.fillText(track.composer, 400, y);
+        }
+        
+        // Scrollbar (Simple)
+        if (this.tracks.length > maxVisible) {
+            const sbX = w - 40;
+            const sbY = startY;
+            const sbH = maxVisible * spacing;
+            
+            // Track
+            ctx.fillStyle = '#222';
+            ctx.fillRect(sbX, sbY, 6, sbH);
+            
+            // Thumb
+            const thumbH = (maxVisible / this.tracks.length) * sbH;
+            const thumbY = sbY + (this.scrollOffset / (this.tracks.length - maxVisible)) * (sbH - thumbH);
+            
+            ctx.fillStyle = '#666';
+            ctx.fillRect(sbX, thumbY, 6, thumbH);
+        }
 
         // Now Playing
         if (this.currentlyPlaying !== null) {
