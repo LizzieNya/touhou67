@@ -141,7 +141,7 @@ export default class LauncherScene {
         
         // Fade in
         if (this.fadeAlpha > 0) {
-            this.fadeAlpha -= dt * 0.8;
+            this.fadeAlpha -= dt * 3.0;
             if (this.fadeAlpha < 0) {
                 this.fadeAlpha = 0;
                 this.introComplete = true;
@@ -206,7 +206,7 @@ export default class LauncherScene {
     async selectGame() {
         const selected = this.options[this.selectedIndex];
         if (selected.id === 'create') {
-            import('./MakerSelectScene.js?v=2').then(module => {
+            import('./MakerTitleScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
             return;

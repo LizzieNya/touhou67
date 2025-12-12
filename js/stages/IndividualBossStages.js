@@ -2418,60 +2418,93 @@ export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, 
         hp: 1500, duration: 50, spellName: "Lunasa 'Solo - Violin'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 - 100; 
+            const w = (scene.game.playAreaWidth||scene.game.width);
+            enemy.x = w/2 - 100; 
             enemy.y = 100;
-            // Melancholy lasers (lines of bullets)
-             if(Math.floor(t*60)%4===0) {
-                 scene.bulletManager.spawn(enemy.x, enemy.y, 0, 300, '#fff', 4);
-                 scene.bulletManager.spawn(enemy.x + Math.sin(t)*50, enemy.y, 0, 300, '#ccc', 4);
-             }
+            
+            // Violin Waves (Sinusoidal streams)
+            if(Math.floor(t*60)%5===0) {
+                 const angle = Math.PI/2 + Math.sin(t*3)*0.2; // Slight wave aimed down
+                 // Stream of bullets
+                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*300, Math.sin(angle)*300, '#fff', 4);
+                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle - 0.2)*280, Math.sin(angle - 0.2)*280, '#ddd', 4);
+                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle + 0.2)*280, Math.sin(angle + 0.2)*280, '#ddd', 4);
+            }
         }
     },
     {
         hp: 1500, duration: 50, spellName: "Merlin  'Solo - Trumpet'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + 100; 
+            const w = (scene.game.playAreaWidth||scene.game.width);
+            enemy.x = w/2 + 100; 
             enemy.y = 100;
-            // Chaotic curves
-             if(Math.floor(t*60)%3===0) {
-                 const a = t*10;
-                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*200, Math.sin(a)*200, '#f88', 4);
-             }
+            
+            // Chaotic Trumpet Blasts
+            if(Math.floor(t*60)%4===0) {
+                 const baseA = t * 2.5;
+                 for(let i=0; i<3; i++) {
+                     const a = baseA + (i / 3) * Math.PI * 2;
+                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*250, Math.sin(a)*250, '#f88', 5);
+                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*150, Math.sin(a)*150, '#f44', 3);
+                 }
+            }
         }
     },
     {
         hp: 1500, duration: 50, spellName: "Lyrica 'Solo - Keyboard'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; 
+            const w = (scene.game.playAreaWidth||scene.game.width);
+            enemy.x = w/2; 
             enemy.y = 80;
-            // Aimed illusion
-             if(Math.floor(t*60)%40===0) {
-                 PatternLibrary.aimedNWay(scene, enemy, 7, 0.1, 250, '#f00', 4);
-             }
+            
+            // Keyboard Phantom Notes
+            if(Math.floor(t*60)%10===0) {
+                 // Spawn a row of bullets? Or aimed shots
+                 const offset = Math.sin(t*2) * 150;
+                 scene.bulletManager.spawn(enemy.x + offset, enemy.y, 0, 300, '#f00', 4);
+                 scene.bulletManager.spawn(enemy.x - offset, enemy.y, 0, 300, '#f00', 4);
+            }
+            if(Math.floor(t*60)%60===0) {
+                 PatternLibrary.aimedNWay(scene, enemy, 5, 0.3, 200, '#fff', 3);
+            }
         }
     },
     {
-        hp: 3000, duration: 90, spellName: "Funeral Concert 'Prismriver Concerto'",
+        hp: 3500, duration: 90, spellName: "Funeral Concert 'Prismriver Concerto'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; 
+            const w = (scene.game.playAreaWidth||scene.game.width);
+            enemy.x = w/2; 
             enemy.y = 100;
             
-            // Simulating all 3
-            // Violin Lines
-            if(Math.floor(t*60)%10===0) {
-                 scene.bulletManager.spawn(enemy.x-100, enemy.y, 0, 300, '#fff', 4);
+            // Virtual positions for the sisters
+            const lunasaX = w/2 - 120;
+            const merlinX = w/2 + 120;
+            const lyricaX = w/2;
+            const y = 100;
+            
+            // Lunasa (Left): Gentle Waves
+            if(Math.floor(t*60)%8===0) {
+                 const a = Math.PI/2 + Math.sin(t)*0.3;
+                 scene.bulletManager.spawn(lunasaX, y, Math.cos(a)*250, Math.sin(a)*250, '#ccc', 4);
             }
-            // Trumpet Waves
-            if(Math.floor(t*60)%5===0) {
-                 const a = t*8;
-                 scene.bulletManager.spawn(enemy.x+100, enemy.y, Math.cos(a)*200, Math.sin(a)*200, '#f88', 4);
+            
+            // Merlin (Right): Spirals
+            if(Math.floor(t*60)%6===0) {
+                 const a = -t * 2;
+                 scene.bulletManager.spawn(merlinX, y, Math.cos(a)*200, Math.sin(a)*200, '#faa', 4);
             }
-            // Keyboard Aimed
-            if(Math.floor(t*60)%60===0) {
-                 PatternLibrary.aimedNWay(scene, enemy, 5, 0.2, 250, '#f00', 4);
+            
+            // Lyrica (Center): Aimed Pulses
+            if(Math.floor(t*60)%45===0) {
+                 PatternLibrary.aimedNWay(scene, {x: lyricaX, y: y}, 7, 0.4, 280, '#f00', 5);
+            }
+            
+            // Finale visual
+            if(Math.floor(t*60)%120===0) {
+                 PatternLibrary.circle(scene, w/2, 100, 20, 150, '#ff0', 3, t);
             }
         }
     }

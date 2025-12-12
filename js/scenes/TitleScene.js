@@ -45,6 +45,8 @@ export default class TitleScene {
             if (this.game.currentGameManifest && this.game.currentGameManifest.id === 'touhou7') {
                 theme = 'th7_menu';
             }
+            // Force stop to ensure freshness
+            this.game.soundManager.stop(); 
             this.game.soundManager.playBossTheme(theme);
         }
     }
@@ -250,8 +252,8 @@ export default class TitleScene {
 
         // Menu Options (Right Aligned, below title)
         const startX = w - 40; // Right aligned
-        const startY = 160;
-        const spacing = 32;
+        const startY = 140;
+        const spacing = 26;
 
         ctx.font = 'bold 22px "Times New Roman", serif';
         ctx.textAlign = 'right';
