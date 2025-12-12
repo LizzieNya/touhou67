@@ -298,6 +298,20 @@ export default class LeitmotifManager {
                 ]
             },
 
+            'launcher': {
+                tempo: 120,
+                sequence: [
+                    // Etheral Launcher Theme
+                    s([pad('C4'), pad('G4'), pad('C5')], 1.0), s([pad('G4'), pad('C5'), pad('E5')], 1.0),
+                    s([pad('F4'), pad('C5'), pad('A4')], 1.0), s([pad('G4'), pad('D5'), pad('B4')], 1.0),
+                    s([pad('E4'), pad('B4'), pad('G4')], 1.0), s([pad('A4'), pad('E5'), pad('C5')], 1.0),
+                    s([pad('D4'), pad('A4'), pad('F4')], 1.0), s([pad('G3'), pad('G4'), pad('B4')], 1.0),
+                    // Loop
+                    s([pad('C4'), pad('G4'), pad('C5')], 1.0), s([pad('G4'), pad('C5'), pad('E5')], 1.0),
+                    s([pad('F4'), pad('C5'), pad('A4')], 1.0), s([pad('G4'), pad('D5'), pad('B4')], 1.0),
+                ]
+            },
+
             'menu': {
                 tempo: 132, // Slower, haunting
                 sequence: [

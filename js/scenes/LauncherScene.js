@@ -128,7 +128,7 @@ export default class LauncherScene {
                 this.started = true;
                 this.game.soundManager.playMenuSelect();
                 if (this.game.soundManager && this.game.soundManager.leitmotifManager) {
-                    this.game.soundManager.leitmotifManager.playTheme('menu');
+                    this.game.soundManager.leitmotifManager.playTheme('launcher');
                 }
                 return;
             }
