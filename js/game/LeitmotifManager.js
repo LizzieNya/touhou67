@@ -882,6 +882,26 @@ export default class LeitmotifManager {
                     s([zunpet('E5'), guitar('C3')], 0.25), s(zunpet('D5'), 0.25),
                     s([zunpet('D5'), guitar('D3'), bass('D2')], 1.0)
                 ]
+            },
+
+            // Nue Houjuu - "Heian Alien"
+            'nue': {
+                tempo: 170,
+                sequence: [
+                    // High pitched alien synth lead
+                    s([zunpet('E6'), zunpet('E5'), bass('E2')], 0.25), s(zunpet('B5'), 0.25),
+                    s([zunpet('D6'), guitar('E3')], 0.25), s(zunpet('B5'), 0.25),
+                    s([zunpet('A5'), bass('A2')], 0.25), s(zunpet('B5'), 0.25),
+                    s([zunpet('D6'), guitar('E3')], 0.5),
+                    // Repeat with variation
+                    s([zunpet('E6'), bass('E2')], 0.25), s(zunpet('B5'), 0.25),
+                    s([zunpet('G6'), guitar('G3')], 0.25), s(zunpet('E6'), 0.25),
+                    s([zunpet('D6'), bass('B2')], 0.25), s(zunpet('B5'), 0.25),
+                    s([zunpet('A5'), guitar('D3')], 0.5),
+                    // Alien Trill
+                    s([zunpet('E6'), bass('E2')], 0.125), s(zunpet('D#6'), 0.125), s(zunpet('E6'), 0.125), s(zunpet('G6'), 0.125),
+                    s([zunpet('E6'), guitar('E3')], 0.5)
+                ]
             }
 
         };

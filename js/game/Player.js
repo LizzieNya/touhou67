@@ -1051,66 +1051,7 @@ export default class Player extends Entity {
         }
     }
 
-    die() {
-        if (this.state === 'dead' || this.isInvincible) return;
-        if (this.invulnerableTimer > 0) return;
-        
-        this.lives--;
-        this.game.soundManager.playPlayerDie();
-        console.log("PLAYER DIED! Lives left: " + this.lives);
-        
-        // Visuals
-        const scene = this.game.sceneManager.currentScene;
-        scene.cameraShake = 30;
-        
-        // Massive Explosion
-        if (scene.particleSystem) {
-             // Red/White pichu~n
-             scene.particleSystem.createExplosion(this.x, this.y, '#f00');
-             scene.particleSystem.createExplosion(this.x, this.y, '#fff');
-             
-             // Expanding ring
-             scene.particleSystem.emit(this.x, this.y, {
-                vx: 0, vy: 0,
-                life: 0.5,
-                color: '#fff',
-                size: 10,
-                type: 'ring',
-                scaleSpeed: 1000,
-                blendMode: 'lighter'
-             });
-        }
-        
-        // Clear screen
-        if (scene.bulletManager) {
-            scene.bulletManager.clear();
-        }
+    // shootSans was here, keeping it if it was before.
+    // Actually replacement should start AFTER shootSans.
 
-        if (this.lives >= 0) {
-            // Respawn
-            this.state = 'dying'; 
-            this.active = false; // Hide player
-            
-            // Simple respawn for now
-            setTimeout(() => {
-                this.respawn();
-            }, 1000);
-        } else {
-            // Game Over
-            this.state = 'dead';
-            this.active = false;
-            console.log("GAME OVER");
-            // Scene should handle Game Over transition ideally
-        }
-    }
-    
-    respawn() {
-        this.state = 'alive';
-        this.active = true;
-        this.x = (this.game.playAreaWidth || this.game.width) / 2;
-        this.y = this.game.height - 100;
-        this.invulnerableTimer = 4.0;
-        this.bombs = 3; // Reset bombs on death usually
-        this.power = Math.max(0, this.power - 16); // Lose power
-    }
 }

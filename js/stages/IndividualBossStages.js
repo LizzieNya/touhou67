@@ -287,11 +287,12 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
             enemy.x = w/2;
             
             // Converging lasers/lines
-            if(Math.floor(t*60)%40===0) {
+            if(Math.floor(t*60)%45===0) { // Slightly slower spawn rate too
                 const y = Math.random() * (h/2);
-                for(let i=0; i<20; i++) {
-                     scene.bulletManager.spawn(0, y + i*20, 200, 0, '#0f0', 4);
-                     scene.bulletManager.spawn(w, y + i*20 + 10, -200, 0, '#0f0', 4);
+                for(let i=0; i<15; i++) {
+                     // Slower (130) and Wider Gap (50)
+                     scene.bulletManager.spawn(0, y + i*50, 130, 0, '#0f0', 4);
+                     scene.bulletManager.spawn(w, y + i*50 + 25, -130, 0, '#0f0', 4);
                 }
             }
             // Aimed shots
