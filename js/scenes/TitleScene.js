@@ -38,6 +38,15 @@ export default class TitleScene {
                 alpha: Math.random() * 0.5
             });
         }
+        
+        // Start Music Immediately
+        if (this.game.soundManager) {
+            let theme = 'menu'; // Default to Touhou 6 (A Soul as Red as a Ground Cherry)
+            if (this.game.currentGameManifest && this.game.currentGameManifest.id === 'touhou7') {
+                theme = 'th7_menu';
+            }
+            this.game.soundManager.playBossTheme(theme);
+        }
     }
 
     update(dt) {
@@ -58,13 +67,7 @@ export default class TitleScene {
         if (!this.started) {
             if (this.game.input.isPressed('SHOOT') || this.game.input.isPressed('Confirm')) {
                 this.started = true;
-                if (this.game.soundManager) {
-                    let theme = 'menu';
-                    if (this.game.currentGameManifest && this.game.currentGameManifest.id === 'touhou7') {
-                        theme = 'th7_menu';
-                    }
-                    this.game.soundManager.playBossTheme(theme);
-                }
+                this.game.soundManager.playMenuMove();
             }
             return;
         }
@@ -221,6 +224,14 @@ export default class TitleScene {
                 jpTitle = "東方妖々夢";
                 enTitle = "Perfect Cherry Blossom";
                 ctx.fillStyle = '#f8c'; // Pinker for PCB
+            } else if (this.game.currentGameManifest.id === 'touhou11') {
+                jpTitle = "東方地霊殿";
+                enTitle = "Subterranean Animism";
+                ctx.fillStyle = '#4f4'; // Greenish
+            } else if (this.game.currentGameManifest.id === 'touhou12') {
+                jpTitle = "東方星蓮船";
+                enTitle = "Undefined Fantastic Object";
+                ctx.fillStyle = '#88f'; // Purple/Blue
             } else if (this.game.currentGameManifest.id === 'nocturnal_sunlight') {
                 jpTitle = "東方夜光";
                 enTitle = "Nocturnal Sunlight";
