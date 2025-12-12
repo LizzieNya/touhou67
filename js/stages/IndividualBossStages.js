@@ -287,17 +287,19 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
             enemy.x = w/2;
             
             // Converging lasers/lines
-            if(Math.floor(t*60)%45===0) { // Slightly slower spawn rate too
+            // Converging lasers/lines
+            if(Math.floor(t*60)%60===0) { // Slower spawn rate (every 1 sec)
                 const y = Math.random() * (h/2);
                 for(let i=0; i<15; i++) {
-                     // Slower (130) and Wider Gap (50)
-                     scene.bulletManager.spawn(0, y + i*50, 130, 0, '#0f0', 4);
-                     scene.bulletManager.spawn(w, y + i*50 + 25, -130, 0, '#0f0', 4);
+                     // Slower (100) and Wider Gap (60)
+                     scene.bulletManager.spawn(0, y + i*60, 100, 0, '#0f0', 4);
+                     scene.bulletManager.spawn(w, y + i*60 + 30, -100, 0, '#0f0', 4);
                 }
             }
             // Aimed shots
             if(Math.floor(t*60)%10===0) {
-                PatternLibrary.aimedNWay(scene, enemy, 3, 0.2, 300, '#8f0', 3);
+                // Slower aimed shots (150 vs 300)
+                PatternLibrary.aimedNWay(scene, enemy, 3, 0.2, 150, '#8f0', 3);
             }
         }
     },
@@ -754,14 +756,15 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.x = w/2; enemy.y = 150;
             
             // The sword sweep
-            if (Math.floor(t * 60) % 2 === 0) {
+            if (Math.floor(t * 60) % 4 === 0) { // Slower frequency (was 2)
                 const sweepSpeed = 0.5;
-                const angle = Math.sin(t * sweepSpeed) * Math.PI; // Sweep back and forth
+                const angle = Math.sin(t * sweepSpeed) * Math.PI; 
                 
-                // Beam-like line
-                for(let i=0; i<10; i++) {
-                     const speed = 200 + i*50;
-                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*speed, Math.sin(angle)*speed, '#f00', 8);
+                // Beam-like line - Reduced density, larger bullets
+                for(let i=0; i<6; i++) { // Fewer bullets (was 10)
+                     const speed = 200 + i*60;
+                     // Larger radius (12) to maintain beam look
+                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*speed, Math.sin(angle)*speed, '#f00', 12);
                 }
             }
             // Falling embers

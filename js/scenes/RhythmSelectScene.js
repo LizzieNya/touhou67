@@ -3,7 +3,7 @@ import Background from '../game/Background.js';
 export default class RhythmSelectScene {
     constructor(game) {
         this.game = game;
-        this.options = ['Standard Mode', 'Song Select', 'Catch the Beat', 'Calibration', 'Back'];
+        this.options = ['Standard Mode', 'Catch the Beat', 'Back'];
         this.selectedIndex = 0;
         this.blinkTimer = 0;
 
@@ -36,7 +36,7 @@ export default class RhythmSelectScene {
     selectOption() {
         const option = this.options[this.selectedIndex];
         if (option === 'Standard Mode') {
-            import('./RhythmGameScene_v2.js').then(module => {
+            import('./RhythmGameScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (option === 'Song Select') {

@@ -6,16 +6,29 @@ export default class SpriteGenerator {
         this.ctx = this.canvas.getContext('2d');
     }
 
-    generateAll() {
-        const sprites = {};
+    isSupported(name) {
         const characters = [
-            'reimu', 'marisa', // Added main characters
+            'reimu', 'marisa',
             'rumia', 'cirno', 'meiling', 'patchouli', 'sakuya',
             'remilia', 'flandre', 'parsee', 'nue', 'okuu', 'sans',
             'pepe', 'letty', 'chen', 'alice',
             'merlin', 'youmu', 'yuyuko', 'ran',
             'sanae', 'reisen', 'eclipse', 'midnight',
-            'prism', 'chronos', 'solstice'
+            'prism', 'chronos', 'solstice', 'lizzie'
+        ];
+        return characters.includes(name);
+    }
+
+    generateAll() {
+        const sprites = {};
+        const characters = [
+            'reimu', 'marisa',
+            'rumia', 'cirno', 'meiling', 'patchouli', 'sakuya',
+            'remilia', 'flandre', 'parsee', 'nue', 'okuu', 'sans',
+            'pepe', 'letty', 'chen', 'alice',
+            'merlin', 'youmu', 'yuyuko', 'ran',
+            'sanae', 'reisen', 'eclipse', 'midnight',
+            'prism', 'chronos', 'solstice', 'lizzie'
         ];
 
         characters.forEach(char => {

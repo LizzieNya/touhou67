@@ -7,6 +7,7 @@ export default class TitleScene {
         this.selectedIndex = 0;
         this.blinkTimer = 0;
         this.started = false; // Wait for input
+        this.lastMouseDown = false;
 
         // Hide HUD
         const sidebar = document.getElementById('sidebar');
@@ -87,6 +88,35 @@ export default class TitleScene {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         }
+
+        // Mouse Handling
+        const mx = this.game.input.mouseX;
+        const my = this.game.input.mouseY;
+        const mClicked = this.game.input.mouseDown && !this.lastMouseDown;
+        this.lastMouseDown = this.game.input.mouseDown;
+
+        const startX = this.game.width - 40;
+        const startY = 160;
+        const spacing = 32;
+
+        this.options.forEach((opt, index) => {
+            // Approximate hit box for right-aligned text
+            // Text is drawn at baseline y. 
+            // Box: x: [w-250, w], y: [y-20, y+10]
+            const y = startY + index * spacing;
+            if (mx > startX - 300 && mx < startX + 20 &&
+                my > y - 25 && my < y + 10) {
+                
+                if (this.selectedIndex !== index) {
+                    this.selectedIndex = index;
+                    this.game.soundManager.playMenuMove();
+                }
+                
+                if (mClicked) {
+                    this.selectOption();
+                }
+            }
+        });
     }
 
     selectOption() {

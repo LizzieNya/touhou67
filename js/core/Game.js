@@ -39,6 +39,7 @@ export default class Game {
         this.resourceManager = new ResourceManager();
         this.soundManager = new SoundManager();
         this.spriteGenerator = new SpriteGenerator();
+        this.resourceManager.setSpriteGenerator(this.spriteGenerator);
         console.log("Game: SpriteGenerator initialized:", this.spriteGenerator);
         this.floatingTextManager = new FloatingTextManager(this);
         this.input = new Input(this.virtualControls, this.soundManager);
@@ -79,19 +80,9 @@ export default class Game {
 
         if (manifest) {
             this.loadAssets(manifest);
-            // Wait for resources to load? ResourceManager doesn't expose a promise yet, 
-            // but images load asynchronously. For now we just start loading.
-            // In a real implementation we'd await this.resourceManager.loadAll().
         }
 
-        // Generate Boss Sprites (Fallback) - only if needed
-        const spriteGen = new SpriteGenerator();
-        const sprites = spriteGen.generateAll();
-        Object.keys(sprites).forEach(key => {
-            if (!this.resourceManager.getImage(key)) {
-                this.resourceManager.addImage(key, sprites[key]);
-            }
-        });
+        // Lazy generation handles the rest via ResourceManager
     }
 
 
@@ -157,15 +148,8 @@ export default class Game {
 
     start() {
         console.log("Game.start() called.");
-        // Generate sprites early for Launcher use
-        if (this.spriteGenerator) {
-            const sprites = this.spriteGenerator.generateAll();
-            Object.keys(sprites).forEach(key => {
-                if (!this.resourceManager.getImage(key)) {
-                    this.resourceManager.addImage(key, sprites[key]);
-                }
-            });
-        }
+        
+        // Sprites are lazy-loaded by ResourceManager now
         
         this.lastTime = performance.now();
         console.log("Scheduling loop...");

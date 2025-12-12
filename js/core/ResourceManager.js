@@ -64,7 +64,15 @@ export default class ResourceManager {
         }
     }
 
+    setSpriteGenerator(generator) {
+        this.spriteGenerator = generator;
+    }
+
     getImage(key) {
+        if (!this.images[key] && this.spriteGenerator && this.spriteGenerator.isSupported(key)) {
+            // Lazy load sprite
+            this.images[key] = this.spriteGenerator.generateSprite(key);
+        }
         return this.images[key];
     }
 
