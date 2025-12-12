@@ -812,8 +812,8 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2; 
             enemy.y = 150;
             
-            // Green mesh pattern
-            if (Math.floor(t * 60) % 10 === 0) {
+            // Green mesh pattern - Optimized
+            if (Math.floor(t * 60) % 15 === 0) { // Slower spawning (was 10)
                 for(let i=0; i<6; i++) {
                     const a = (i/6)*Math.PI*2 + t*0.5;
                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*250, Math.sin(a)*250, '#0f0', 4);
@@ -855,18 +855,21 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.y = 120;
             
             // Rainbow explosion
-            if (Math.floor(t * 60) % 90 === 0) {
-                const colors = ['#f00', '#f80', '#ff0', '#0f0', '#0ff', '#00f', '#f0f'];
-                colors.forEach((c, idx) => {
-                    // Each color is a ring or line
-                    for(let i=0; i<30; i++) {
-                        const a = (i/30)*Math.PI*2;
+            // Optimized: Spawn colors sequentially based on time rather than all at once with setTimeouts
+            if (Math.floor(t * 60) % 90 < 21) { // Spawn over 21 frames (3 frames per color)
+                if (Math.floor(t * 60) % 3 === 0) {
+                    const idx = Math.floor((t * 60 % 90) / 3);
+                    const colors = ['#f00', '#f80', '#ff0', '#0f0', '#0ff', '#00f', '#f0f'];
+                    if (idx < colors.length) {
+                        const c = colors[idx];
                         const speed = 150 + idx*30;
-                        setTimeout(() => {
-                           scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*speed, Math.sin(a)*speed, c, 5); 
-                        }, idx*100);
+                        const count = 20; // Reduced from 30
+                        for(let i=0; i<count; i++) {
+                            const a = (i/count)*Math.PI*2 + (idx * 0.1); // Slight rotation per layer
+                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*speed, Math.sin(a)*speed, c, 5); 
+                        }
                     }
-                });
+                }
             }
         }
     },
@@ -944,10 +947,10 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.x = w/2; enemy.y = 120;
             
             // Intense ripples
-            if (Math.floor(t * 60) % 10 === 0) {
-                // Expanding rings
-                PatternLibrary.circle(scene, enemy.x, enemy.y, 16, 200 + Math.sin(t)*50, '#f00', 4, t);
-                PatternLibrary.circle(scene, enemy.x, enemy.y, 16, 180 + Math.cos(t)*50, '#ff0', 4, -t);
+            if (Math.floor(t * 60) % 15 === 0) { // Slower rings (was 10)
+                // Expanding rings - Reduced density (12 bullets per ring instead of 16)
+                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 200 + Math.sin(t)*50, '#f00', 4, t);
+                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 180 + Math.cos(t)*50, '#ff0', 4, -t);
             }
             // Wings shooting
              if (Math.floor(t * 60) % 5 === 0) {
