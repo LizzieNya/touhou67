@@ -269,25 +269,10 @@ export default class LeitmotifManager {
             },
 
             'menu': {
-                tempo: 90, // Slowed down
-                loopStart: 0,
+                tempo: 144, // EoSD Title Tempo
                 sequence: [
-                    // Distorted Theme of Eastern Story (Pitched Up + Dissonant)
-                    // Original was G2/G3 based. We shift up ~5 semitones to C3/C4
-                    
-                    // Phrase 1 (Distorted)
-                    s([bass('C3'), guitar('C4')], 0.375), s(guitar('D4'), 0.125), s(guitar('E4'), 0.25), s(guitar('F4'), 0.25),
-                    s([bass('G3'), guitar('G4')], 0.375), s(guitar('F4'), 0.125), s(guitar('E4'), 0.25), s(guitar('D4'), 0.25),
-                    // Weird timing/distortion
-                    s([bass('A3'), guitar('C4')], 0.20), s(guitar('C4'), 0.30), s(guitar('D4'), 0.25), s(guitar('E4'), 0.25),
-                    s([bass('F3'), guitar('D4')], 0.5), s([guitar('C4'), bass('G3')], 0.5),
-                    
-                    // Phrase 2 (Pitched Up + ZUNpet)
-                    s([bass('C3'), zunpet('E5')], 0.375), s(zunpet('F5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('A5'), 0.25),
-                    s([bass('E2'), zunpet('G5')], 0.375), s(zunpet('F5'), 0.125), s(zunpet('E5'), 0.25), s(zunpet('D5'), 0.25),
-                    // Dissonant Chord?
-                    s([bass('F3'), zunpet('C5'), guitar('F#4')], 0.25), s(zunpet('D5'), 0.25), s(zunpet('E5'), 0.25), s(zunpet('F5'), 0.25),
-                    s([bass('G3'), zunpet('D5')], 0.5), s(zunpet('G5'), 0.5),
+                    // A Soul as Red as a Ground Cherry (Matches Stage 1)
+                    s([bass('A2'), bass('D2')], 0.500), s(guitar('D3'), 0.500), s(guitar('D3'), 0.250), s(guitar('D3'), 0.250), s(bass('A2'), 0.500), s(bass('D2'), 0.500), s(bass('D2'), 0.500), s(bass('D2'), 0.250), s(bass('A2'), 0.250), s(guitar('D3'), 0.250), s(bass('A2'), 0.250), s(bass('D2'), 0.750), s([guitar('A3'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('A3'), bass('A2')], 0.500), s(bass('D2'), 0.750), s([guitar('A3'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('A3'), bass('A2')], 0.500), s([guitar('A3'), bass('D2')], 0.750), s([guitar('F4'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('E4'), bass('A2')], 0.500), s([guitar('F3'), bass('D2')], 0.750), s([guitar('D4'), bass('A2')], 0.250), s([guitar('E3'), guitar('D3')], 0.500), s([guitar('C4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('F5'), guitar('A4'), bass('D2')], 0.750), s([zunpet('E5'), guitar('G4'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('D5'), guitar('F4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('A5'), zunpet('F5'), bass('D2')], 0.750), s([zunpet('G5'), zunpet('E5'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('F5'), zunpet('D5'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('F5'), guitar('A4'), bass('D2')], 0.750), s([zunpet('E5'), guitar('G4'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('D5'), guitar('F4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('A5'), zunpet('F5'), bass('D2')], 0.750), s([zunpet('G5'), zunpet('E5'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('F5'), zunpet('D5'), bass('A2')], 0.500)
                 ]
             },
 

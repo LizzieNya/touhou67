@@ -77,11 +77,12 @@ export default class Background {
     render(renderer) {
         const ctx = renderer.ctx;
         let w = this.game.playAreaWidth || this.game.width;
+        const h = this.game.height; // Moved definition of h here
+
         if (this.currentStage === 'Menu' || this.currentStage === 'Menu7') {
             w = this.game.width;
         }
 
-        const h = this.game.height;
         // Check if image is valid and loaded
         if (this.image && this.image.complete && this.image.naturalWidth > 0) {
             const imgW = this.image.naturalWidth;

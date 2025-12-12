@@ -115,11 +115,16 @@ export default class LauncherScene {
     }
 
     update(dt) {
-        this.time += dt;
-        
-        // Start music after user interaction
+        // Mouse Input Handling
+        const mx = this.game.input.mouse.x;
+        const my = this.game.input.mouse.y;
+        const mDown = this.game.input.mouse.down;
+        const mClicked = mDown && !this.lastMouseDown;
+        this.lastMouseDown = mDown;
+
+        // Start music after user interaction (Keyboard OR Click)
         if (!this.started) {
-            if (this.game.input.anyKeyPressed()) {
+            if (this.game.input.anyKeyPressed() || mClicked) {
                 this.started = true;
                 this.game.soundManager.playMenuSelect();
                 if (this.game.soundManager && this.game.soundManager.leitmotifManager) {
@@ -162,6 +167,27 @@ export default class LauncherScene {
         });
 
         if (this.loading) return;
+
+        // Mouse Hover & Click Validation
+        const startY = this.game.height * 0.35;
+        const spacing = 55;
+        this.options.forEach((opt, index) => {
+            const y = startY + index * spacing;
+            // Check Hitbox (Centered approx 400px wide, 40px tall)
+            if (mx > this.game.width/2 - 250 && mx < this.game.width/2 + 250 &&
+                my > y - 25 && my < y + 25) {
+                
+                if (this.selectedIndex !== index) {
+                    this.selectedIndex = index;
+                    this.game.soundManager.playMenuMove();
+                }
+                
+                if (mClicked) {
+                    this.game.soundManager.playMenuSelect();
+                    this.selectGame();
+                }
+            }
+        });
 
         if (this.game.input.isPressed('UP')) {
             this.selectedIndex = (this.selectedIndex - 1 + this.options.length) % this.options.length;

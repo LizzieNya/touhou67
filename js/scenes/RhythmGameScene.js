@@ -21,7 +21,8 @@ export default class RhythmGameScene {
         if (!this.game.soundManager) return;
 
         // Pick a random theme
-        const themes = ['rumia', 'cirno', 'meiling', 'patchouli', 'sakuya', 'remilia', 'flandre', 'sans'];
+        // Pick a random theme
+        const themes = ['rumia', 'cirno', 'meiling', 'patchouli', 'sans', 'pepe', 'nue', 'menu'];
         const randomTheme = themes[Math.floor(Math.random() * themes.length)];
 
         console.log(`Starting Rhythm Game with theme: ${randomTheme}`);
