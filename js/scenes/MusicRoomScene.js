@@ -1,0 +1,145 @@
+export default class MusicRoomScene {
+    constructor(game) {
+        this.game = game;
+        this.tracks = [
+            { name: 'A Soul as Red as a Ground Cherry', id: 'menu', composer: 'ZUN' },
+            { name: 'Apparitions Stalk the Night', id: 'stage1', composer: 'ZUN' },
+            { name: 'Lunate Elf', id: 'stage2', composer: 'ZUN' },
+            { name: 'Shanghai Teahouse ~ Chinese Tea', id: 'stage3', composer: 'ZUN' },
+            { name: 'Voile, the Magic Library', id: 'stage4', composer: 'ZUN' },
+            { name: 'The Maid and the Pocket Watch of Blood', id: 'stage5', composer: 'ZUN' },
+            { name: 'Lunar Clock ~ Luna Dial', id: 'sakuya', composer: 'ZUN' },
+            { name: 'The Young Descendant of Tepes', id: 'stage6', composer: 'ZUN' },
+            { name: 'Septette for the Dead Princess', id: 'remilia', composer: 'ZUN' },
+            { name: 'The Centennial Festival for Magical Girls', id: 'stage_extra', composer: 'ZUN' },
+            { name: 'U.N. Owen Was Her?', id: 'flandre', composer: 'ZUN' },
+            { name: 'Beloved Tomboyish Girl', id: 'cirno', composer: 'ZUN' },
+            { name: 'Shanghai Alice of Meiji 17', id: 'meiling', composer: 'ZUN' },
+            { name: 'Locked Girl ~ The Girl\'s Secret Room', id: 'patchouli', composer: 'ZUN' },
+            { name: 'Megalovania', id: 'sans', composer: 'Toby Fox' }
+        ];
+        this.selectedIndex = 0;
+        this.blinkTimer = 0;
+        this.currentlyPlaying = null;
+
+        // Hide HUD
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.style.display = 'none';
+    }
+
+    update(dt) {
+        this.blinkTimer += dt;
+        const input = this.game.input;
+
+        if (input.isDown('UP')) {
+            input.keys['ArrowUp'] = false;
+            this.selectedIndex = (this.selectedIndex - 1 + this.tracks.length) % this.tracks.length;
+        }
+        if (input.isDown('DOWN')) {
+            input.keys['ArrowDown'] = false;
+            this.selectedIndex = (this.selectedIndex + 1) % this.tracks.length;
+        }
+        if (input.isDown('SHOOT')) { // Play/Stop
+            input.keys['KeyZ'] = false;
+            this.toggleTrack();
+        }
+        if (input.isDown('BOMB')) { // Back
+            input.keys['KeyX'] = false;
+            this.stopCurrentTrack();
+            import('./TitleScene.js').then(module => {
+                this.game.sceneManager.changeScene(new module.default(this.game));
+            });
+        }
+    }
+
+    toggleTrack() {
+        const track = this.tracks[this.selectedIndex];
+
+        if (this.currentlyPlaying === this.selectedIndex) {
+            // Stop current track
+            this.stopCurrentTrack();
+        } else {
+            // Play new track
+            this.stopCurrentTrack();
+            this.currentlyPlaying = this.selectedIndex;
+            console.log(`Playing: ${track.name}`);
+            if (this.game.soundManager) {
+                this.game.soundManager.playBossTheme(track.id);
+            }
+        }
+    }
+
+    stopCurrentTrack() {
+        if (this.currentlyPlaying !== null) {
+            console.log('Stopping music');
+            this.currentlyPlaying = null;
+            if (this.game.soundManager) {
+                this.game.soundManager.stopBossTheme();
+            }
+        }
+    }
+
+    render(renderer) {
+        const ctx = renderer.ctx;
+        const w = this.game.width;
+        const h = this.game.height;
+
+        // Background
+        const gradient = ctx.createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, '#104');
+        gradient.addColorStop(1, '#000');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
+
+        // Title
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 30px "Times New Roman", serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText("Music Room", w / 2, 50);
+
+        // Instructions
+        ctx.font = '14px "Times New Roman", serif';
+        ctx.fillStyle = '#aaa';
+        ctx.fillText("Z: Play/Stop  |  X: Return", w / 2, 80);
+
+        // Track list
+        const startY = 120;
+        const spacing = 35;
+
+        this.tracks.forEach((track, index) => {
+            let color = '#888';
+            let prefix = '  ';
+
+            if (index === this.selectedIndex) {
+                const alpha = 0.5 + Math.abs(Math.sin(this.blinkTimer * 5)) * 0.5;
+                color = `rgba(255, 255, 255, ${alpha})`;
+                prefix = '> ';
+            }
+
+            if (this.currentlyPlaying === index) {
+                color = '#0f0';
+                prefix = '♪ ';
+            }
+
+            ctx.font = 'bold 18px "Times New Roman", serif';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'left';
+            ctx.fillText(`${prefix}${track.name}`, 80, startY + index * spacing);
+
+            ctx.font = '14px "Times New Roman", serif';
+            ctx.fillStyle = '#666';
+            ctx.fillText(track.composer, 400, startY + index * spacing);
+        });
+
+        // Now Playing
+        if (this.currentlyPlaying !== null) {
+            const track = this.tracks[this.currentlyPlaying];
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 16px "Times New Roman", serif';
+            ctx.fillStyle = '#0f0';
+            ctx.fillText(`♪ Now Playing: ${track.name}`, w / 2, h - 30);
+        }
+
+        ctx.textAlign = 'left';
+    }
+}

@@ -1,0 +1,16 @@
+import GameManifest from '../../engine/GameManifest.js';
+
+export default class NocturnalSunlightManifest extends GameManifest {
+    constructor() {
+        super('nocturnal_sunlight', 'Touhou: Nocturnal Sunlight', 'Why is the sun out at midnight?');
+
+        this.stages = {
+            1: () => import('./Stage1.js').then(m => m.Stage1Events),
+            2: () => import('./Stage2.js').then(m => m.Stage2Events),
+            3: () => import('./Stage3.js').then(m => m.Stage3Events),
+            4: () => import('./Stage4.js').then(m => m.Stage4Events),
+            5: () => import('./Stage5.js').then(m => m.Stage5Events),
+            6: () => import('./Stage6.js').then(m => m.Stage6Events),
+        };
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@tonejs/midi": "^2.0.28"
+  }
+}
