@@ -951,10 +951,13 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.x = w/2; enemy.y = 120;
             
             // Intense ripples
-            if (Math.floor(t * 60) % 15 === 0) { // Slower rings (was 10)
-                // Expanding rings - Reduced density (12 bullets per ring instead of 16)
+            // Intense ripples
+            if (Math.floor(t * 60) % 15 === 0) { // Slower rings
+                // Expanding rings - Reduced density
                 PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 200 + Math.sin(t)*50, '#f00', 4, t);
-                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 180 + Math.cos(t)*50, '#ff0', 4, -t);
+                 // Fixed speed for yellow to prevent clumping (removed cosine variance)
+                 // Or keep variance but ensure it's distinct from red
+                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 170, '#ff0', 4, -t); 
             }
             // Wings shooting
              if (Math.floor(t * 60) % 5 === 0) {

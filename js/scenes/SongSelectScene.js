@@ -31,7 +31,7 @@ export default class SongSelectScene {
 
     selectSong() {
         const selectedTheme = this.themes[this.selectedIndex];
-        import('./RhythmGameScene_v2.js').then(module => {
+        import('./RhythmGameScene.js').then(module => {
             this.game.sceneManager.changeScene(new module.default(this.game, selectedTheme));
         });
     }
