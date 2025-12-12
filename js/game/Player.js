@@ -10,48 +10,49 @@ export default class Player extends Entity {
 
         // Stats based on character
         if (this.character === 'Marisa') {
-            this.speed = 350;
-            this.focusSpeed = 180;
+            this.speed = 300;
+            this.focusSpeed = 120;
             this.color = '#ff0'; // Marisa yellow
         } else if (this.character === 'Sakuya') {
-            this.speed = 320;
-            this.focusSpeed = 160;
+            this.speed = 280;
+            this.focusSpeed = 110;
             this.color = '#aaa'; // Sakuya silver
         } else if (this.character === 'Youmu') {
-            this.speed = 330;
-            this.focusSpeed = 160;
+            this.speed = 290;
+            this.focusSpeed = 110;
             this.color = '#e0e0e0'; // Youmu white/silver
         } else if (this.character === 'Sanae') {
-            this.speed = 310;
-            this.focusSpeed = 155;
+            this.speed = 270;
+            this.focusSpeed = 100;
             this.color = '#8bc34a'; // Sanae green
         } else if (this.character === 'Remilia') {
-            this.speed = 360; // Very fast
-            this.focusSpeed = 170;
+            this.speed = 320; // Very fast
+            this.focusSpeed = 130;
             this.color = '#f00'; // Scarlet
         } else if (this.character === 'Flandre') {
-            this.speed = 360; // Very fast
-            this.focusSpeed = 170;
+            this.speed = 320; // Very fast
+            this.focusSpeed = 130;
             this.color = '#ff0000'; // Deep Red
         } else if (this.character === 'Okuu') {
-            this.speed = 250; // Slow
-            this.focusSpeed = 120;
+            this.speed = 220; // Slow
+            this.focusSpeed = 80;
             this.color = '#f00'; // Nuclear Red
         } else if (this.character === 'Nue') {
-            this.speed = 350; // Fast
-            this.focusSpeed = 180;
+            this.speed = 300; // Fast
+            this.focusSpeed = 120;
             this.color = '#800080'; // Purple
         } else if (this.character === 'Parsee') {
-            this.speed = 300; // Average
-            this.focusSpeed = 150;
+            this.speed = 260; // Average
+            this.focusSpeed = 100;
             this.color = '#0f0'; // Green
         } else if (this.character === 'Yuyuko') {
-            this.speed = 280; // Slow
-            this.focusSpeed = 140;
+            this.speed = 240; // Slow
+            this.focusSpeed = 90;
             this.color = '#f0f'; // Pink
         } else {
-            this.speed = 300;
-            this.focusSpeed = 150;
+            // Reimu / Default
+            this.speed = 260;
+            this.focusSpeed = 100;
             this.color = '#f00'; // Reimu red
         }
         

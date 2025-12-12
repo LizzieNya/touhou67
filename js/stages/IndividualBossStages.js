@@ -835,12 +835,15 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             enemy.y = 100;
             
             // Spinning ring with gaps
-            if (Math.floor(t * 60) % 2 === 0) {
+            if (Math.floor(t * 60) % 4 === 0) { // Reduced frequency (was 2)
                 const angle = t * 2; // Spin
                 // We create a circle but only spawn if angle is NOT in a gap
-                // Simplified: Just 4 streams rotating
+                // Simplified: Just 4 streams rotating (Wider Gaps)
                 for(let i=0; i<4; i++) {
                     const a = angle + (i/4)*Math.PI*2;
+                    // Skip spawning sometimes to make gaps bigger?
+                    // Or just use 3 streams?
+                    // Let's keep 4 but reduce frequency by half
                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*250, Math.sin(a)*250, '#f0f', 4);
                 }
             }
@@ -865,7 +868,8 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
                         const speed = 150 + idx*30;
                         const count = 20; // Reduced from 30
                         for(let i=0; i<count; i++) {
-                            const a = (i/count)*Math.PI*2 + (idx * 0.1); // Slight rotation per layer
+                            // Dynamic rotation: (t * 0.5) makes the whole pattern slowly rotate over time
+                            const a = (i/count)*Math.PI*2 + (idx * 0.1) + (t * 0.5); 
                             scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*speed, Math.sin(a)*speed, c, 5); 
                         }
                     }
@@ -918,7 +922,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Secret Barrage "And Then Will There Be None?"
-        hp: 4000, duration: 99, spellName: "Secret Barrage 'And Then Will There Be None?'",
+        hp: 4000, duration: 99, spellName: "Taboo 'And Then Will There Be None?'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
