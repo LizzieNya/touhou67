@@ -81,9 +81,9 @@ export default class Background {
             w = this.game.width;
         }
 
+        const h = this.game.height;
         // Check if image is valid and loaded
         if (this.image && this.image.complete && this.image.naturalWidth > 0) {
-            const h = this.game.height;
             const imgW = this.image.naturalWidth;
             const imgH = this.image.naturalHeight;
 
