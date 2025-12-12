@@ -296,7 +296,7 @@ export default class SoundManager {
         // Map IDs to Names for notification
         const names = {
             'menu': 'A Soul as Red as a Ground Cherry',
-            'stage1': 'A Soul as Red as a Ground Cherry',
+            'stage1': 'Apparitions Stalk the Night',
             'rumia': 'Apparitions Stalk the Night',
             'stage2': 'Lunate Elf',
             'cirno': 'Beloved Tomboyish Girl',

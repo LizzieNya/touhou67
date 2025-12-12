@@ -299,10 +299,25 @@ export default class LeitmotifManager {
             },
 
             'menu': {
-                tempo: 144, // EoSD Title Tempo
+                tempo: 132, // Slower, haunting
                 sequence: [
-                    // A Soul as Red as a Ground Cherry (Matches Stage 1)
-                    s([bass('A2'), bass('D2')], 0.500), s(guitar('D3'), 0.500), s(guitar('D3'), 0.250), s(guitar('D3'), 0.250), s(bass('A2'), 0.500), s(bass('D2'), 0.500), s(bass('D2'), 0.500), s(bass('D2'), 0.250), s(bass('A2'), 0.250), s(guitar('D3'), 0.250), s(bass('A2'), 0.250), s(bass('D2'), 0.750), s([guitar('A3'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('A3'), bass('A2')], 0.500), s(bass('D2'), 0.750), s([guitar('A3'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('A3'), bass('A2')], 0.500), s([guitar('A3'), bass('D2')], 0.750), s([guitar('F4'), bass('A2')], 0.250), s([guitar('G3'), guitar('D3')], 0.500), s([guitar('E4'), bass('A2')], 0.500), s([guitar('F3'), bass('D2')], 0.750), s([guitar('D4'), bass('A2')], 0.250), s([guitar('E3'), guitar('D3')], 0.500), s([guitar('C4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('F5'), guitar('A4'), bass('D2')], 0.750), s([zunpet('E5'), guitar('G4'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('D5'), guitar('F4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('A5'), zunpet('F5'), bass('D2')], 0.750), s([zunpet('G5'), zunpet('E5'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('F5'), zunpet('D5'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('F5'), guitar('A4'), bass('D2')], 0.750), s([zunpet('E5'), guitar('G4'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('D5'), guitar('F4'), bass('A2')], 0.500), s([zunpet('D5'), guitar('F4'), bass('D2')], 0.750), s([guitar('A4'), bass('A2')], 0.250), s([guitar('G4'), guitar('D3')], 0.500), s([guitar('A4'), bass('A2')], 0.500), s([zunpet('A5'), zunpet('F5'), bass('D2')], 0.750), s([zunpet('G5'), zunpet('E5'), bass('A2')], 0.250), s(guitar('D3'), 0.500), s([zunpet('F5'), zunpet('D5'), bass('A2')], 0.500)
+                    // A Soul as Red as a Ground Cherry
+                    // Intro / Main Melody
+                    s([zunpet('D5'), guitar('D3'), bass('D2')], 0.75), s(zunpet('C5'), 0.25),
+                    s([zunpet('A4'), guitar('F3')], 0.75), s(zunpet('G4'), 0.25),
+                    s([zunpet('F4'), guitar('A#2'), bass('A#1')], 0.75), s(zunpet('E4'), 0.25),
+                    s([zunpet('D4'), guitar('A2'), bass('A1')], 1.0),
+                    
+                    s([zunpet('F4'), guitar('D3')], 0.5), s(zunpet('G4'), 0.5),
+                    s([zunpet('A4'), guitar('F3'), bass('D2')], 0.75), s(zunpet('C5'), 0.25),
+                    s([zunpet('D5'), guitar('A#2'), bass('A#1')], 1.0),
+                    s([zunpet('A4'), guitar('A2'), bass('A1')], 1.0),
+
+                    // Repeat with harmony
+                    s([zunpet('D5'), zunpet('F5'), guitar('D3')], 0.75), s(zunpet('C5'), 0.25),
+                    s([zunpet('A4'), zunpet('C5'), guitar('F3')], 0.75), s(zunpet('G4'), 0.25),
+                    s([zunpet('F4'), zunpet('A4'), bass('A#1')], 0.75), s(zunpet('E4'), 0.25),
+                    s([zunpet('D4'), zunpet('F4'), bass('A1')], 1.0)
                 ]
             },
 
