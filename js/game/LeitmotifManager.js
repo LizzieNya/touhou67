@@ -288,36 +288,36 @@ export default class LeitmotifManager {
             },
 
             'menu': {
-                tempo: 140, 
+                tempo: 144, 
                 sequence: [
-                    // A Soul as Red as a Ground Cherry (Touhou 6 Title)
-                    // Intro / Main Loop
+                    // A Soul as Red as a Ground Cherry - Authentic Intro
+                    // Bar 1 (Am)
+                    s([bass('A1'), guitar('E3'), zunpet('A4')], 1.50), s([guitar('E3'), zunpet('B4')], 0.50),
+                    s([bass('A1'), guitar('A3'), zunpet('C5')], 1.00), s([guitar('E3'), zunpet('B4')], 1.00),
                     
-                    // Am
-                    s([zunpet('A4'), guitar('A3'), bass('A2')], 0.5), s(zunpet('B4'), 0.25), s(zunpet('C5'), 0.25),
-                    s([zunpet('B4'), guitar('A3')], 0.5), s(zunpet('A4'), 0.5),
-                    
-                    // G
-                    s([zunpet('G4'), guitar('G3'), bass('G2')], 0.5), s(zunpet('A4'), 0.25), s(zunpet('B4'), 0.25),
-                    s([zunpet('A4'), guitar('G3')], 0.5), s(zunpet('G4'), 0.5),
+                    // Bar 2
+                    s([bass('A1'), guitar('A3'), zunpet('A4')], 2.00), s([guitar('E3'), zunpet('E5')], 2.00),
 
-                    // F
-                    s([zunpet('F4'), guitar('F3'), bass('F2')], 0.75), s(zunpet('G4'), 0.25),
-                    s([zunpet('A4'), guitar('F3')], 0.75), s(zunpet('B4'), 0.25),
+                    // Bar 3 (G)
+                    s([bass('G1'), guitar('D3'), zunpet('G4')], 1.50), s([guitar('D3'), zunpet('A4')], 0.50),
+                    s([bass('G1'), guitar('G3'), zunpet('B4')], 1.00), s([guitar('D3'), zunpet('A4')], 1.00),
 
-                    // E (Turnaround)
-                    s([zunpet('C5'), guitar('E3'), bass('E2')], 0.5), s(zunpet('B4'), 0.5),
-                    s([zunpet('A4'), guitar('E3')], 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('E4'), 0.25),
-                    
-                    // Repeat with variation
-                    s([zunpet('A4'), guitar('A3'), bass('A2')], 0.5), s(zunpet('B4'), 0.25), s(zunpet('C5'), 0.25),
-                    s([zunpet('D5'), guitar('A3')], 0.5), s(zunpet('C5'), 0.5),
+                    // Bar 4
+                    s([bass('G1'), guitar('G3'), zunpet('G4')], 2.00), s([guitar('D3'), zunpet('D5')], 2.00),
 
-                    s([zunpet('B4'), guitar('G3'), bass('G2')], 0.5), s(zunpet('A4'), 0.25), s(zunpet('G4'), 0.25),
-                    s([zunpet('A4'), guitar('G3')], 0.5), s(zunpet('B4'), 0.5),
+                    // Bar 5 (F)
+                    s([bass('F1'), guitar('C3'), zunpet('F4')], 1.50), s([guitar('C3'), zunpet('G4')], 0.50),
+                    s([bass('F1'), guitar('F3'), zunpet('A4')], 1.00), s([guitar('C3'), zunpet('G4')], 1.00),
 
-                    s([zunpet('C5'), guitar('F3'), bass('F2')], 1.0),
-                    s([zunpet('B4'), guitar('E3'), bass('E2')], 1.0)
+                    // Bar 6
+                    s([bass('F1'), guitar('F3'), zunpet('F4')], 2.00), s([guitar('C3'), zunpet('C5')], 2.00),
+
+                    // Bar 7 (E)
+                    s([bass('E1'), guitar('B2'), zunpet('B4')], 1.50), s([guitar('B2'), zunpet('C5')], 0.50),
+                    s([bass('E1'), guitar('E3'), zunpet('D5')], 1.00), s([guitar('B2'), zunpet('C5')], 1.00),
+
+                    // Bar 8
+                    s([bass('E1'), guitar('E3'), zunpet('B4')], 4.00)
                 ]
             },
 
