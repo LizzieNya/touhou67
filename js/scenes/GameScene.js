@@ -303,8 +303,23 @@ export default class GameScene {
         } else if (typeof this.stage === 'string' && this.stage.startsWith('Boss')) {
             // Boss Select stages - return to boss select instead of title
             console.log("Boss Battle Clear!");
-            import('./BossSelectScene.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
+            
+            // Construct stats for Result Screen
+            const gameData = {
+                stage: this.stage, // e.g. "BossRumia"
+                character: this.character,
+                difficulty: this.difficulty, // Usually 'Normal' or based on practice
+                score: this.hud.score,
+                graze: this.hud.graze,
+                continues: this.continueCount,
+                spellsCaptured: 0, // Not fully tracked in this lightweight engine yet
+                spellsTotal: 0,
+                cleared: true,
+                returnTo: 'BossSelect'
+            };
+
+            import('./ResultScene.js').then(module => {
+                this.game.sceneManager.changeScene(new module.default(this.game, gameData));
             });
         } else {
             // Unknown stage type - return to title

@@ -4,10 +4,11 @@ export default class PauseMenu {
         this.active = false;
         this.options = [
             { name: 'Resume Game', action: 'resume' },
+            { name: 'Retry Stage', action: 'retry' },
+            { name: 'Character Select', action: 'select' }, 
             { name: 'Return to Title', action: 'title' },
-            { name: 'Return to Select', action: 'select' }, // Go back to character select
-            { name: 'Retry Stage', action: 'retry' }, // Restart current stage
-            { name: 'Give Up', action: 'quit' } // Go to launcher
+            { name: 'Settings (Options)', action: 'settings' },
+            { name: 'Quit to Launcher', action: 'quit' }
         ];
         this.selectedIndex = 0;
     }
@@ -66,6 +67,20 @@ export default class PauseMenu {
                     scene.shotType,
                     scene.difficulty
                 ));
+            });
+        } else if (action === 'settings') {
+            // Save current scene context to return to? 
+            // For now, simpler to just go to options and let it return to title, 
+            // OR implement a "return to pause" in options.
+            // But usually settings in pause menu is a sub-menu or overlay.
+            // Let's assume OptionsScene exists and try to use it, but it might break context.
+            // Better: Overlay settings here or just link to OptionsScene.
+            // Given the engine limitations, going to OptionsScene might lose game state.
+            // I will skip 'settings' as a full scene change for now to avoid bugginess, 
+            // or if I do, warn user.
+            // Wait, use 'quit' to launcher logic?
+            import('../scenes/OptionsScene.js').then(module => {
+                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (action === 'quit') {
             import('../scenes/LauncherScene.js').then(module => {

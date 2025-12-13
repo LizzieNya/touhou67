@@ -1048,24 +1048,46 @@ export const BossSansEvents = createBossStage("Sans", null, [
                  for(let y=top;y<=bot;y+=40) { scene.bulletManager.spawn(l,y,0,0,'#00f',2); scene.bulletManager.spawn(r,y,0,0,'#00f',2); }
             }
             
-            // Clamp
+            // --- Custom Platformer Physics ---
+            
+            // 1. Reset standard Y movement from Player.js (force Y back to previous frame's Y)
+            // This effectively disables the UP/DOWN keys for direct movement
+            scene.player.y = scene.player.prevY;
+            
+            // 2. Initialize or Retrieve Custom Velocity
+            if (scene.player.customVy === undefined) scene.player.customVy = 0;
+            
+            // 3. Apply Gravity
+            const gravity = 1200;
+            scene.player.customVy += gravity * dt;
+            
+            // 4. Input: Jump
+            // Only jump if on the ground
+            const floorY = bot - 15;
+            const isGrounded = scene.player.y >= floorY - 5; // Tolerance
+            
+            if (isGrounded && (scene.game.input.isPressed('UP') || scene.game.input.isPressed('Z'))) {
+                 scene.player.customVy = -600; // Jump Strength
+                 scene.game.soundManager.playSelect(); // Jump sound effect?
+            }
+            
+            // 5. Apply Vertical Velocity
+            scene.player.y += scene.player.customVy * dt;
+            
+            // 6. Floor Collision / Clamping
+            if (scene.player.y > floorY) {
+                scene.player.y = floorY;
+                scene.player.customVy = 0;
+            }
+            // Ceiling Collision
+            if (scene.player.y < top + 15) {
+                scene.player.y = top + 15;
+                if (scene.player.customVy < 0) scene.player.customVy = 0;
+            }
+            
+            // Clamp X (Left/Right) - Player.js still handles X movement
             if(scene.player.x < l+15) scene.player.x = l+15;
             if(scene.player.x > r-15) scene.player.x = r-15;
-            if(scene.player.y < top+15) scene.player.y = top+15;
-            if(scene.player.y > bot-15) scene.player.y = bot-15;
-            
-            // GRAVITY LOGIC
-            // Force player downwards unless 'UP' is pressed (Jump)
-            const gravityStrength = 250;
-            const jumpStrength = 300;
-            
-            if (scene.game.input.isDown('UP')) {
-                // Allow moving up (Jump)
-                // Standard movement handles this, but we fight gravity
-            } else {
-                // Apply Gravity
-                scene.player.y += gravityStrength * dt;
-            }
 
             enemy.x = cx; enemy.y = top - 80;
 

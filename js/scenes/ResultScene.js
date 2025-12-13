@@ -26,9 +26,16 @@ export default class ResultScene {
         if (input.isDown('SHOOT') || input.isDown('BOMB')) {
             input.keys['KeyZ'] = false;
             input.keys['KeyX'] = false;
-            import('./TitleScene.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
-            });
+            
+            if (this.gameData.returnTo === 'BossSelect') {
+                import('./BossSelectScene.js').then(module => {
+                    this.game.sceneManager.changeScene(new module.default(this.game));
+                });
+            } else {
+                import('./TitleScene.js').then(module => {
+                    this.game.sceneManager.changeScene(new module.default(this.game));
+                });
+            }
         }
     }
 

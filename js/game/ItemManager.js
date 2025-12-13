@@ -124,11 +124,11 @@ class Item extends Entity {
         let shape = 'box'; // box, star
         
         if (this.type === 'power') {
-            // Bright Red, standard size (14 slightly smaller than 16)
-            color = '#f00'; innerColor = '#fcc'; text = 'P'; size = 14;
+            // LED Red: Bright red outer, White inner (hot core)
+            color = '#f00'; innerColor = '#fff'; text = 'P'; size = 14;
         } else if (this.type === 'big_power') {
-            // Bright Red, reduced size (was 24, now 20)
-            color = '#f00'; innerColor = '#fcc'; text = 'P'; size = 20;
+            // LED Red: Bright red outer, White inner
+            color = '#f00'; innerColor = '#fff'; text = 'P'; size = 20;
         } else if (this.type === 'full_power') {
             color = '#da0'; innerColor = '#ff4'; text = 'F'; size = 20;
         } else if (this.type === 'point') {
@@ -210,7 +210,19 @@ class Item extends Entity {
             ctx.lineTo(x, y + r);
             ctx.quadraticCurveTo(x, y, x + r, y);
             ctx.closePath();
+            
+            // LED Glow for power items
+            if (this.type === 'power' || this.type === 'big_power') {
+                ctx.shadowColor = '#f00';
+                ctx.shadowBlur = 15;
+            } else {
+                // Standard shadow for others
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 5;
+            }
+            
             ctx.fill();
+            ctx.shadowBlur = 0; // Reset for border/inner
             
             // Inner gradient/glow
             const grd = ctx.createRadialGradient(0, -5, 1, 0, 0, size);

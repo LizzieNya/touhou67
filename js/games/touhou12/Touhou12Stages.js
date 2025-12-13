@@ -19,9 +19,11 @@ const createBossStage = (config) => (character) => {
                 // Play Stage Theme
                 if (scene.game.soundManager && stageTheme) {
                     scene.game.soundManager.playBossTheme(stageTheme); 
-                    // Note: playBossTheme is often used for any BGM in this simplified engine
                 }
-                scene.ui.showBossTitle(stageName || `Stage - ${bossName}`);
+                const ui = scene.ui || scene.hud;
+                if (ui && ui.showBossTitle) {
+                    ui.showBossTitle(stageName || `Stage - ${bossName}`);
+                }
             }
         },
         // Simulate Stage Portion (Short travel)
