@@ -116,6 +116,7 @@ class Item extends Entity {
         if (!this.active) return;
 
         // Visual Parameters
+        // Visual Parameters
         let color = '#f00';
         let innerColor = '#faa';
         let text = '';
@@ -123,9 +124,11 @@ class Item extends Entity {
         let shape = 'box'; // box, star
         
         if (this.type === 'power') {
-            color = '#d00'; innerColor = '#f44'; text = 'P'; size = 16;
+            // Bright Red, standard size (14 slightly smaller than 16)
+            color = '#f00'; innerColor = '#fcc'; text = 'P'; size = 14;
         } else if (this.type === 'big_power') {
-            color = '#d00'; innerColor = '#f44'; text = 'P'; size = 24;
+            // Bright Red, reduced size (was 24, now 20)
+            color = '#f00'; innerColor = '#fcc'; text = 'P'; size = 20;
         } else if (this.type === 'full_power') {
             color = '#da0'; innerColor = '#ff4'; text = 'F'; size = 20;
         } else if (this.type === 'point') {
@@ -144,8 +147,9 @@ class Item extends Entity {
         
         // Pop-in scale
         let scale = 1.0;
-        if (this.spawnTimer < 0.2) {
-            scale = this.spawnTimer / 0.2;
+        // Scale less quickly (0.4s instead of 0.2s)
+        if (this.spawnTimer < 0.4) {
+            scale = this.spawnTimer / 0.4;
         }
 
         // Vacuum Line (fancier)

@@ -41,7 +41,9 @@ export default class Boss extends Enemy {
     die() {
         super.die();
         if (this.game.soundManager && this.game.soundManager.stopBossTheme) {
-            this.game.soundManager.stopBossTheme();
+            // Prevent silence gap by NOT stopping theme immediately. 
+            // The next stage/event will handle music transition.
+            // this.game.soundManager.stopBossTheme();
         }
         // Boss death explosion
         const scene = this.game.sceneManager.currentScene;
@@ -88,8 +90,9 @@ export default class Boss extends Enemy {
         }
         this.currentPhaseIndex = index;
         const phase = this.phases[index];
-        this.maxHp = phase.hp;
-        this.hp = phase.hp;
+        // difficulty: Double HP
+        this.maxHp = phase.hp * 2.0;
+        this.hp = phase.hp * 2.0;
         this.phaseTimer = phase.duration;
         this.stateTimer = 0; // Reset animation timer
         this.pattern = phase.pattern;
