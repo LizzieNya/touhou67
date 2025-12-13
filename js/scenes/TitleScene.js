@@ -228,8 +228,9 @@ export default class TitleScene {
         }
 
         // Title Text (Top Left)
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = '#000';
+        // Shadow removed for performance
+        // ctx.shadowBlur = 5;
+        // ctx.shadowColor = '#000';
         ctx.textAlign = 'left';
 
         // Japanese Title
@@ -258,15 +259,16 @@ export default class TitleScene {
                 ctx.fillStyle = '#88f'; // Blue/Purple
             }
         }
-
+        
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#220000';
+        ctx.strokeText(jpTitle, 40, 80);
         ctx.fillText(jpTitle, 40, 80);
 
         // English Title
         ctx.font = 'bold 24px "Times New Roman", serif';
         ctx.fillStyle = '#ccc';
         ctx.fillText(enTitle, 40, 115);
-
-        ctx.shadowBlur = 0;
 
         // Menu Options (Right Aligned, below title)
         const startX = w - 40; // Right aligned
@@ -278,19 +280,24 @@ export default class TitleScene {
 
         this.options.forEach((opt, index) => {
             let color = '#aaa';
-            let shadow = 0;
             let offset = 0;
 
             if (index === this.selectedIndex) {
                 // Active selection
                 const alpha = Math.abs(Math.sin(this.blinkTimer * 5));
                 color = `rgba(255, 200, 200, ${0.8 + alpha * 0.2})`;
-                shadow = 10;
+                // shadow = 10; // REMOVED
                 offset = -10; // Move left slightly
+                
+                // Draw selection indicator (simpler than shadow)
+                ctx.fillStyle = '#f00';
+                ctx.font = '16px Arial';
+                ctx.fillText("▶", startX + offset - 150, startY + index * spacing);
+                ctx.font = 'bold 22px "Times New Roman", serif';
             }
 
-            ctx.shadowBlur = shadow;
-            ctx.shadowColor = '#f00';
+            // ctx.shadowBlur = shadow; // REMOVED
+            // ctx.shadowColor = '#f00';
             ctx.fillStyle = color;
             ctx.fillText(opt, startX + offset, startY + index * spacing);
         });

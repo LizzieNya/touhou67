@@ -53,6 +53,7 @@ export default class GameScene {
         this.enemies = [];
         this.collisionSystem = new CollisionSystem(game);
         this.hud = new HUD(game);
+        this.ui = this.hud; // Alias for scripts using scene.ui
         this.dialogueManager = new DialogueManager(game);
         this.pauseMenu = new PauseMenu(game);
 

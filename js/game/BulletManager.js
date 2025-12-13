@@ -66,7 +66,7 @@ class Bullet extends Entity {
         }
     }
 
-    render(renderer, alpha = 1.0) {
+    render(renderer, alpha = 1.0, manager) {
         if (!this.active) return;
         const ctx = renderer.ctx;
         
@@ -74,9 +74,11 @@ class Bullet extends Entity {
         const drawX = this.prevX ? (this.prevX + (this.x - this.prevX) * alpha) : this.x;
         const drawY = this.prevY ? (this.prevY + (this.y - this.prevY) * alpha) : this.y;
         
-        const scene = this.game.sceneManager.currentScene;
-        if (scene && scene.bulletManager) {
-             const sprite = scene.bulletManager.getBulletSprite(this.color, this.radius);
+        // Fast path: Use provided manager or fallback
+        const bulletManager = manager || (this.game.sceneManager.currentScene ? this.game.sceneManager.currentScene.bulletManager : null);
+
+        if (bulletManager) {
+             const sprite = bulletManager.getBulletSprite(this.color, this.radius);
              if (sprite) {
                  const offset = sprite.width / 2;
                  ctx.drawImage(sprite, Math.floor(drawX - offset), Math.floor(drawY - offset));
@@ -87,6 +89,7 @@ class Bullet extends Entity {
         // Fallback (Original Slow Render)
         // Draw outer glow (larger, low alpha circle)
         ctx.fillStyle = this.color;
+        // ... (rest of render logic remains implicitly here if I don't replace it, but I must replace the whole block)
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius + 2, 0, Math.PI * 2);
@@ -120,8 +123,6 @@ export default class BulletManager {
     }
 
     getBulletSprite(color, radius) {
-        // ... (Same implementation, can copy-paste or keep)
-        // For brevity in this thought, I will include the full method.
         const key = `${color}-${radius}`;
         if (!this.spriteCache[key]) {
             const glowSize = Math.max(6, radius * 1.5);
@@ -219,7 +220,7 @@ export default class BulletManager {
 
     render(renderer, alpha) {
         for (let i = 0; i < this.activeCount; i++) {
-            this.pool[i].render(renderer, alpha);
+            this.pool[i].render(renderer, alpha, this);
         }
     }
 

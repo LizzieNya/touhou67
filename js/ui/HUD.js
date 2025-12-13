@@ -16,6 +16,11 @@ export default class HUD {
         // Score is updated directly by other systems
     }
 
+    showBossTitle(text) {
+        this.bossTitle = text;
+        this.bossTitleTimer = 5.0; // Show for 5 seconds
+    }
+
     render(renderer) {
         const scene = this.game.sceneManager.currentScene;
         const player = scene ? scene.player : null;
@@ -118,6 +123,25 @@ export default class HUD {
 
         ctx.restore();
 
+        // Render Boss Title Overlay
+        if (this.bossTitle && this.bossTitleTimer > 0) {
+            this.bossTitleTimer -= 0.016; // Approx dt
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 100, sidebarX, 50); // Band across play area
+            
+            ctx.font = 'italic bold 30px "Times New Roman", serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#fff';
+            // Simple text outline instead of shadow for performance
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#f00';
+            ctx.strokeText(this.bossTitle, sidebarX / 2, 125);
+            ctx.fillText(this.bossTitle, sidebarX / 2, 125);
+            ctx.restore();
+        }
+
         // Boss Spell Card Name (Modern Cut-in Style)
         if (scene && scene.enemies) {
             const boss = scene.enemies.find(e => e.constructor.name === 'Boss' && e.active && e.isSpellCard);
@@ -163,12 +187,14 @@ export default class HUD {
                 const textY = stripY + 22;
                 
                 if (slideProgress > 0) {
-                     // Shadow
-                    ctx.shadowColor = '#f0f';
-                    ctx.shadowBlur = 10 * ease;
+                     // Outline instead of Shadow
                     ctx.fillStyle = '#fff';
                     ctx.fillText(boss.spellCardName, textX - (1 - ease) * 100, textY);
-                    ctx.shadowBlur = 0;
+                    
+                    // Optional: Cheap outline
+                    // ctx.strokeStyle = '#f0f';
+                    // ctx.lineWidth = 1;
+                    // ctx.strokeText(boss.spellCardName, textX - (1 - ease) * 100, textY);
                 }
                 ctx.restore();
                 

@@ -177,91 +177,65 @@ export default class LeitmotifManager {
 
         const themes = {
             'nue': {
-                tempo: 168,
-                loopStart: 16,
+                tempo: 170, // Fast and chaotic
+                loopStart: 8,
                 sequence: [
-                    // Intro
-                    s([bass('C2'), guitar('C3')], 0.25), s(guitar('G3'), 0.25), s(guitar('C4'), 0.25), s(guitar('G3'), 0.25),
-                    s([bass('A#1'), guitar('A#2')], 0.25), s(guitar('F3'), 0.25), s(guitar('A#3'), 0.25), s(guitar('F3'), 0.25),
-                    s([bass('G#1'), guitar('G#2')], 0.25), s(guitar('D#3'), 0.25), s(guitar('G#3'), 0.25), s(guitar('D#3'), 0.25),
-                    s([bass('G1'), guitar('G2')], 0.25), s(guitar('D3'), 0.25), s(guitar('G3'), 0.25), s(guitar('D3'), 0.25),
-                    // Loop Start (Heian Alien Theme - Simplified)
-                    s([bass('C2'), zunpet('C5')], 0.375), s(zunpet('D#5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('C6'), 0.25),
-                    s([bass('A#1'), zunpet('A#5')], 0.375), s(zunpet('G#5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('F5'), 0.25),
-                    s([bass('G#1'), zunpet('D#5')], 0.375), s(zunpet('F5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('C5'), 0.25),
-                    s([bass('G1'), zunpet('D5')], 0.5), s([zunpet('D5'), guitar('G2')], 0.5),
+                    // Intro - "UFO" Sounding dissonance
+                    s([bass('A1'), guitar('A2'), zunpet('A4')], 0.25), s(guitar('A#2'), 0.25), s(guitar('B2'), 0.25), s(guitar('C3'), 0.25),
+                    s([bass('F1'), guitar('F2')], 0.25), s(guitar('E2'), 0.25), s(guitar('D#2'), 0.25), s(guitar('D2'), 0.25),
+                    s([bass('A1'), guitar('A2'), zunpet('E5')], 0.25), s(guitar('G2'), 0.25), s(guitar('F2'), 0.25), s(guitar('E2'), 0.25),
+                    s([bass('D1'), guitar('D2')], 0.5), s([bass('E1'), guitar('E2')], 0.5),
+
+                    // Main Melody (Heian Alien) - A Minor / Chromatic
+                    // Phrase 1
+                    s([bass('A1'), zunpet('A4'), guitar('A2')], 0.375), s(zunpet('C5'), 0.125), s(zunpet('A4'), 0.25), s(zunpet('G4'), 0.25),
+                    s([bass('F1'), zunpet('E4')], 0.25), s(zunpet('G4'), 0.25), s([bass('G1'), zunpet('A4')], 0.5),
                     
-                    s([bass('C2'), zunpet('C5')], 0.375), s(zunpet('D#5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('C6'), 0.25),
-                    s([bass('A#1'), zunpet('A#5')], 0.375), s(zunpet('G#5'), 0.125), s(zunpet('G5'), 0.25), s(zunpet('F5'), 0.25),
-                    s([bass('G#1'), zunpet('D#5')], 0.25), s(zunpet('F5'), 0.25), s(zunpet('G5'), 0.25), s(zunpet('C6'), 0.25),
-                    s([bass('G1'), zunpet('G5')], 0.5), s([zunpet('G5'), guitar('G2')], 0.5),
+                    // Phrase 2
+                    s([bass('A1'), zunpet('C5')], 0.375), s(zunpet('D5'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('A4'), 0.25),
+                    s([bass('F1'), zunpet('G4')], 0.25), s(zunpet('A4'), 0.25), s([bass('C2'), zunpet('C5')], 0.5),
 
-                    // Weird Chromatic Bridge
-                    s([bass('C2'), guitar('C3')], 0.25), s(guitar('C#3'), 0.25), s(guitar('D3'), 0.25), s(guitar('D#3'), 0.25),
-                    s([bass('G1'), guitar('E3')], 0.25), s(guitar('F3'), 0.25), s(guitar('F#3'), 0.25), s(guitar('G3'), 0.25),
-                ]
-            },
-            'sans': {
-                tempo: 240, // Fast!
-                loopStart: 0,
-                sequence: [
-                    // D D D5 A4 ... (Megalovania Main Riff)
-                    s([bass('D2'), zunpet('D4')], 0.125), s(zunpet('D4'), 0.125), s(zunpet('D5'), 0.25), s(zunpet('A4'), 0.375),
-                    s(zunpet('G#4'), 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('D4'), 0.125), s(zunpet('F4'), 0.125), s(zunpet('G4'), 0.125),
-                    
-                    // C C D5 A4 ...
-                    s([bass('C2'), zunpet('C4')], 0.125), s(zunpet('C4'), 0.125), s(zunpet('D5'), 0.25), s(zunpet('A4'), 0.375),
-                    s(zunpet('G#4'), 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('D4'), 0.125), s(zunpet('F4'), 0.125), s(zunpet('G4'), 0.125),
+                    // Phrase 3 (Rising)
+                    s([bass('D2'), zunpet('D5')], 0.25), s(zunpet('E5'), 0.25), s([bass('F2'), zunpet('F5')], 0.25), s(zunpet('G5'), 0.25),
+                    s([bass('E2'), zunpet('E5')], 0.25), s(zunpet('D5'), 0.25), s([bass('A1'), zunpet('A4')], 0.5),
 
-                    // B1 B1 D5 A4 ...
-                    s([bass('B1'), zunpet('B3')], 0.125), s(zunpet('B3'), 0.125), s(zunpet('D5'), 0.25), s(zunpet('A4'), 0.375),
-                    s(zunpet('G#4'), 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('D4'), 0.125), s(zunpet('F4'), 0.125), s(zunpet('G4'), 0.125),
-
-                    // Bb1 Bb1 D5 A4 ...
-                    s([bass('A#1'), zunpet('A#3')], 0.125), s(zunpet('A#3'), 0.125), s(zunpet('D5'), 0.25), s(zunpet('A4'), 0.375),
-                    s(zunpet('G#4'), 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('D4'), 0.125), s(zunpet('F4'), 0.125), s(zunpet('G4'), 0.125),
-                ]
-            },
-            'pepe': {
-                tempo: 120, // Sad and slow
-                loopStart: 0,
-                sequence: [
-                    // Sad Violin / Meme Theme
-                    s([bass('A2'), violin('A4')], 0.5), s(violin('C5'), 0.5),
-                    s([bass('F2'), violin('F4')], 0.5), s(violin('A4'), 0.5),
-                    s([bass('G2'), violin('G4')], 0.5), s(violin('B4'), 0.5),
-                    s([bass('E2'), violin('E4')], 1.0),
-
-                    s([bass('A2'), violin('A4')], 0.5), s(violin('E5'), 0.5),
-                    s([bass('F2'), violin('D5')], 0.5), s(violin('C5'), 0.5),
-                    s([bass('G2'), violin('B4')], 0.5), s(violin('C5'), 0.25), s(violin('D5'), 0.25),
-                    s([bass('A2'), violin('A4')], 1.0),
-
-                    // Sadder section
-                    s(violin('E5'), 0.75), s(violin('D5'), 0.25),
-                    s(violin('C5'), 0.75), s(violin('B4'), 0.25),
-                    s(violin('A4'), 1.0),
+                    // Phrase 4 (Weird Bridge)
+                    s([bass('A#1'), guitar('A#2')], 0.25), s(zunpet('A#4'), 0.25), s(zunpet('C5'), 0.25), s(zunpet('D5'), 0.25),
+                    s([bass('E2'), zunpet('E5')], 0.5), s([bass('G#2'), zunpet('G#5')], 0.5),
                 ]
             },
             'okuu': {
-                tempo: 180,
-                loopStart: 0,
+                tempo: 175, // Energetic
                 loopStart: 8,
                 sequence: [
-                    // Warning Sirens Intro
-                    s(zunpet('G5'), 0.5), s(zunpet('E5'), 0.5), s(zunpet('G5'), 0.5), s(zunpet('E5'), 0.5),
-                    s([bass('C2'), bass('G1')], 0.25), s(bass('C2'), 0.25), s(bass('C2'), 0.25), s(bass('C2'), 0.25),
-                    
-                    // Main Riff (Nuclear Fusion)
-                    s([bass('C2'), zunpet('C5')], 0.375), s(zunpet('G4'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
-                    s([bass('G#1'), zunpet('F5')], 0.375), s(zunpet('D#5'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
-                    s([bass('A#1'), zunpet('D5')], 0.375), s(zunpet('C5'), 0.125), s(zunpet('A#4'), 0.25), s(zunpet('D5'), 0.25),
-                    s([bass('G1'), zunpet('C5')], 0.5), s(zunpet('G4'), 0.5),
+                    // Intro - Warning Sirens
+                    s([zunpet('G5'), bass('C2')], 0.5), s([zunpet('E5'), bass('G1')], 0.5), 
+                    s([zunpet('G5'), bass('C2')], 0.5), s([zunpet('E5'), bass('G1')], 0.5), 
+                    s([zunpet('C6'), bass('C2')], 0.125), s(zunpet('G5'), 0.125), s(zunpet('E5'), 0.125), s(zunpet('C5'), 0.125),
+                    s(bass('G1'), 0.5),
 
-                    s([bass('C2'), zunpet('C5')], 0.375), s(zunpet('G4'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
-                    s([bass('G#1'), zunpet('G5')], 0.375), s(zunpet('F5'), 0.125), s(zunpet('D#5'), 0.25), s(zunpet('C5'), 0.25),
-                    s([bass('A#1'), zunpet('A#5')], 0.25), s(zunpet('G#5'), 0.25), s(zunpet('G5'), 0.25), s(zunpet('F5'), 0.25),
-                    s([bass('G1'), zunpet('G5')], 0.5), s(zunpet('B4'), 0.5),
+                    // Main Melody (Nuclear Fusion) - C Minor
+                    // "C... G C Eb F... G... F Eb C..."
+                    
+                    // Bar 1
+                    s([bass('C2'), guitar('C3'), zunpet('C5')], 0.375), s(zunpet('G4'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
+                    // Bar 2
+                    s([bass('F1'), guitar('F2'), zunpet('F5')], 0.75), s([bass('G1'), zunpet('G5')], 0.25),
+                    
+                    // Bar 3
+                    s([bass('G#1'), guitar('G#2'), zunpet('F5')], 0.25), s(zunpet('D#5'), 0.25), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
+                    // Bar 4
+                    s([bass('A#1'), guitar('A#2'), zunpet('D5')], 0.25), s(zunpet('C5'), 0.25), s(zunpet('A#4'), 0.25), s(zunpet('D5'), 0.25),
+
+                    // Bar 5 (Repeat High)
+                    s([bass('C2'), guitar('C3'), zunpet('C5')], 0.375), s(zunpet('G4'), 0.125), s(zunpet('C5'), 0.25), s(zunpet('D#5'), 0.25),
+                    // Bar 6
+                    s([bass('F1'), guitar('F2'), zunpet('G#5')], 0.5), s([bass('G1'), zunpet('A#5')], 0.5),
+
+                    // Bar 7 (Climax)
+                    s([bass('C2'), zunpet('C6')], 0.5), s([bass('A#1'), zunpet('A#5')], 0.25), s(zunpet('G5'), 0.25),
+                    // Bar 8
+                    s([bass('G#1'), zunpet('G#5')], 0.25), s(zunpet('G5'), 0.25), s([bass('G1'), zunpet('F5')], 0.25), s(zunpet('D#5'), 0.25)
                 ]
             },
             'junko': {
@@ -314,18 +288,36 @@ export default class LeitmotifManager {
             },
 
             'menu': {
-                tempo: 120, 
+                tempo: 140, 
                 sequence: [
-                    // Melody from User Image: E5, G4, B4, D5, B4, A4, E5
-                    // Using piano/bell like sounds for title screen
+                    // A Soul as Red as a Ground Cherry (Touhou 6 Title)
+                    // Intro / Main Loop
                     
-                    // Phrase 1
-                    s([zunpet('E5'), guitar('E3'), bass('E2')], 0.25), s(guitar('G4'), 0.25), s(guitar('B4'), 0.25), s(zunpet('D5'), 0.25),
-                    s([zunpet('B4'), guitar('E3')], 0.25), s(zunpet('A4'), 0.25), s([zunpet('E5'), guitar('B3')], 1.5),
+                    // Am
+                    s([zunpet('A4'), guitar('A3'), bass('A2')], 0.5), s(zunpet('B4'), 0.25), s(zunpet('C5'), 0.25),
+                    s([zunpet('B4'), guitar('A3')], 0.5), s(zunpet('A4'), 0.5),
+                    
+                    // G
+                    s([zunpet('G4'), guitar('G3'), bass('G2')], 0.5), s(zunpet('A4'), 0.25), s(zunpet('B4'), 0.25),
+                    s([zunpet('A4'), guitar('G3')], 0.5), s(zunpet('G4'), 0.5),
 
-                    // Repeat/Variation
-                     s([zunpet('E5'), guitar('E3'), bass('E2')], 0.25), s(guitar('G4'), 0.25), s(guitar('B4'), 0.25), s(zunpet('D5'), 0.25),
-                    s([zunpet('B4'), guitar('E3')], 0.25), s(zunpet('A4'), 0.25), s([zunpet('G5'), guitar('E4')], 1.5),
+                    // F
+                    s([zunpet('F4'), guitar('F3'), bass('F2')], 0.75), s(zunpet('G4'), 0.25),
+                    s([zunpet('A4'), guitar('F3')], 0.75), s(zunpet('B4'), 0.25),
+
+                    // E (Turnaround)
+                    s([zunpet('C5'), guitar('E3'), bass('E2')], 0.5), s(zunpet('B4'), 0.5),
+                    s([zunpet('A4'), guitar('E3')], 0.25), s(zunpet('G4'), 0.25), s(zunpet('F4'), 0.25), s(zunpet('E4'), 0.25),
+                    
+                    // Repeat with variation
+                    s([zunpet('A4'), guitar('A3'), bass('A2')], 0.5), s(zunpet('B4'), 0.25), s(zunpet('C5'), 0.25),
+                    s([zunpet('D5'), guitar('A3')], 0.5), s(zunpet('C5'), 0.5),
+
+                    s([zunpet('B4'), guitar('G3'), bass('G2')], 0.5), s(zunpet('A4'), 0.25), s(zunpet('G4'), 0.25),
+                    s([zunpet('A4'), guitar('G3')], 0.5), s(zunpet('B4'), 0.5),
+
+                    s([zunpet('C5'), guitar('F3'), bass('F2')], 1.0),
+                    s([zunpet('B4'), guitar('E3'), bass('E2')], 1.0)
                 ]
             },
 
