@@ -46,7 +46,7 @@ export default class TitleScene {
                 theme = 'th7_menu';
             }
             // Force stop to ensure freshness
-            this.game.soundManager.stop(); 
+            this.game.soundManager.stopBossTheme(); 
             this.game.soundManager.playBossTheme(theme);
         }
     }

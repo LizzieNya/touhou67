@@ -184,7 +184,7 @@ export default class LauncherScene {
                 }
                 
                 if (mClicked) {
-                    this.game.soundManager.playMenuSelect();
+                    // Jingle played inside selectGame
                     this.selectGame();
                 }
             }
@@ -199,12 +199,14 @@ export default class LauncherScene {
             this.game.soundManager.playMenuMove();
         }
         if (this.game.input.isPressed('SHOOT') || this.game.input.isPressed('Confirm')) {
-            this.game.soundManager.playMenuSelect();
+            // Jingle played inside selectGame
             this.selectGame();
         }
     }
 
     async selectGame() {
+        this.game.soundManager.playGameStartJingle();
+
         const selected = this.options[this.selectedIndex];
         if (selected.id === 'create') {
             import('./MakerTitleScene.js').then(module => {
