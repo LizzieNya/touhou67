@@ -236,6 +236,9 @@ export default class LauncherScene {
         const manifest = this.manifests[selected.id];
         if (manifest) {
             this.game.currentGameManifest = manifest;
+            if (this.game.resourceManager && this.game.resourceManager.resetProgress) {
+                this.game.resourceManager.resetProgress();
+            }
             this.game.loadGameAssets(selected.id);
 
             Promise.all([

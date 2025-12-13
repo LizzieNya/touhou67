@@ -214,6 +214,7 @@ export default class Boss extends Enemy {
         // Draw Boss Sprite
         let spriteName = this.name.toLowerCase().split(' ')[0];
         if (spriteName === 'hong') spriteName = 'meiling';
+        if (spriteName === 'prismriver') spriteName = 'merlin';
         if (spriteName === 'utsuho') spriteName = 'okuu';
         if (spriteName === 'fujiwara') spriteName = 'mokou';
         // Use taller aspect ratio for bosses

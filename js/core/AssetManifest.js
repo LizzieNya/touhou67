@@ -80,6 +80,11 @@ export const NocturnalSunlightAssets = {
         { key: 'portrait_chronos', path: 'assets/portrait/chronos.png' },
         { key: 'portrait_solstice', path: 'assets/portrait/solstice.png' },
 
+        // NS New Specific Sprites
+        { key: 'nocturnal_sunlight_title', path: 'assets/backgrounds/nocturnal_sunlight_title.png' },
+        { key: 'prism', path: 'assets/sprites/bosses/prism.png' },
+        { key: 'chronos', path: 'assets/sprites/bosses/chronos.png' },
+
         // Extra Boss Characters (Placeholders using boss.png or specific if available)
         { key: 'lumina', path: 'assets/sprites/bosses/lumina.png' },
         { key: 'sans', path: 'assets/sprites/bosses/sans.png' },

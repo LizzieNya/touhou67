@@ -77,11 +77,24 @@ export default class LoadingScene {
             this.messageTimer = 0;
         }
 
-        // Update progress
-        this.progress += this.loadingSpeed * dt;
+        // Update progress based on ACTUAL loading status
+        let actualProgress = 1.0;
+        if (this.game.resourceManager && this.game.resourceManager.getProgress) {
+            actualProgress = this.game.resourceManager.getProgress();
+        }
 
-        // Once loaded and minimum time passed, switch to target scene
-        if (this.progress >= 1.0 && this.elapsedTime >= this.minDisplayTime) {
+        // Smoothly interpolate visual progress towards actual progress
+        if (this.progress < actualProgress) {
+            this.progress += this.loadingSpeed * dt;
+            if (this.progress > actualProgress) this.progress = actualProgress;
+        }
+
+        // Once loaded AND minimum time passed, switch to target scene
+        if (this.progress >= 0.99 && actualProgress >= 0.99 && this.elapsedTime >= this.minDisplayTime) {
+            // Double check strict loading state if available
+            if (this.game.resourceManager.isLoading && this.game.resourceManager.isLoading()) {
+                return; // Still waiting for pending requests
+            }
             this.game.sceneManager.changeScene(this.targetScene);
         }
     }

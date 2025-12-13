@@ -66,7 +66,15 @@ export default class TitleScene {
              if (p.y > this.game.height) p.y = 0;
         });
 
+        // Instant start (or very fast auto-start) logic handled in game loop,
+        // but let's ensure input is ready immediately.
+        // We'll keep the input check for "Press Start" to avoid accidental selection,
+        // but ensure no hidden timers block it.
+        
         if (!this.started) {
+            // Auto-start title interaction if desired, or just wait for input
+            // Removing any potentially blocking 'blinkTimer' or 'fade' logic if present
+            
             if (this.game.input.isPressed('SHOOT') || this.game.input.isPressed('Confirm')) {
                 this.started = true;
                 this.game.soundManager.playMenuMove();
@@ -182,7 +190,17 @@ export default class TitleScene {
         const h = this.game.height;
 
         // Render Background
-        this.background.render(renderer);
+        if (this.game.currentGameManifest && this.game.currentGameManifest.id === 'nocturnal_sunlight') {
+             // Draw custom title BG for Nocturnal Sunlight
+             const bgImg = this.game.resourceManager.getImage('nocturnal_sunlight_title');
+             if (bgImg) {
+                 ctx.drawImage(bgImg, 0, 0, w, h);
+             } else {
+                 this.background.render(renderer);
+             }
+        } else {
+            this.background.render(renderer);
+        }
         
         // Render Particles
         ctx.save();

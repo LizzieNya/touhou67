@@ -113,11 +113,15 @@ export const Stage4Events = (character) => {
                     prism.addPhase(800, 30, (enemy, dt, t) => {
                         enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
                         enemy.y = 100;
-                        if (Math.floor(t * 60) % 5 === 0) {
-                            // Refracting lasers (simulated with fast bullets)
-                            const a = t * 2;
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a) * 400, Math.sin(a) * 400, '#fff', 3);
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(-a) * 400, Math.sin(-a) * 400, '#0ff', 3);
+                        if (Math.floor(t * 60) % 10 === 0) {
+                            // Refracting lasers: 3 Split beams
+                            const a = t * 1.5;
+                            for(let i = -1; i <= 1; i++) {
+                                const offset = i * 0.2; // Angle offset
+                                const color = i === 0 ? '#fff' : (i < 0 ? '#0ff' : '#f0f');
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a + offset) * 350, Math.sin(a + offset) * 350, color, 4);
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(-a - offset) * 350, Math.sin(-a - offset) * 350, color, 4);
+                            }
                         }
                     }, "Crystal Sign 'Refraction'");
 
@@ -213,36 +217,57 @@ export const Stage4Events = (character) => {
                     prism.color = '#0ff';
 
                     // Phase 1: Light Sign "Prismatic Laser"
-                    prism.addPhase(1000, 40, (enemy, dt, t) => {
+                    prism.addPhase(1200, 40, (enemy, dt, t) => {
                         enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2 + Math.sin(t) * 100;
                         enemy.y = 100;
-                        if (Math.floor(t * 60) % 10 === 0) {
-                            PatternLibrary.aimedNWay(scene, enemy, 7, 0.5, 300, '#fff', 3);
+                        // Focus on geometric shapes
+                        if (Math.floor(t * 60) % 15 === 0) {
+                             PatternLibrary.aimedNWay(scene, enemy, 5, 0.4, 300, '#fff', 4);
+                             // Side lasers
+                             const w = (scene.game.playAreaWidth || scene.game.width);
+                             scene.bulletManager.spawn(0, enemy.y + 100, 200, 0, '#0aa', 3);
+                             scene.bulletManager.spawn(w, enemy.y + 100, -200, 0, '#0aa', 3);
                         }
                     }, "Light Sign 'Prismatic Laser'");
 
                     // Phase 2: Crystal Sign "Diamond Dust"
-                    prism.addPhase(1200, 50, (enemy, dt, t) => {
+                    prism.addPhase(1400, 50, (enemy, dt, t) => {
                         enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
                         enemy.y = 100;
-                        if (Math.floor(t * 60) % 2 === 0) {
-                            // Random spread
-                            const a = Math.random() * Math.PI * 2;
-                            const s = 100 + Math.random() * 200;
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a) * s, Math.sin(a) * s, '#0ff', 3);
+                        // Snowflake-like symmetry instead of random spray
+                        if (Math.floor(t * 60) % 8 === 0) {
+                            const symmetry = 6;
+                            const baseA = t; // Rotate
+                            for(let i=0; i<symmetry; i++) {
+                                const a = baseA + (i/symmetry)*Math.PI*2;
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a) * 250, Math.sin(a) * 250, '#0ff', 3);
+                                // Secondary
+                                const a2 = a + 0.1;
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a2) * 200, Math.sin(a2) * 200, '#fff', 2);
+                            }
                         }
                     }, "Crystal Sign 'Diamond Dust'");
 
                     // Phase 3: Spectrum "Rainbow Road"
-                    prism.addPhase(1500, 60, (enemy, dt, t) => {
+                    prism.addPhase(1800, 60, (enemy, dt, t) => {
                         enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
                         enemy.y = 120;
                         const colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f'];
+                        const laneCount = 6;
+                        
+                        // Rotational Rainbow Spirals
                         if (Math.floor(t * 60) % 5 === 0) {
-                            const c = colors[Math.floor(t) % colors.length];
-                            const a = t * 3;
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a) * 300, Math.sin(a) * 300, c, 4);
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a + Math.PI) * 300, Math.sin(a + Math.PI) * 300, c, 4);
+                            const baseSpeed = 250;
+                            const spin = t * 0.8; 
+                            for(let i=0; i<laneCount; i++) {
+                                const c = colors[i % colors.length];
+                                const angle = spin + (i / laneCount) * Math.PI * 2;
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*baseSpeed, Math.sin(angle)*baseSpeed, c, 5);
+                            }
+                        }
+                        // Occasional burst
+                        if (Math.floor(t * 60) % 90 === 0) {
+                             PatternLibrary.circle(scene, enemy.x, enemy.y, 20, 150, '#fff', 3, t);
                         }
                     }, "Spectrum 'Rainbow Road'");
 

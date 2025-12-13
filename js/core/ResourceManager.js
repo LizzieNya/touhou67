@@ -1,29 +1,47 @@
 export default class ResourceManager {
     constructor() {
         this.images = {};
+        this.activeLoads = 0;
+        this.totalLoads = 0;
     }
 
     loadImage(key, src) {
         console.log(`Loading image: ${key} from ${src}`);
+        this.activeLoads++;
+        this.totalLoads++;
+        
         const img = new Image();
-        img.crossOrigin = "Anonymous"; // Allow manipulation if served correctly
+        img.crossOrigin = "Anonymous"; 
         img.src = src;
         img.onload = () => {
             console.log(`Loaded image: ${key}`);
-            // Process for transparency if it's a sprite (not background)
-            // Process for transparency if it's a sprite (not background)
-            // Skip for backgrounds and known transparent assets (portraits, new sprites)
             if (key !== 'mainmenu_bg' && !key.includes('_bg') && !key.startsWith('portrait_') && key !== 'reimu' && key !== 'marisa') {
                 this.images[key] = this.makeTransparent(img);
             } else {
                 this.images[key] = img;
             }
+            this.activeLoads--;
         };
         img.onerror = (e) => {
             console.error(`Failed to load image: ${key}`, e);
+            this.activeLoads--;
         };
         // Pre-assign to avoid null checks
         this.images[key] = img;
+    }
+
+    isLoading() {
+        return this.activeLoads > 0;
+    }
+
+    getProgress() {
+        if (this.totalLoads === 0) return 1.0;
+        return 1.0 - (this.activeLoads / this.totalLoads);
+    }
+    
+    resetProgress() {
+        this.totalLoads = 0;
+        this.activeLoads = 0;
     }
 
     makeTransparent(img) {
