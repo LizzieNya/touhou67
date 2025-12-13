@@ -31,6 +31,7 @@ export default class LauncherScene {
         
         // Interaction state
         this.started = false;
+        this.lastError = null;
     }
 
     initSilhouettes() {
@@ -227,6 +228,7 @@ export default class LauncherScene {
                 }
             } catch (e) {
                 console.error("Failed to load manifest on select:", e);
+                this.lastError = "Manifest Load Error: " + e.message;
                 this.loading = false;
                 return;
             }
@@ -248,6 +250,10 @@ export default class LauncherScene {
                 const titleScene = new titleModule.default(this.game);
                 const loadingScene = new loadingModule.default(this.game, titleScene);
                 this.game.sceneManager.changeScene(loadingScene);
+            }).catch(e => {
+                console.error("Failed to load scene modules:", e);
+                this.lastError = "Scene Load Error: " + e.message;
+                this.loading = false;
             });
         }
     }
@@ -428,6 +434,17 @@ export default class LauncherScene {
         if (this.fadeAlpha > 0) {
             ctx.fillStyle = `rgba(0, 0, 0, ${this.fadeAlpha})`;
             ctx.fillRect(0, 0, w, h);
+        }
+
+        if (this.lastError) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(0, h/2 - 40, w, 80);
+            ctx.fillStyle = '#f00';
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText(this.lastError, w/2, h/2 + 10);
+            ctx.restore();
         }
     }
 }

@@ -153,7 +153,7 @@ export default class TitleScene {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (option === 'Rhythm Game') {
-            import('./RhythmSelectScene.js?v=2').then(module => {
+            import('./RhythmSelectScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (option === 'Touhou Maker') {

@@ -50,6 +50,8 @@ export default class Game {
         import('./AssetManifest.js').then(module => {
             this.assetManifests = module;
             this.loadAssets(module.CommonAssets);
+        }).catch(err => {
+            console.error("Failed to load AssetManifest:", err);
         });
 
         window.gameInstance = this;
@@ -73,6 +75,12 @@ export default class Game {
 
     async loadGameAssets(gameId) {
         console.log(`Loading assets for ${gameId}...`);
+        
+        if (!this.assetManifests) {
+            console.error("AssetManifests not loaded yet! Waiting or failing.");
+            return;
+        }
+
         let manifest;
         if (gameId === 'touhou6') manifest = this.assetManifests.Touhou6Assets;
         else if (gameId === 'touhou7') manifest = this.assetManifests.Touhou7Assets;
