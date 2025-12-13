@@ -357,6 +357,10 @@ export default class SoundManager {
         this.leitmotifManager.stop();
     }
 
+    stop() {
+        this.stopBossTheme();
+    }
+
     resetMusic() {
         this.leitmotifManager.reset();
     }
