@@ -11,7 +11,7 @@ export default class Touhou12Manifest extends GameManifest {
             4: () => import('./Touhou12Stages.js').then(m => m.Stage4Events),
             5: () => import('./Touhou12Stages.js').then(m => m.Stage5Events),
             6: () => import('./Touhou12Stages.js').then(m => m.Stage6Events),
-            'Extra': () => import('../../stages/IndividualBossStages.js').then(m => m.BossNueEvents),
+            'Extra': () => import('./Touhou12Stages.js').then(m => m.BossNueEvents),
             // Boss Rush? Could reuse BossRushStage maybe, or define here
         };
     }

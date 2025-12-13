@@ -67,6 +67,35 @@ export const Touhou7Assets = {
     ]
 };
 
+export const Touhou11Assets = {
+    images: [
+        // Reimu/Marisa reusing existing
+        ...Touhou6Assets.images.filter(img => img.key === 'reimu' || img.key === 'marisa' || img.key === 'boss'),
+        { key: 'yamame', path: 'assets/sprites/bosses/yamame.png' },
+        { key: 'parsee', path: 'assets/sprites/bosses/parsee.png' },
+        { key: 'yuugi', path: 'assets/sprites/bosses/yuugi.png' },
+        { key: 'satori', path: 'assets/sprites/bosses/satori.png' },
+        { key: 'rin', path: 'assets/sprites/bosses/rin.png' },
+        { key: 'okuu', path: 'assets/sprites/bosses/okuu.png' },
+        { key: 'koishi', path: 'assets/sprites/bosses/koishi.png' }
+    ]
+};
+
+export const Touhou12Assets = {
+    images: [
+        // Reimu/Marisa/Sanae
+        ...Touhou6Assets.images.filter(img => img.key === 'reimu' || img.key === 'marisa' || img.key === 'boss'),
+        { key: 'sanae', path: 'assets/sprites/player/reimu.png' }, // Placeholder or use correct if exists
+        { key: 'nazrin', path: 'assets/sprites/bosses/nazrin.png' },
+        { key: 'kogasa', path: 'assets/sprites/bosses/kogasa.png' },
+        { key: 'ichirin', path: 'assets/sprites/bosses/ichirin.png' },
+        { key: 'murasa', path: 'assets/sprites/bosses/murasa.png' },
+        { key: 'shou', path: 'assets/sprites/bosses/shou.png' },
+        { key: 'byakuren', path: 'assets/sprites/bosses/byakuren.png' },
+        { key: 'nue', path: 'assets/sprites/bosses/nue.png' }
+    ]
+};
+
 export const NocturnalSunlightAssets = {
     images: [
         { key: 'remilia', path: 'assets/sprites/bosses/remilia.png' }, // Placeholder: Use boss sprite

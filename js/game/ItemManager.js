@@ -8,6 +8,8 @@ class Item extends Entity {
         this.radius = 8;
         this.vy = 100;
         this.isAutoCollect = false;
+        this.spawnTimer = 0; // For pop-in effect
+        this.bobOffset = Math.random() * Math.PI * 2;
     }
 
     spawn(x, y, type) {
@@ -15,12 +17,15 @@ class Item extends Entity {
         this.y = y;
         this.type = type;
         this.active = true;
-        this.vy = -200;
+        this.vy = -200; // Initial pop up
         this.isAutoCollect = false;
+        this.spawnTimer = 0;
     }
 
     update(dt) {
         if (!this.active) return;
+        
+        this.spawnTimer += dt;
 
         if (this.vy < 150 && !this.isAutoCollect) {
             this.vy += 200 * dt;
@@ -62,9 +67,11 @@ class Item extends Entity {
 
     collect(player) {
         this.active = false;
-        if (this.game.sceneManager.currentScene.particleSystem) {
-             const ps = this.game.sceneManager.currentScene.particleSystem;
-             const color = (this.type === 'point') ? '#00f' : '#f00';
+        const scene = this.game.sceneManager.currentScene;
+        
+        if (scene.particleSystem) {
+             const ps = scene.particleSystem;
+             const color = (this.type === 'point') ? '#44f' : (this.type === 'power' ? '#f44' : '#fff');
              ps.createItemCollect(this.x, this.y, color);
         }
 
@@ -74,74 +81,176 @@ class Item extends Entity {
         } else if (this.type === 'big_power') {
             player.addPower(8);
             this.game.soundManager.playPowerUp();
+            if (scene.particleSystem) scene.particleSystem.createFloatingText(this.x, this.y, "MAX", "#f44");
         } else if (this.type === 'full_power') {
             player.power = player.maxPower;
             this.game.soundManager.playPowerUp();
+            if (scene.particleSystem) scene.particleSystem.createFloatingText(this.x, this.y, "FULL", "#ff0");
         } else if (this.type === 'point') {
-            this.game.sceneManager.currentScene.hud.score += 10000;
+             // Score logic
+             // Higher on screen = more points (Touhou mechanic)
+             // But for now fixed or based on y
+             let points = 10000;
+             if (this.y < 150) points = 50000; // Max points high up
+             
+             // Auto-collect makes it max points usually
+             if (this.isAutoCollect) points = 50000;
+
+             scene.hud.score += points;
+             
+             if (scene.particleSystem) {
+                 scene.particleSystem.createFloatingText(this.x, this.y, `${points}`, "#ccf");
+             }
+        } else if (this.type === 'bomb') {
+             player.bombs++;
+             this.game.soundManager.playPowerUp(); // Specific sound TODO
+             if (scene.particleSystem) scene.particleSystem.createFloatingText(this.x, this.y, "BOMB", "#0f0");
+        } else if (this.type === 'life') {
+             player.lives++;
+             this.game.soundManager.playExtend();
+             if (scene.particleSystem) scene.particleSystem.createFloatingText(this.x, this.y, "EXTEND", "#f0f");
         }
     }
 
     render(renderer) {
         if (!this.active) return;
 
-        let size = 12;
-        let text = '';
+        // Visual Parameters
         let color = '#f00';
-
+        let innerColor = '#faa';
+        let text = '';
+        let size = 16;
+        let shape = 'box'; // box, star
+        
         if (this.type === 'power') {
-            color = '#f00'; // Red
-            text = 'P';
-            size = 12; // Small power
+            color = '#d00'; innerColor = '#f44'; text = 'P'; size = 16;
         } else if (this.type === 'big_power') {
-            color = '#f00'; // Red
-            text = 'P';
-            size = 18; // Big power
+            color = '#d00'; innerColor = '#f44'; text = 'P'; size = 24;
         } else if (this.type === 'full_power') {
-            color = '#ff0'; // Yellow
-            text = 'F';
-            size = 20; // Full power
+            color = '#da0'; innerColor = '#ff4'; text = 'F'; size = 20;
         } else if (this.type === 'point') {
-            color = '#00f'; // Blue
-            text = '';
-            size = 10; // Point items
+            color = '#00d'; innerColor = '#44f'; text = '点'; size = 16;
+        } else if (this.type === 'bomb') {
+            color = '#0d0'; innerColor = '#4f4'; text = 'B'; size = 18; shape = 'star';
+        } else if (this.type === 'life') {
+            color = '#d0d'; innerColor = '#f4f'; text = '1UP'; size = 18; shape = 'star';
         }
 
         const ctx = renderer.ctx;
+        
+        // Bobbing animation
+        const bob = Math.sin(this.game.accumulator * 5 + this.bobOffset) * 3;
+        const renderY = this.y + bob;
+        
+        // Pop-in scale
+        let scale = 1.0;
+        if (this.spawnTimer < 0.2) {
+            scale = this.spawnTimer / 0.2;
+        }
 
-        // Vacuum Line
+        // Vacuum Line (fancier)
         if (this.showVacuumLine) {
             const player = this.game.sceneManager.currentScene.player;
             if (player) {
                 ctx.save();
-                ctx.strokeStyle = color;
-                ctx.globalAlpha = 0.3;
-                ctx.lineWidth = 2;
+                // Gradient trail
+                const grad = ctx.createLinearGradient(this.x, renderY, player.x, player.y);
+                grad.addColorStop(0, innerColor);
+                grad.addColorStop(1, 'rgba(255,255,255,0)');
+                
+                ctx.strokeStyle = grad;
+                ctx.globalAlpha = 0.6;
+                ctx.lineWidth = 4 * scale;
                 ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
+                ctx.moveTo(this.x, renderY);
                 ctx.lineTo(player.x, player.y);
                 ctx.stroke();
+                
+                // Add sparkles along line? (Too expensive probably)
                 ctx.restore();
             }
         }
 
-        // Draw simple square box (EoSD authentic)
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x - size / 2, this.y - size / 2, size, size);
+        ctx.save();
+        ctx.translate(this.x, renderY);
+        ctx.scale(scale, scale);
 
-        // White border
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x - size / 2, this.y - size / 2, size, size);
+        // Rotation for some items
+        if (shape === 'star') {
+             ctx.rotate(this.game.accumulator * 2);
+        }
+
+        // Drop Shadow
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 5;
+        ctx.shadowOffsetY = 3;
+
+        // Draw Shape
+        if (shape === 'box') {
+            // Rounded Box
+            const r = 4;
+            const w = size;
+            const h = size;
+            const x = -w/2;
+            const y = -h/2;
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Inner gradient/glow
+            const grd = ctx.createRadialGradient(0, -5, 1, 0, 0, size);
+            grd.addColorStop(0, innerColor);
+            grd.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grd;
+            ctx.fill();
+            
+            // Border
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+        } else if (shape === 'star') {
+            // Draw Star
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for(let i=0; i<5; i++) {
+                ctx.lineTo(Math.cos((18 + i*72)/180*Math.PI) * size, 
+                           Math.sin((18 + i*72)/180*Math.PI) * size);
+                ctx.lineTo(Math.cos((54 + i*72)/180*Math.PI) * size/2, 
+                           Math.sin((54 + i*72)/180*Math.PI) * size/2);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
 
         // Text
         if (text) {
-            ctx.fillStyle = '#fff';
-            ctx.font = `bold ${size * 0.8}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(text, this.x, this.y);
+             // Reset shadow for text to be crisp or minimal
+             ctx.shadowBlur = 0;
+             ctx.shadowOffsetY = 1;
+             ctx.fillStyle = '#fff';
+             ctx.font = `bold ${size * 0.7}px "Segoe UI", sans-serif`; // Cleaner font
+             ctx.textAlign = 'center';
+             ctx.textBaseline = 'middle';
+             ctx.fillText(text, 0, 1); // Slight offset
         }
+
+        ctx.restore();
     }
 }
 

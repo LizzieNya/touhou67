@@ -1,13 +1,13 @@
 import { PatternLibrary } from '../../game/PatternLibrary.js';
 
 // Helper to create a single boss stage (Copied/Adapted)
-const createBossStage = (bossName, spellNames, patterns) => (character) => {
+const createBossStage = (bossName, themeId, patterns) => (character) => {
     return [
         {
             time: 0.1,
             action: (scene) => {
                 if (scene.game.soundManager) {
-                    scene.game.soundManager.playBossTheme('generic');
+                    scene.game.soundManager.playBossTheme(themeId || 'generic');
                 }
             }
         },
@@ -61,7 +61,7 @@ const createBossStage = (bossName, spellNames, patterns) => (character) => {
 };
 
 // --- STAGE 1: YAMAME KURODANI ---
-export const Stage1Events = createBossStage("Yamame Kurodani", null, [
+export const Stage1Events = createBossStage("Yamame Kurodani", 'yamame', [
     {
         hp: 500, duration: 40, spellName: "Trap Sign 'Capture Web'",
         pattern: (enemy, dt, t) => {
@@ -88,8 +88,31 @@ export const Stage1Events = createBossStage("Yamame Kurodani", null, [
     }
 ])(null);
 
+// --- STAGE 2: PARSEE MIZUHASHI ---
+export const Stage2Events = createBossStage("Parsee Mizuhashi", 'parsee', [
+    {
+        hp: 700, duration: 45, spellName: "Jealousy 'Green-Eyed Invisible Monster'",
+        pattern: (enemy, dt, t) => {
+            const scene = enemy.game.sceneManager.currentScene;
+            if(Math.floor(t*60)%10===0) {
+                // Wave pattern
+                PatternLibrary.aimedNWay(scene, enemy, 7, 0.3, 250, '#0f0', 4);
+            }
+        }
+    },
+    {
+        hp: 850, duration: 60, spellName: "Envy 'Green-Eyed Beat'",
+        pattern: (enemy, dt, t) => {
+            const scene = enemy.game.sceneManager.currentScene;
+            if(Math.floor(t*60)%5===0) {
+                 scene.bulletManager.spawn(enemy.x, enemy.y, (Math.random()-0.5)*300, 300, '#0f0', 5);
+            }
+        }
+    }
+])(null);
+
 // --- STAGE 3: YUUGI HOSHIGUMA ---
-export const Stage3Events = createBossStage("Yuugi Hoshiguma", null, [
+export const Stage3Events = createBossStage("Yuugi Hoshiguma", 'yuugi', [
     {
         hp: 1200, duration: 50, spellName: "Strength 'Mountain Breaker'",
         pattern: (enemy, dt, t) => {
@@ -124,7 +147,7 @@ export const Stage3Events = createBossStage("Yuugi Hoshiguma", null, [
 ])(null);
 
 // --- STAGE 4: SATORI KOMEIJI ---
-export const Stage4Events = createBossStage("Satori Komeiji", null, [
+export const Stage4Events = createBossStage("Satori Komeiji", 'satori', [
     {
         hp: 1600, duration: 60, spellName: "Recollection 'Terrifying Hypnotism'",
         pattern: (enemy, dt, t) => {
@@ -151,7 +174,7 @@ export const Stage4Events = createBossStage("Satori Komeiji", null, [
 ])(null);
 
 // --- STAGE 5: RIN KAENBYOU (ORIN) ---
-export const Stage5Events = createBossStage("Rin Kaenbyou", null, [
+export const Stage5Events = createBossStage("Rin Kaenbyou", 'rin', [
     {
         hp: 2000, duration: 60, spellName: "Cat Walk 'Needle Mountain'",
         pattern: (enemy, dt, t) => {
@@ -176,6 +199,49 @@ export const Stage5Events = createBossStage("Rin Kaenbyou", null, [
                  const bx = enemy.x + Math.cos(orbitA) * orbitR;
                  const by = enemy.y + Math.sin(orbitA) * orbitR;
                  scene.bulletManager.spawn(bx, by, Math.cos(orbitA)*100, Math.sin(orbitA)*100, '#fa0', 4);
+             }
+        }
+    }
+])(null);
+
+// --- STAGE 6: UTSUHO REIUJI (OKUU) ---
+export const Stage6Events = createBossStage("Utsuho Reiuji", 'okuu', [
+    {
+        hp: 3000, duration: 90, spellName: "Atomic Fire 'Nuclear Fusion'",
+        pattern: (enemy, dt, t) => {
+             const scene = enemy.game.sceneManager.currentScene;
+             // Large sun bullets
+             if(Math.floor(t*60)%60===0) {
+                 PatternLibrary.circle(scene, enemy.x, enemy.y, 10, 200, '#f80', 20, t);
+             }
+             // Radiation
+             if(Math.floor(t*60)%5===0) {
+                 PatternLibrary.aimedNWay(scene, enemy, 3, 0.2, 400, '#ff0', 5);
+             }
+        }
+    },
+    {
+        hp: 3500, duration: 99, spellName: "Explosion Sign 'Mega Flare'",
+        pattern: (enemy, dt, t) => {
+             const scene = enemy.game.sceneManager.currentScene;
+             if(Math.floor(t*60)%20===0) {
+                 const x = Math.random() * scene.game.width;
+                 const y = Math.random() * scene.game.height/2;
+                 PatternLibrary.circle(scene, x, y, 12, 150, '#f00', 8, 0);
+             }
+        }
+    },
+    {
+        hp: 4000, duration: 99, spellName: "Subterranean Sun 'Hell's Artificial Sun'",
+        pattern: (enemy, dt, t) => {
+             const scene = enemy.game.sceneManager.currentScene;
+             enemy.x = scene.game.width/2;
+             enemy.y = 150;
+             // Gravity pull effect (simulated by bullets moving towards center then out?)
+             // Just massive spam for now
+             if(Math.floor(t*60)%2===0) {
+                 const a = t * 10;
+                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*400, Math.sin(a)*400, '#fff', 6);
              }
         }
     }

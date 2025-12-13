@@ -1,3 +1,5 @@
+import Background from '../game/Background.js';
+
 export default class MusicRoomScene {
     constructor(game) {
         this.game = game;
@@ -16,18 +18,39 @@ export default class MusicRoomScene {
             { name: 'Beloved Tomboyish Girl', id: 'cirno', composer: 'ZUN' },
             { name: 'Shanghai Alice of Meiji 17', id: 'meiling', composer: 'ZUN' },
             { name: 'Locked Girl ~ The Girl\'s Secret Room', id: 'patchouli', composer: 'ZUN' },
+            { name: 'Solar Sect of Mystic Wisdom ~ Nuclear Fusion', id: 'okuu', composer: 'ZUN' },
+            { name: 'Heian Alien', id: 'nue', composer: 'ZUN' },
+            { name: 'The Sealed-Away Youkai ~ Lost Place', id: 'yamame', composer: 'ZUN' },
+            { name: 'Green-Eyed Jealousy', id: 'parsee', composer: 'ZUN' },
+            { name: 'A Flower-Studded Sake Dish on Mt. Ooe', id: 'yuugi', composer: 'ZUN' },
+            { name: 'Satori Maiden ~ 3rd Eye', id: 'satori', composer: 'ZUN' },
+            { name: 'Corpse Voyage ~ Be of good cheer!', id: 'rin', composer: 'ZUN' },
+            { name: 'Solar Sect of Mystic Wisdom ~ Nuclear Fusion', id: 'okuu', composer: 'ZUN' },
+            { name: 'Hartmann\'s Youkai Girl', id: 'koishi', composer: 'ZUN' },
+            { name: 'Reach for the Moon, Immortal Smoke', id: 'mokou', composer: 'ZUN' },
+            { name: 'Flight of the Bamboo Cutter ~ Lunatic Princess', id: 'kaguya', composer: 'ZUN' },
+            { name: 'Genealogy of the Sky-Born', id: 'eirin', composer: 'ZUN' },
+            { name: 'Lunatic Eyes ~ Invisible Full Moon', id: 'reisen', composer: 'ZUN' },
+            { name: 'Cinderella Cage ~ Kagome-Kagome', id: 'tewi', composer: 'ZUN' },
+            { name: 'A Tiny, Tiny, Clever Commander', id: 'nazrin', composer: 'ZUN' },
+            { name: 'Beware the Umbrella Left There Forever', id: 'kogasa', composer: 'ZUN' },
+            { name: 'The Traditional Old Man and the Stylish Girl', id: 'ichirin', composer: 'ZUN' },
+            { name: 'Captain Murasa', id: 'murasa', composer: 'ZUN' },
+            { name: 'The Tiger-Patterned Bishamonten', id: 'shou', composer: 'ZUN' },
+            { name: 'Emotional Skyscraper ~ Cosmic Mind', id: 'byakuren', composer: 'ZUN' },
             { name: 'Megalovania', id: 'sans', composer: 'Toby Fox' }
         ];
         this.selectedIndex = 0;
         this.blinkTimer = 0;
         this.currentlyPlaying = null;
+        this.scrollOffset = 0;
 
-        // Hide HUD
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.style.display = 'none';
+        // Reuse Background
+        this.background = new Background(game);
     }
 
     update(dt) {
+        this.background.update(dt);
         this.blinkTimer += dt;
         const input = this.game.input;
 
@@ -92,11 +115,10 @@ export default class MusicRoomScene {
         const w = this.game.width;
         const h = this.game.height;
 
-        // Background
-        const gradient = ctx.createLinearGradient(0, 0, 0, h);
-        gradient.addColorStop(0, '#104');
-        gradient.addColorStop(1, '#000');
-        ctx.fillStyle = gradient;
+        this.background.render(renderer);
+
+        // Dark overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, w, h);
 
         // Title
@@ -115,9 +137,6 @@ export default class MusicRoomScene {
         const spacing = 35;
         const maxVisible = 10;
         
-        // Ensure scrollOffset is initialized
-        if (typeof this.scrollOffset === 'undefined') this.scrollOffset = 0;
-
         const endIndex = Math.min(this.scrollOffset + maxVisible, this.tracks.length);
 
         for (let i = this.scrollOffset; i < endIndex; i++) {
@@ -146,7 +165,7 @@ export default class MusicRoomScene {
 
             ctx.font = '14px "Times New Roman", serif';
             ctx.fillStyle = '#666';
-            ctx.fillText(track.composer, 400, y);
+            ctx.fillText(track.composer, 500, y);
         }
         
         // Scrollbar (Simple)
@@ -173,7 +192,7 @@ export default class MusicRoomScene {
             ctx.textAlign = 'center';
             ctx.font = 'bold 16px "Times New Roman", serif';
             ctx.fillStyle = '#0f0';
-            ctx.fillText(`♪ Now Playing: ${track.name}`, w / 2, h - 30);
+            ctx.fillText(`♪ Now Playing: ${track.id === 'sans' ? 'Megalovania' : track.name}`, w / 2, h - 30);
         }
 
         ctx.textAlign = 'left';

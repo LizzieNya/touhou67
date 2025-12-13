@@ -122,157 +122,9 @@ export default class Player extends Entity {
             this.shootTimer = this.shootDelay;
         }
 
-        // Reimu Bomb Damage Logic
-        if (this.character === 'Reimu' && this.bombTimer > 0) {
-            const t = 2.0 - this.bombTimer;
-            const currentRadius = t * 250; // Faster expansion
-            const orbCount = 8;
-            const rotationSpeed = 8; // Faster rotation
-            const angleOffset = t * rotationSpeed;
-            const orbRadius = 30; // Larger orbs
-
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                // Field Damage (Graze)
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        const dist = Math.hypot(e.x - this.x, e.y - this.y);
-                        if (dist < currentRadius + e.radius) {
-                            e.takeDamage(5); // Increased from 2
-                        }
-                    }
-                });
-
-                // Orb Damage
-                for (let i = 0; i < orbCount; i++) {
-                    const angle = (i / orbCount) * Math.PI * 2 + angleOffset;
-                    const ox = this.x + Math.cos(angle) * currentRadius;
-                    const oy = this.y + Math.sin(angle) * currentRadius;
-
-                    scene.enemies.forEach(e => {
-                        if (e.active) {
-                            const dist = Math.hypot(e.x - ox, e.y - oy);
-                            if (dist < orbRadius + e.radius) {
-                                e.takeDamage(25); // Increased from 10
-                            }
-                        }
-                    });
-                }
-            }
-        }
-
-        // Marisa Bomb Damage Logic (Master Spark)
-        if (this.character === 'Marisa' && this.bombTimer > 0) {
-            const width = 100;
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        // Check if enemy is within the vertical beam
-                        if (Math.abs(e.x - this.x) < width / 2 + e.radius && e.y < this.y) {
-                            e.takeDamage(15); // High continuous damage
-                        }
-                    }
-                });
-            }
-        }
-
-        // Youmu Bomb (200 Yojana in One Slash)
-        if (this.character === 'Youmu' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        // Full screen slash damage
-                        e.takeDamage(10);
-                    }
-                });
-            }
-        }
-
-        // Sanae Bomb (Miracle)
-        if (this.character === 'Sanae' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(5); // Continuous miracle damage
-                    }
-                });
-            }
-        }
-
-        // Remilia Bomb (Red Magic)
-        if (this.character === 'Remilia' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(12); // High continuous damage (Vampiric)
-                    }
-                });
-            }
-        }
-
-        // Flandre Bomb (Levatine)
-        if (this.character === 'Flandre' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(20); // Extreme damage (Destruction)
-                    }
-                });
-            }
-        }
-
-        // Okuu Bomb (Subterranean Sun)
-        if (this.character === 'Okuu' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.cameraShake = 5; // Screen shake
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(25); // Massive damage
-                    }
-                });
-            }
-        }
-
-        // Nue Bomb (Danmaku Chimera)
-        if (this.character === 'Nue' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(10);
-                    }
-                });
-            }
-        }
-
-        // Parsee Bomb (Green-Eyed Monster)
-        if (this.character === 'Parsee' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(8); // Continuous burn
-                    }
-                });
-            }
-        }
-
-        // Yuyuko Bomb (Ghastly Dream)
-        if (this.character === 'Yuyuko' && this.bombTimer > 0) {
-            const scene = this.game.sceneManager.currentScene;
-            if (scene && scene.enemies) {
-                scene.enemies.forEach(e => {
-                    if (e.active) {
-                        e.takeDamage(15); // Spirit damage
-                    }
-                });
-            }
+        // Spell Card / Bomb Logic
+        if (this.bombTimer > 0) {
+            this.updateSpellCard(dt);
         }
 
         // Bomb
@@ -310,7 +162,11 @@ export default class Player extends Entity {
         this.invulnerableTimer = 3.0; // Invincible during bomb
         this.bombTimer = 2.0; // Visual effect duration
         this.game.soundManager.playBomb();
-        console.log("BOMB USED!");
+        const spellName = this.getSpellCardName();
+        console.log(`BOMB USED! ${spellName}`);
+        if (this.game.sceneManager.currentScene.uiManager && this.game.sceneManager.currentScene.uiManager.showSpellCard) {
+            this.game.sceneManager.currentScene.uiManager.showSpellCard(spellName, this.character);
+        }
 
         // Visuals
         const scene = this.game.sceneManager.currentScene;
@@ -360,20 +216,35 @@ export default class Player extends Entity {
         return '#fff';
     }
 
-
+    getSpellCardName() {
+        if (this.character === 'Reimu') return this.shotType === 'A' ? 'Spirit Sign "Fantasy Seal"' : 'Dream Sign "Evil Sealing Circle"';
+        if (this.character === 'Marisa') return this.shotType === 'A' ? 'Love Sign "Master Spark"' : 'Magic Sign "Stardust Reverie"';
+        if (this.character === 'Sakuya') return this.shotType === 'A' ? 'Illusion "Killing Doll"' : 'Time Sign "Sakuya\'s World"';
+        if (this.character === 'Youmu') return this.shotType === 'A' ? 'Human God Sword "Slash of Future"' : 'Obsession Sword "Blood of Asura"';
+        if (this.character === 'Sanae') return this.shotType === 'A' ? 'Miracle "Daytime Stars"' : 'Esoterica "Gray Thaumaturgy"';
+        if (this.character === 'Remilia') return this.shotType === 'A' ? 'Red Magic "Scarlet Devil"' : 'Divine Spear "Spear the Gungnir"';
+        if (this.character === 'Flandre') return this.shotType === 'A' ? 'Taboo "Four of a Kind"' : 'Taboo "Laevateinn"';
+        if (this.character === 'Okuu') return this.shotType === 'A' ? 'Nuclear Sign "Mega Flare"' : 'Hell Sign "Subterranean Sun"';
+        if (this.character === 'Nue') return this.shotType === 'A' ? 'Unidentified "Red UFO"' : 'Nue Sign "Chimera"';
+        if (this.character === 'Parsee') return this.shotType === 'A' ? 'Jealousy "Green-Eyed Monster"' : 'Envy "Bridge of Jealousy"';
+        if (this.character === 'Yuyuko') return this.shotType === 'A' ? 'Death Sign "Ghastly Dream"' : 'Butterfly "Butterfly\'s Flit"';
+        if (this.character === 'Cirno') return this.shotType === 'A' ? 'Ice Sign "Icicle Fall"' : 'Freeze Sign "Perfect Freeze"';
+        if (this.character === 'Patchouli') return this.shotType === 'A' ? 'Fire Metal "St. Elmo\'s Pillar"' : 'Water Wood "Water Elf"';
+        if (this.character === 'Rumia') return this.shotType === 'A' ? 'Moon Sign "Moonlight Ray"' : 'Night Sign "Night Bird"';
+        if (this.character === 'Sans') return this.shotType === 'A' ? 'Bone Sign "Blue Attack"' : 'Hell Sign "Bad Time"';
+        return 'Unknown Spell';
+    }
 
     shoot() {
         if (this.bulletManager) {
             this.game.soundManager.playShoot();
 
-
-
             // Determine Shot Level (EoSD authentic)
             let level = 1;
-            if (this.power >= 8) level = 2; // EoSD: 8 power
-            if (this.power >= 16) level = 3; // EoSD: 16 power  
-            if (this.power >= 32) level = 4; // EoSD: 32 power
-            if (this.power >= 64) level = 5; // EoSD: 64 power (max level)
+            if (this.power >= 8) level = 2;
+            if (this.power >= 16) level = 3;
+            if (this.power >= 32) level = 4;
+            if (this.power >= 64) level = 5;
 
             // Cheat: Max Power
             if (this.game.config.maxPower) level = 5;
@@ -383,36 +254,11 @@ export default class Player extends Entity {
             // Muzzle Flash
             this.spawnMuzzleFlash(isFocused);
             
-            if (this.character === 'Reimu') {
-                this.shootReimu(level, isFocused);
-            } else if (this.character === 'Marisa') {
-                this.shootMarisa(level, isFocused);
-            } else if (this.character === 'Sakuya') {
-                this.shootSakuya(level, isFocused);
-            } else if (this.character === 'Youmu') {
-                this.shootYoumu(level, isFocused);
-            } else if (this.character === 'Sanae') {
-                this.shootSanae(level, isFocused);
-            } else if (this.character === 'Remilia') {
-                this.shootRemilia(level, isFocused);
-            } else if (this.character === 'Flandre') {
-                this.shootFlandre(level, isFocused);
-            } else if (this.character === 'Okuu') {
-                this.shootOkuu(level, isFocused);
-            } else if (this.character === 'Nue') {
-                this.shootNue(level, isFocused);
-            } else if (this.character === 'Parsee') {
-                this.shootParsee(level, isFocused);
-            } else if (this.character === 'Yuyuko') {
-                this.shootYuyuko(level, isFocused);
-            } else if (this.character === 'Cirno') {
-                this.shootCirno(level, isFocused);
-            } else if (this.character === 'Patchouli') {
-                this.shootPatchouli(level, isFocused);
-            } else if (this.character === 'Rumia') {
-                this.shootRumia(level, isFocused);
-            } else if (this.character === 'Sans') {
-                this.shootSans(level, isFocused);
+            const method = `shoot${this.character}`;
+            if (typeof this[method] === 'function') {
+                this[method](level, isFocused);
+            } else {
+                this.shootReimu(level, isFocused); // Default
             }
         }
     }
@@ -475,150 +321,431 @@ export default class Player extends Entity {
     }
 
     shootReimu(level, isFocused) {
-        // Reimu Type A: Homing Amulet
-        // Main Shot
-        this.bulletManager.spawn(this.x - 8, this.y - 10, 0, -1200, 2, 'straight');
-        this.bulletManager.spawn(this.x + 8, this.y - 10, 0, -1200, 2, 'straight');
+        if (this.shotType === 'A') {
+            // Type A: Homing Amulet
+            this.bulletManager.spawn(this.x - 8, this.y - 10, 0, -1200, 2, 'straight');
+            this.bulletManager.spawn(this.x + 8, this.y - 10, 0, -1200, 2, 'straight');
 
-        // Sub Shots (Homing)
-        // Focus Mode: Spawn closer to center and aim more forward
-        const xSpread = isFocused ? 0.3 : 1.0;
-        const xVelSpread = isFocused ? 0.2 : 1.0;
+            const xSpread = isFocused ? 0.3 : 1.0;
+            const xVelSpread = isFocused ? 0.2 : 1.0;
 
-        if (level >= 2) {
-            this.bulletManager.spawn(this.x - 16 * xSpread, this.y, -100 * xVelSpread, -1000, 1, 'homing');
-            this.bulletManager.spawn(this.x + 16 * xSpread, this.y, 100 * xVelSpread, -1000, 1, 'homing');
-        }
-        if (level >= 3) {
-            this.bulletManager.spawn(this.x - 24 * xSpread, this.y, -200 * xVelSpread, -900, 1, 'homing');
-            this.bulletManager.spawn(this.x + 24 * xSpread, this.y, 200 * xVelSpread, -900, 1, 'homing');
-        }
-        if (level >= 4) {
-            this.bulletManager.spawn(this.x - 32 * xSpread, this.y, -300 * xVelSpread, -800, 1, 'homing');
-            this.bulletManager.spawn(this.x + 32 * xSpread, this.y, 300 * xVelSpread, -800, 1, 'homing');
+            if (level >= 2) {
+                this.bulletManager.spawnPlayerBullet(this.x - 16 * xSpread, this.y, -100 * xVelSpread, -1000, 1, 'homing', '#f00', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 16 * xSpread, this.y, 100 * xVelSpread, -1000, 1, 'homing', '#f00', 2);
+            }
+            if (level >= 3) {
+                this.bulletManager.spawnPlayerBullet(this.x - 24 * xSpread, this.y, -200 * xVelSpread, -900, 1, 'homing', '#f00', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 24 * xSpread, this.y, 200 * xVelSpread, -900, 1, 'homing', '#f00', 2);
+            }
+            if (level >= 4) {
+                this.bulletManager.spawnPlayerBullet(this.x - 32 * xSpread, this.y, -300 * xVelSpread, -800, 1, 'homing', '#f00', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 32 * xSpread, this.y, 300 * xVelSpread, -800, 1, 'homing', '#f00', 2);
+            }
+        } else {
+            // Type B: Persuasion Needle
+            this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1400, 3, 'straight');
+            this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1400, 3, 'straight');
+            
+            // Needles fire straight and fast
+            const speed = 1500;
+            if (level >= 2) {
+                this.bulletManager.spawnPlayerBullet(this.x - 10, this.y, 0, -speed, 1, 'needle', '#fdd', 3);
+                this.bulletManager.spawnPlayerBullet(this.x + 10, this.y, 0, -speed, 1, 'needle', '#fdd', 3);
+            }
+            if (level >= 3) {
+                this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, 0, -speed, 1, 'needle', '#fdd', 3);
+                this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 0, -speed, 1, 'needle', '#fdd', 3);
+            }
+            if (level >= 4) {
+                 this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, 0, -speed * 1.1, 1, 'talisman', '#fff', 3);
+            }
         }
     }
 
     shootMarisa(level, isFocused) {
-        // Marisa Type A: Magic Missile
-        // Main Shot
-        this.bulletManager.spawn(this.x - 10, this.y - 10, 0, -1400, 3, 'missile');
-        this.bulletManager.spawn(this.x + 10, this.y - 10, 0, -1400, 3, 'missile');
+        if (this.shotType === 'A') {
+            // Type A: Magic Missile
+            this.bulletManager.spawn(this.x - 10, this.y - 10, 0, -1400, 3, 'missile');
+            this.bulletManager.spawn(this.x + 10, this.y - 10, 0, -1400, 3, 'missile');
 
-        // Sub Shots (Missiles)
-        // Focus Mode: Tighten spread
-        const spread = isFocused ? 0.2 : 1.0;
+            const spread = isFocused ? 0.2 : 1.0;
+            if (level >= 2) {
+                this.bulletManager.spawnPlayerBullet(this.x - 20 * spread, this.y, -50 * spread, -1200, 1, 'missile', '#ff0', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 20 * spread, this.y, 50 * spread, -1200, 1, 'missile', '#ff0', 2);
+            }
+            if (level >= 3) {
+                this.bulletManager.spawnPlayerBullet(this.x - 40 * spread, this.y, -100 * spread, -1200, 1, 'missile', '#ff0', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 40 * spread, this.y, 100 * spread, -1200, 1, 'missile', '#ff0', 2);
+            }
+        } else {
+            // Type B: Illusion Laser
+            this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1400, 3, 'straight');
+            this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1400, 3, 'straight');
 
-        if (level >= 2) {
-            this.bulletManager.spawn(this.x - 20 * spread, this.y, 0, -1200, 2, 'missile');
-            this.bulletManager.spawn(this.x + 20 * spread, this.y, 0, -1200, 2, 'missile');
-        }
-        if (level >= 3) {
-            this.bulletManager.spawn(this.x - 30 * spread, this.y, 0, -1200, 2, 'missile');
-            this.bulletManager.spawn(this.x + 30 * spread, this.y, 0, -1200, 2, 'missile');
-        }
-        if (level >= 4) {
-            this.bulletManager.spawn(this.x - 40 * spread, this.y, 0, -1200, 2, 'missile');
-            this.bulletManager.spawn(this.x + 40 * spread, this.y, 0, -1200, 2, 'missile');
+            const xOff = isFocused ? 10 : 25;
+            if (level >= 2) {
+                this.bulletManager.spawnPlayerBullet(this.x - xOff, this.y, 0, -1500, 1, 'laser', '#0ff', 4);
+                this.bulletManager.spawnPlayerBullet(this.x + xOff, this.y, 0, -1500, 1, 'laser', '#0ff', 4);
+            }
+            if (level >= 4) {
+                 this.bulletManager.spawnPlayerBullet(this.x - xOff * 2, this.y, 0, -1500, 1, 'laser', '#0ff', 4);
+                 this.bulletManager.spawnPlayerBullet(this.x + xOff * 2, this.y, 0, -1500, 1, 'laser', '#0ff', 4);
+            }
         }
     }
 
     shootSakuya(level, isFocused) {
-        // Main Shot (Always Knives)
         this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1300, 2, 'straight');
         this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1300, 2, 'straight');
-
         const speed = 1100;
 
         if (this.shotType === 'A') {
-            // Type A: Jack the Ludo (Spread Knives)
-            // Focus Mode: Tighten spread significantly
-            const angleBase = isFocused ? 0.02 : 0.12; // Much tighter when focused
-
+            // Type A: Jack the Ludo
+            const angleBase = isFocused ? 0.02 : 0.12;
             if (level >= 2) {
-                this.bulletManager.spawn(this.x - 10, this.y, Math.sin(-angleBase) * speed, -Math.cos(angleBase) * speed, 1.5, 'needle');
-                this.bulletManager.spawn(this.x + 10, this.y, Math.sin(angleBase) * speed, -Math.cos(angleBase) * speed, 1.5, 'needle');
+                this.bulletManager.spawnPlayerBullet(this.x - 10, this.y, Math.sin(-angleBase) * speed, -Math.cos(angleBase) * speed, 1, 'needle', '#ddd', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 10, this.y, Math.sin(angleBase) * speed, -Math.cos(angleBase) * speed, 1, 'needle', '#ddd', 2);
             }
             if (level >= 3) {
-                this.bulletManager.spawn(this.x - 20, this.y, Math.sin(-angleBase * 2) * speed, -Math.cos(angleBase * 2) * speed, 1.5, 'needle');
-                this.bulletManager.spawn(this.x + 20, this.y, Math.sin(angleBase * 2) * speed, -Math.cos(angleBase * 2) * speed, 1.5, 'needle');
+                this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, Math.sin(-angleBase * 2) * speed, -Math.cos(angleBase * 2) * speed, 1, 'needle', '#ddd', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, Math.sin(angleBase * 2) * speed, -Math.cos(angleBase * 2) * speed, 1, 'needle', '#ddd', 2);
             }
-            if (level >= 4) {
-                this.bulletManager.spawn(this.x - 30, this.y, Math.sin(-angleBase * 3) * speed, -Math.cos(angleBase * 3) * speed, 1.5, 'needle');
-                this.bulletManager.spawn(this.x + 30, this.y, Math.sin(angleBase * 3) * speed, -Math.cos(angleBase * 3) * speed, 1.5, 'needle');
+             if (level >= 4) {
+                this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, Math.sin(-angleBase * 3) * speed, -Math.cos(angleBase * 3) * speed, 1, 'needle', '#ddd', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, Math.sin(angleBase * 3) * speed, -Math.cos(angleBase * 3) * speed, 1, 'needle', '#ddd', 2);
             }
         } else {
-            // Type B: Misdirection (Bouncing/Ricocheting Knives)
-            // Focus: Knives go more straight, unfocused: wider spread
+            // Type B: Misdirection
             const spreadX = isFocused ? 50 : 200;
             const speedY = isFocused ? -1200 : -1000;
-
             if (level >= 2) {
-                // Knives that spread out then curve inward
-                this.bulletManager.spawn(this.x - 15, this.y, -spreadX, speedY, 1.8, 'needle_bounce');
-                this.bulletManager.spawn(this.x + 15, this.y, spreadX, speedY, 1.8, 'needle_bounce');
+                this.bulletManager.spawnPlayerBullet(this.x - 15, this.y, -spreadX, speedY, 1, 'needle_bounce', '#aaf', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 15, this.y, spreadX, speedY, 1, 'needle_bounce', '#aaf', 2);
             }
             if (level >= 3) {
-                this.bulletManager.spawn(this.x - 25, this.y, -spreadX * 1.5, speedY * 0.9, 1.8, 'needle_bounce');
-                this.bulletManager.spawn(this.x + 25, this.y, spreadX * 1.5, speedY * 0.9, 1.8, 'needle_bounce');
-            }
-            if (level >= 4) {
-                this.bulletManager.spawn(this.x - 35, this.y, -spreadX * 2, speedY * 0.8, 1.8, 'needle_bounce');
-                this.bulletManager.spawn(this.x + 35, this.y, spreadX * 2, speedY * 0.8, 1.8, 'needle_bounce');
+                 this.bulletManager.spawnPlayerBullet(this.x - 25, this.y, -spreadX * 1.5, speedY * 0.9, 1, 'needle_bounce', '#aaf', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 25, this.y, spreadX * 1.5, speedY * 0.9, 1, 'needle_bounce', '#aaf', 2);
             }
         }
     }
 
     shootYoumu(level, isFocused) {
-        // Youmu Type A: Sword (Straight)
-        // Main Shot
         this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1300, 2, 'straight');
         this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1300, 2, 'straight');
 
-        // Phantom Shot (Sword Beams)
-        const spread = isFocused ? 0.1 : 0.3;
-
-        if (level >= 2) {
-            this.bulletManager.spawn(this.x - 20, this.y, -100 * spread, -1200, 2, 'sword');
-            this.bulletManager.spawn(this.x + 20, this.y, 100 * spread, -1200, 2, 'sword');
-        }
-        if (level >= 3) {
-            this.bulletManager.spawn(this.x - 30, this.y, -200 * spread, -1100, 2, 'sword');
-            this.bulletManager.spawn(this.x + 30, this.y, 200 * spread, -1100, 2, 'sword');
-        }
-        if (level >= 4) {
-            this.bulletManager.spawn(this.x, this.y - 20, 0, -1400, 3, 'sword'); // Center heavy
+        if (this.shotType === 'A') {
+             // Type A: Sword Beams
+             const spread = isFocused ? 0.05 : 0.2;
+             if (level >= 2) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -200 * spread, -1200, 1, 'sword', '#fff', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 200 * spread, -1200, 1, 'sword', '#fff', 2);
+             }
+             if (level >= 3) {
+                  this.bulletManager.spawnPlayerBullet(this.x, this.y - 20, 0, -1300, 1, 'sword', '#fff', 3);
+             }
+        } else {
+             // Type B: Phantom Half
+             const phantomOffset = 40;
+             if (level >= 2) {
+                 this.bulletManager.spawnPlayerBullet(this.x - phantomOffset, this.y, -50, -1000, 1, 'spirit', '#fff', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + phantomOffset, this.y, 50, -1000, 1, 'spirit', '#fff', 2);
+             }
+             if (level >= 3) {
+                 this.bulletManager.spawnPlayerBullet(this.x, this.y, -300, -800, 1, 'boomerang', '#eee', 3);
+                 this.bulletManager.spawnPlayerBullet(this.x, this.y, 300, -800, 1, 'boomerang', '#eee', 3);
+             }
         }
     }
 
     shootSanae(level, isFocused) {
-        // Sanae Type A: Wind (Straight) + Type B: Snakes (Homing)
-        // Main Shot
         this.bulletManager.spawn(this.x - 8, this.y - 10, 0, -1200, 2, 'straight');
         this.bulletManager.spawn(this.x + 8, this.y - 10, 0, -1200, 2, 'straight');
 
-        const spread = isFocused ? 0.2 : 0.8;
-
         if (this.shotType === 'A') {
-            // Wind/Frogs
+            // Type A: Wind
+            const spread = isFocused ? 0.2 : 0.8;
             if (level >= 2) {
-                this.bulletManager.spawn(this.x - 20, this.y, -100 * spread, -1000, 2, 'frog');
-                this.bulletManager.spawn(this.x + 20, this.y, 100 * spread, -1000, 2, 'frog');
+                this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -100 * spread, -1000, 1, 'frog', '#8f8', 2);
+                this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 100 * spread, -1000, 1, 'frog', '#8f8', 2);
             }
-            if (level >= 3) {
-                this.bulletManager.spawn(this.x - 35, this.y, -200 * spread, -900, 2, 'frog');
-                this.bulletManager.spawn(this.x + 35, this.y, 200 * spread, -900, 2, 'frog');
+            if (level >= 4) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 40, this.y, -200 * spread, -900, 1, 'frog', '#8f8', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 40, this.y, 200 * spread, -900, 1, 'frog', '#8f8', 2);
             }
         } else {
-            // Snakes (Homing/Wavy)
+            // Type B: Mystery (Snakes)
             if (level >= 2) {
-                this.bulletManager.spawn(this.x - 20, this.y, -150, -1000, 2, 'snake');
-                this.bulletManager.spawn(this.x + 20, this.y, 150, -1000, 2, 'snake');
+                this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, -200, -800, 1, 'snake', '#fff', 3);
+                this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, 200, -800, 1, 'snake', '#fff', 3);
             }
-            if (level >= 3) {
-                this.bulletManager.spawn(this.x - 40, this.y, -300, -900, 2, 'snake');
-                this.bulletManager.spawn(this.x + 40, this.y, 300, -900, 2, 'snake');
+        }
+    }
+
+    shootRemilia(level, isFocused) {
+        this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1300, 2, 'straight');
+        this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1300, 2, 'straight');
+
+        if (this.shotType === 'A') {
+             // Type A: Servant Flier
+             if (level >= 2) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -150, -900, 1, 'bat', '#f00', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 150, -900, 1, 'bat', '#f00', 2);
+             }
+             if (level >= 4) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 40, this.y, -300, -800, 1, 'bat', '#800', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 40, this.y, 300, -800, 1, 'bat', '#800', 2);
+             }
+        } else {
+             // Type B: Demon Lord Arrow
+             const spread = isFocused ? 0 : 20;
+             if (level >= 2) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 15, this.y, -spread, -1400, 1, 'spear', '#f00', 3);
+                 this.bulletManager.spawnPlayerBullet(this.x + 15, this.y, spread, -1400, 1, 'spear', '#f00', 3);
+             }
+        }
+    }
+
+    shootFlandre(level, isFocused) {
+         this.bulletManager.spawn(this.x - 5, this.y - 10, 0, -1300, 3, 'straight');
+         this.bulletManager.spawn(this.x + 5, this.y - 10, 0, -1300, 3, 'straight');
+
+         if (this.shotType === 'A') {
+              // Type A: Starbow
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x, this.y, -400, -1000, 1, 'crystal', '#f00', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x, this.y, 400, -1000, 1, 'crystal', '#00f', 2);
+              }
+              if (level >= 3) {
+                   this.bulletManager.spawnPlayerBullet(this.x, this.y, -200, -1100, 1, 'crystal', '#0f0', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x, this.y, 200, -1100, 1, 'crystal', '#ff0', 2);
+              }
+         } else {
+              // Type B: Laevateinn
+              this.bulletManager.spawnPlayerBullet(this.x, this.y - 20, 0, -1000, 1, 'ufo', '#f44', 3); // Giant fire substitute
+         }
+    }
+
+    shootOkuu(level, isFocused) {
+         if (this.shotType === 'A') {
+              // Mega Flare
+              if (this.game.accumulator % 0.1 < 0.02) {
+                  this.bulletManager.spawnPlayerBullet(this.x, this.y - 30, 0, -600, 1, 'ufo', '#F80', 5);
+              }
+         } else {
+              // Hell's Artificial Sun
+              this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, 0, -1200, 1, 'laser', '#fff', 3);
+              this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 0, -1200, 1, 'laser', '#fff', 3);
+              if (level >= 3) {
+                   this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'bubble', '#f00', 2);
+              }
+         }
+    }
+
+    shootNue(level, isFocused) {
+        if (this.shotType === 'A') {
+             // UFO Wobble
+             this.bulletManager.spawnPlayerBullet(this.x - 10, this.y, 0, -1000, 1, 'ufo', '#f0f', 2);
+             this.bulletManager.spawnPlayerBullet(this.x + 10, this.y, 0, -1000, 1, 'ufo', '#f0f', 2);
+             if (level >= 3) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, -100, -900, 1, 'ufo', '#0f0', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, 100, -900, 1, 'ufo', '#00f', 2);
+             }
+        } else {
+             // Chimera
+             this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'chimera', '#f00', 3);
+             if (level >= 3) {
+                 this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -200, -1000, 1, 'chimera', '#800', 2);
+                 this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 200, -1000, 1, 'chimera', '#800', 2);
+             }
+        }
+    }
+
+    shootParsee(level, isFocused) {
+         if (this.shotType === 'A') {
+              // Green-Eyed Monster
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1100, 1, 'bubble', '#0f0', 2); 
+              if (level >= 2) {
+                  this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -200, -1000, 1, 'bubble', '#0f0', 2);
+                  this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 200, -1000, 1, 'bubble', '#0f0', 2);
+              }
+         } else {
+              // Jealousy
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1300, 1, 'needle', '#0f0', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, 100, -1200, 1, 'needle', '#0f0', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, -100, -1200, 1, 'needle', '#0f0', 2);
+              }
+         }
+    }
+
+    shootYuyuko(level, isFocused) {
+         if (this.shotType === 'A') {
+              // Resurrection Butterfly
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1000, 1, 'butterfly', '#f0f', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -150, -900, 1, 'butterfly', '#aaf', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 150, -900, 1, 'butterfly', '#aaf', 2);
+              }
+         } else {
+              // Deadly Dance
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1000, 1, 'spirit', '#fff', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 40, this.y, -50, -900, 1, 'spirit', '#fff', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 40, this.y, 50, -900, 1, 'spirit', '#fff', 2);
+              }
+         }
+    }
+
+    shootCirno(level, isFocused) {
+         if (this.shotType === 'A') {
+              // Ice Shard
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'ice', '#0ff', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 15, this.y, -100, -1100, 1, 'ice', '#0ff', 1);
+                   this.bulletManager.spawnPlayerBullet(this.x + 15, this.y, 100, -1100, 1, 'ice', '#0ff', 1);
+              }
+         } else {
+              // Perfect Freeze
+              const offset = Math.random() * 20;
+              this.bulletManager.spawnPlayerBullet(this.x - 10 + offset, this.y, (Math.random()-0.5)*100, -1000, 1, 'freeze', '#0ff', 2);
+         }
+    }
+
+    shootPatchouli(level, isFocused) {
+         if (this.shotType === 'A') {
+              // Fire & Metal
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'missile', '#f44', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, 0, -1400, 1, 'needle', '#aaa', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 0, -1400, 1, 'needle', '#aaa', 2);
+              }
+         } else {
+              // Water & Wood
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1000, 1, 'bubble', '#00f', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -50, -1100, 1, 'laser', '#0f0', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 50, -1100, 1, 'laser', '#0f0', 2);
+              }
+         }
+    }
+
+    shootRumia(level, isFocused) {
+         if (this.shotType === 'A') {
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'bubble', '#222', 3);
+         } else {
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1100, 1, 'bat', '#000', 2);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, -100, -1100, 1, 'bat', '#000', 2);
+                   this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 100, -1100, 1, 'bat', '#000', 2);
+              }
+         }
+    }
+
+    shootSans(level, isFocused) {
+         if (this.shotType === 'A') {
+              this.bulletManager.spawnPlayerBullet(this.x, this.y, 0, -1200, 1, 'bone', '#fff', 3);
+              if (level >= 2) {
+                   this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, 0, -1200, 1, 'bone', '#fff', 3);
+                   this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, 0, -1200, 1, 'bone', '#fff', 3);
+              }
+         } else {
+              this.bulletManager.spawnPlayerBullet(this.x, this.y - 20, 0, -1500, 1, 'laser', '#fff', 5);
+         }
+    }
+
+    updateSpellCard(dt) {
+        const scene = this.game.sceneManager.currentScene;
+        if (!scene || !scene.enemies) return;
+
+        // Damage Helper
+        const dealDamage = (damage) => {
+            scene.enemies.forEach(e => {
+                if (e.active) e.takeDamage(damage);
+            });
+        };
+
+        // Screen Clear Helper
+        // (Bullet clear is handled in useBomb once, but we can do continuous clear if needed)
+        
+        if (this.character === 'Reimu') {
+            if (this.shotType === 'A') {
+                // Fantasy Seal (Orbs)
+                const t = 2.0 - this.bombTimer;
+                const radius = t * 300;
+                scene.enemies.forEach(e => {
+                     if (e.active && Math.hypot(e.x - this.x, e.y - this.y) < radius) e.takeDamage(15);
+                });
+            } else {
+                // Evil Sealing Circle (Borders)
+                dealDamage(10); // Screen wide pressure
             }
+        } else if (this.character === 'Marisa') {
+             if (this.shotType === 'A') {
+                 // Master Spark
+                 const width = 120;
+                 scene.enemies.forEach(e => {
+                    if (e.active && Math.abs(e.x - this.x) < width/2 && e.y < this.y) e.takeDamage(20);
+                 });
+                 scene.cameraShake = 5;
+             } else {
+                 // Final Spark / Comet (Spread)
+                 scene.enemies.forEach(e => {
+                     if (e.active && e.y < this.y) e.takeDamage(15);
+                 });
+             }
+        } else if (this.character === 'Sakuya') {
+             // Killing Doll (Time Stop - high damage inst)
+             // Already handled visual, just deal damage
+             dealDamage(8);
+        } else if (this.character === 'Remilia') {
+             if (this.shotType === 'A') {
+                 // Red Magic
+                 scene.enemies.forEach(e => {
+                     if (e.active) e.takeDamage(12);
+                 });
+             } else {
+                 // Scarlet Gensokyo (Spear Rain)
+                 dealDamage(15);
+             }
+        } else if (this.character === 'Flandre') {
+             // Taboo "Four of a Kind"
+             dealDamage(25);
+             scene.cameraShake = 10;
+        } else if (this.character === 'Okuu') {
+             // Subterranean Sun
+             scene.cameraShake = 8;
+             scene.enemies.forEach(e => {
+                 if(e.active) {
+                     const dist = Math.hypot(e.x - this.x, e.y - this.y);
+                     if (dist < 400) e.takeDamage(30); // Center is deadly
+                     else e.takeDamage(10);
+                 }
+             });
+        } else if (this.character === 'Nue') {
+             // Unidentified Darkness
+             dealDamage(10);
+        } else if (this.character === 'Parsee') {
+             // Green-Eyed Monster
+             dealDamage(8);
+        } else if (this.character === 'Yuyuko') {
+             // Saigyouji Parinirvana
+             dealDamage(15);
+        } else if (this.character === 'Cirno') {
+             // Perfect Freeze (Screen Freeze + shatter)
+             if (this.bombTimer < 0.5) dealDamage(50); // Shatter damage at end
+             else dealDamage(1); // Freeze damage
+        } else if (this.character === 'Patchouli') {
+             // Philosopher's Stone
+             dealDamage(12);
+        } else if (this.character === 'Rumia') {
+             // Night Bird
+             dealDamage(10);
+        } else if (this.character === 'Sans') {
+             // Gaster Blaster Swarm
+             dealDamage(20);
+        } else {
+             // Default
+             dealDamage(10);
         }
     }
 
@@ -675,132 +802,7 @@ export default class Player extends Entity {
 
         // Draw Bomb Effect
         if (this.bombTimer > 0) {
-            renderer.ctx.save();
-            renderer.ctx.globalAlpha = Math.min(1, this.bombTimer);
-
-            if (this.character === 'Reimu') {
-                // Fantasy Seal: Large colored circles expanding + Rotating Orbs
-                const t = 2.0 - this.bombTimer;
-                const maxRadius = 300;
-                const currentRadius = t * 150;
-
-                // Main expanding field
-                renderer.ctx.fillStyle = `rgba(255, 0, 0, 0.2)`;
-                renderer.ctx.beginPath();
-                renderer.ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
-                renderer.ctx.fill();
-
-                // Rotating Orbs
-                const orbCount = 8;
-                const orbRadius = 20;
-                const rotationSpeed = 5;
-                const angleOffset = t * rotationSpeed;
-
-                for (let i = 0; i < orbCount; i++) {
-                    const angle = (i / orbCount) * Math.PI * 2 + angleOffset;
-                    const ox = this.x + Math.cos(angle) * currentRadius;
-                    const oy = this.y + Math.sin(angle) * currentRadius;
-
-                    renderer.ctx.fillStyle = '#fff';
-                    renderer.ctx.shadowBlur = 10;
-                    renderer.ctx.shadowColor = '#f00';
-                    renderer.ctx.beginPath();
-                    renderer.ctx.arc(ox, oy, orbRadius, 0, Math.PI * 2);
-                    renderer.ctx.fill();
-                }
-
-                renderer.ctx.shadowBlur = 0;
-
-            } else if (this.character === 'Marisa') {
-                // Master Spark: Giant Laser with core and pulse
-                const pulse = Math.sin(this.bombTimer * 20) * 0.2 + 1.0;
-                const width = (120 + Math.sin(this.bombTimer * 10) * 20) * pulse;
-
-                // Outer Glow
-                renderer.ctx.fillStyle = `rgba(255, 255, 0, 0.4)`;
-                renderer.ctx.shadowBlur = 20;
-                renderer.ctx.shadowColor = '#ff0';
-                renderer.ctx.fillRect(this.x - width / 2, 0, width, this.y);
-
-                // Inner Core
-                renderer.ctx.fillStyle = `rgba(255, 255, 255, 0.9)`;
-                renderer.ctx.shadowBlur = 10;
-                renderer.ctx.fillRect(this.x - width / 4, 0, width / 2, this.y);
-
-                // Base Spark
-                renderer.ctx.beginPath();
-                renderer.ctx.arc(this.x, this.y, width * 0.8, 0, Math.PI * 2);
-                renderer.ctx.fillStyle = '#fff';
-                renderer.ctx.fill();
-
-            } else if (this.character === 'Sakuya') {
-                // Killing Doll: Time Stop / Blue Tint / Distortion
-                renderer.ctx.fillStyle = `rgba(0, 0, 50, 0.5)`;
-                renderer.ctx.fillRect(0, 0, this.game.width, this.game.height);
-
-                // Random knives appearing frozen in time
-                // Use a deterministic seed based on timer to make them "flicker" in and out
-                const seed = Math.floor(this.bombTimer * 20);
-                const count = 20;
-
-                renderer.ctx.shadowBlur = 5;
-                renderer.ctx.shadowColor = '#0ff';
-
-                for (let i = 0; i < count; i++) {
-                    // Pseudo-random based on seed + i
-                    const r1 = Math.sin(seed * 12.9898 + i * 78.233) * 43758.5453;
-                    const r2 = Math.cos(seed * 12.9898 + i * 78.233) * 43758.5453;
-                    const kx = Math.abs(r1 % this.game.width);
-                    const ky = Math.abs(r2 % this.game.height);
-
-                    renderer.drawSprite('knife', kx, ky, 16, 32);
-                }
-                renderer.ctx.shadowBlur = 0;
-            } else if (this.character === 'Youmu') {
-                // Slash effects
-                renderer.ctx.fillStyle = `rgba(255, 255, 255, 0.3)`;
-                renderer.ctx.fillRect(0, 0, this.game.width, this.game.height);
-
-                // Draw big slash lines
-                renderer.ctx.strokeStyle = '#fff';
-                renderer.ctx.lineWidth = 5;
-                renderer.ctx.beginPath();
-                renderer.ctx.moveTo(0, this.game.height);
-                renderer.ctx.lineTo(this.game.width, 0);
-                renderer.ctx.stroke();
-
-                renderer.ctx.beginPath();
-                renderer.ctx.moveTo(0, 0);
-                renderer.ctx.lineTo(this.game.width, this.game.height);
-                renderer.ctx.stroke();
-
-            } else if (this.character === 'Sanae') {
-                // Green Miracle Wind
-                renderer.ctx.fillStyle = `rgba(100, 255, 100, 0.2)`;
-                renderer.ctx.fillRect(0, 0, this.game.width, this.game.height);
-            } else if (this.character === 'Remilia') {
-                // Red Magic: Blood Mist
-                renderer.ctx.fillStyle = `rgba(255, 0, 0, 0.3)`;
-                renderer.ctx.fillRect(0, 0, this.game.width, this.game.height);
-                // Draw Cross
-                renderer.ctx.fillStyle = '#f00';
-                renderer.ctx.fillRect(this.x - 100, this.y - 20, 200, 40);
-                renderer.ctx.fillRect(this.x - 20, this.y - 100, 40, 200);
-            } else if (this.character === 'Flandre') {
-                // Levatine: Chaos
-                renderer.ctx.fillStyle = `rgba(255, 0, 0, 0.5)`;
-                renderer.ctx.fillRect(0, 0, this.game.width, this.game.height);
-                // Random explosions
-                for (let i = 0; i < 5; i++) {
-                    renderer.ctx.fillStyle = '#ff0';
-                    const rx = Math.random() * this.game.width;
-                    const ry = Math.random() * this.game.height;
-                    renderer.ctx.beginPath();
-                    renderer.ctx.arc(rx, ry, 50, 0, Math.PI * 2);
-                    renderer.ctx.fill();
-                }
-            }
-            renderer.ctx.restore();
+            this.renderSpellCard(renderer);
         }
     }
 
@@ -865,194 +867,151 @@ export default class Player extends Entity {
         }
     }
 
-    shootRemilia(level, isFocused) {
-        // Type A: Gungnir (Cool Red Spear Laser)
-        if (this.shotType === 'A') {
-            // Main Gungnir Spear (Giant Laser)
-            const damage = 3 + level;
-            this.bulletManager.spawnPlayerBullet(this.x, this.y - 20, 0, -1500, 2.5, 'laser', '#f00', damage);
+    renderSpellCard(renderer) {
+        const ctx = renderer.ctx;
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, this.bombTimer);
 
-            // Sub-lasers (if high level)
-            if (level >= 2) {
-                this.bulletManager.spawnPlayerBullet(this.x - 15, this.y, 0, -1200, 1.0, 'laser', '#800', 1);
-                this.bulletManager.spawnPlayerBullet(this.x + 15, this.y, 0, -1200, 1.0, 'laser', '#800', 1);
+        if (this.character === 'Reimu') {
+            const t = 2.0 - this.bombTimer;
+            if (this.shotType === 'A') {
+                // Fantasy Seal
+                const currentRadius = t * 150;
+                ctx.fillStyle = `rgba(255, 0, 0, 0.2)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
+                ctx.fill();
+                // Orbs
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2 + t * 5;
+                    const ox = this.x + Math.cos(angle) * currentRadius;
+                    const oy = this.y + Math.sin(angle) * currentRadius;
+                    ctx.fillStyle = '#fff';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#f00';
+                    ctx.beginPath();
+                    ctx.arc(ox, oy, 15, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else {
+                // Evil Sealing Circle
+                const s = t * 150;
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 5;
+                ctx.shadowColor = '#f00';
+                ctx.shadowBlur = 10;
+                ctx.strokeRect(this.x - s, this.y - s, s * 2, s * 2);
             }
+        } else if (this.character === 'Marisa') {
+             if (this.shotType === 'A') {
+                 // Master Spark
+                 const width = 100 + Math.sin(this.bombTimer * 10) * 20;
+                 ctx.fillStyle = `rgba(255, 255, 0, 0.5)`;
+                 ctx.fillRect(this.x - width / 2, 0, width, this.y);
+                 ctx.fillStyle = '#fff';
+                 ctx.fillRect(this.x - width / 4, 0, width / 2, this.y);
+             } else {
+                 // Final Spark / Comet
+                 const count = 10;
+                 ctx.shadowBlur = 10;
+                 ctx.shadowColor = '#ff0';
+                 for(let i=0; i<count; i++) {
+                     const size = Math.random() * 50;
+                     ctx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
+                     ctx.fillRect(this.x + (Math.random()-0.5)*200, this.y - Math.random()*500, size, size*3);
+                 }
+             }
+        } else if (this.character === 'Sakuya') {
+             // Time Stop
+             ctx.fillStyle = `rgba(0, 0, 50, 0.5)`;
+             ctx.fillRect(0, 0, this.game.width, this.game.height);
+             if (this.shotType === 'B') {
+                 // Giant Knife
+                 ctx.shadowBlur = 20;
+                 ctx.shadowColor = '#0ff';
+                 ctx.fillStyle = '#fff';
+                 ctx.beginPath();
+                 ctx.moveTo(this.game.width/2, this.game.height);
+                 ctx.lineTo(this.game.width/2 + 50, 0);
+                 ctx.lineTo(this.game.width/2 - 50, 0);
+                 ctx.fill();
+             }
+        } else if (this.character === 'Remilia') {
+             if (this.shotType === 'A') {
+                 ctx.fillStyle = `rgba(255, 0, 0, 0.3)`;
+                 ctx.fillRect(0, 0, this.game.width, this.game.height);
+                 ctx.fillStyle = '#f00';
+                 ctx.fillRect(this.x - 100, this.y - 20, 200, 40);
+                 ctx.fillRect(this.x - 20, this.y - 100, 40, 200);
+             } else {
+                 // Spears
+                 ctx.fillStyle = '#f00';
+                 for(let i=0; i<20; i++) {
+                     ctx.fillRect(Math.random() * this.game.width, 0, 5, this.game.height);
+                 }
+             }
+        } else if (this.character === 'Okuu') {
+             // Sun
+             const s = 100 + Math.random() * 20;
+             ctx.fillStyle = '#f80';
+             ctx.shadowBlur = 50;
+             ctx.shadowColor = '#f00';
+             ctx.beginPath();
+             ctx.arc(this.x, this.y - 100, s, 0, Math.PI * 2);
+             ctx.fill();
+        } else if (this.character === 'Cirno') {
+             // Freeze
+             ctx.fillStyle = `rgba(0, 255, 255, 0.3)`;
+             ctx.fillRect(0, 0, this.game.width, this.game.height);
+             // Snowflakes
+             ctx.fillStyle = '#fff';
+             for(let i=0; i<20; i++) {
+                 ctx.beginPath();
+                 ctx.arc(Math.random() * this.game.width, Math.random() * this.game.height, 5, 0, Math.PI*2);
+                 ctx.fill();
+             }
+        } else if (this.character === 'Flandre') {
+             ctx.fillStyle = `rgba(255, 0, 0, 0.5)`;
+             ctx.fillRect(0, 0, this.game.width, this.game.height);
+             if (this.shotType === 'B') {
+                 // Fire
+                 ctx.fillStyle = '#fa0';
+                 ctx.shadowBlur = 20;
+                 ctx.beginPath();
+                 ctx.arc(this.x, this.y, 200, 0, Math.PI*2);
+                 ctx.fill();
+             }
+        } else if (this.character === 'Nue') {
+            ctx.fillStyle = `rgba(0, 0, 0, 0.8)`;
+            ctx.fillRect(0, 0, this.game.width, this.game.height);
+             // Glitch rectangles
+             ctx.fillStyle = '#f0f';
+             for(let i=0; i<10; i++) {
+                 ctx.fillRect(Math.random() * this.game.width, Math.random() * this.game.height, 50, 5);
+             }
+        } else if (this.character === 'Yuyuko') {
+             // Butterflies
+             ctx.fillStyle = `rgba(255, 200, 255, 0.3)`;
+             ctx.fillRect(0,0,this.game.width,this.game.height);
+        } else if (this.character === 'Parsee') {
+             ctx.fillStyle = `rgba(0, 255, 0, 0.2)`;
+             ctx.fillRect(0,0,this.game.width,this.game.height);
+        } else if (this.character === 'Rumia') {
+             // Darkness
+             ctx.fillStyle = `rgba(0, 0, 0, 0.9)`;
+             ctx.beginPath();
+             ctx.arc(this.x, this.y, 100 + Math.sin(this.bombTimer)*50, 0, Math.PI*2);
+             ctx.rect(this.game.width, 0, -this.game.width, this.game.height);
+             ctx.fill();
+        } else if (this.character === 'Sans') {
+             // Gaster Blasters
+             ctx.fillStyle = '#fff';
+             ctx.fillRect(this.x - 50, 0, 100, this.y);
+             ctx.shadowBlur = 20;
+             ctx.shadowColor = '#fff';
         }
-        // Type B: Vampire Kiss (Homing Bats/Snakes)
-        else {
-            const count = level + 2;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i - (count - 1) / 2) * 0.3;
-                // Use 'snake' type which homes/waves
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 600, Math.sin(angle) * 600, 1, 'snake', '#f00', 1);
-            }
-        }
+
+        ctx.restore();
     }
-
-    shootFlandre(level, isFocused) {
-        // Type A: Laevateinn (Wide Swing / Spread)
-        if (this.shotType === 'A') {
-            const count = level * 2 + 1;
-            const spread = isFocused ? 0.2 : 1.0;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i - (count - 1) / 2) * spread;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 800, Math.sin(angle) * 800, 1.5, 'straight', '#ff0', 2);
-            }
-        }
-        // Type B: Starbow Break (Rainbow Star Missiles)
-        else {
-            const count = 3 + level; // More stars
-            const colors = ['#f00', '#ff7f00', '#ff0', '#0f0', '#00f', '#4b0082', '#8f00ff']; // Rainbow
-            const spread = isFocused ? 0.5 : 1.5;
-
-            for (let i = 0; i < count; i++) {
-                // Fan shape
-                const angle = -Math.PI / 2 + (i - (count - 1) / 2) * (spread / count);
-                const color = colors[i % colors.length];
-                // Use 'missile' type (Star shape)
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 700, Math.sin(angle) * 700, 1.2, 'missile', color, 2);
-            }
-        }
-    }
-
-    shootOkuu(level, isFocused) {
-        // Type A: Fusion (Big Fireballs)
-        if (this.shotType === 'A') {
-            const damage = 2 + level;
-            this.bulletManager.spawnPlayerBullet(this.x, this.y - 20, 0, -600, 2.0, 'straight', '#f00', damage);
-            if (level >= 3) {
-                this.bulletManager.spawnPlayerBullet(this.x - 30, this.y, 0, -500, 1.5, 'straight', '#f80', damage / 2);
-                this.bulletManager.spawnPlayerBullet(this.x + 30, this.y, 0, -500, 1.5, 'straight', '#f80', damage / 2);
-            }
-        }
-        // Type B: Subterranean Sun (Lasers)
-        else {
-            const count = level + 1;
-            for (let i = 0; i < count; i++) {
-                const offset = (i - (count - 1) / 2) * 20;
-                this.bulletManager.spawnPlayerBullet(this.x + offset, this.y - 20, 0, -1000, 1.0, 'laser', '#ff0', 1);
-            }
-        }
-    }
-
-    shootNue(level, isFocused) {
-        // Type A: UFO (Trident)
-        if (this.shotType === 'A') {
-            const count = 3;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i - 1) * 0.1;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 800, Math.sin(angle) * 800, 1.0, 'straight', '#800080', 1);
-            }
-            if (level >= 3) {
-                // Homing UFOs
-                this.bulletManager.spawnPlayerBullet(this.x - 20, this.y, 0, -600, 1.0, 'snake', '#f0f', 1);
-                this.bulletManager.spawnPlayerBullet(this.x + 20, this.y, 0, -600, 1.0, 'snake', '#f0f', 1);
-            }
-        }
-        // Type B: Chimera (Random)
-        else {
-            const types = ['straight', 'snake', 'missile'];
-            const colors = ['#f00', '#0f0', '#00f'];
-            const count = level + 2;
-            for (let i = 0; i < count; i++) {
-                const type = types[Math.floor(Math.random() * types.length)];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.5;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 700, Math.sin(angle) * 700, 1.0, type, color, 1);
-            }
-        }
-    }
-
-    shootParsee(level, isFocused) {
-        // Type A: Jealousy (Homing Green)
-        if (this.shotType === 'A') {
-            const count = level + 2;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i - (count - 1) / 2) * 0.5;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 500, Math.sin(angle) * 500, 1.0, 'snake', '#0f0', 1);
-            }
-        }
-        // Type B: Envy (Bridge Lasers)
-        else {
-            const count = level + 1;
-            for (let i = 0; i < count; i++) {
-                const x = this.x + (i - (count - 1) / 2) * 40;
-                this.bulletManager.spawnPlayerBullet(x, this.y - 20, 0, -900, 1.0, 'laser', '#0f0', 1);
-            }
-        }
-    }
-
-    shootYuyuko(level, isFocused) {
-        // Type A: Death (Spirits)
-        if (this.shotType === 'A') {
-            const count = level + 2;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.3;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 400, Math.sin(angle) * 400, 1.0, 'snake', '#f0f', 1);
-            }
-        }
-        // Type B: Butterfly (Fan Spread)
-        else {
-            const count = level * 2 + 1;
-            const spread = isFocused ? 0.3 : 1.2;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (i - (count - 1) / 2) * (spread / count);
-                this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * 600, Math.sin(angle) * 600, 1.0, 'missile', '#f0f', 1);
-            }
-        }
-    }
-    shootCirno(level, isFocused) {
-        // Type A: Ice Sign (Spread)
-        const speed = 1000;
-        const count = level + 2;
-        const spread = isFocused ? 0.2 : 0.6;
-
-        for (let i = 0; i < count; i++) {
-            const angle = -Math.PI / 2 + (i - (count - 1) / 2) * (spread / count);
-            this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, Math.cos(angle) * speed, Math.sin(angle) * speed, 1.0, 'ice', '#aaf', 1);
-        }
-    }
-
-    shootPatchouli(level, isFocused) {
-        // Type A: Fire/Water (Mixed)
-        const speed = 900;
-        this.bulletManager.spawnPlayerBullet(this.x - 10, this.y - 10, 0, -speed, 1.5, 'fire', '#f44', 1.2);
-        this.bulletManager.spawnPlayerBullet(this.x + 10, this.y - 10, 0, -speed, 1.5, 'fire', '#f44', 1.2);
-
-        if (level >= 2) {
-            // Water lasers
-            this.bulletManager.spawnPlayerBullet(this.x - 25, this.y, 0, -speed * 1.2, 1.0, 'laser', '#00f', 0.8);
-            this.bulletManager.spawnPlayerBullet(this.x + 25, this.y, 0, -speed * 1.2, 1.0, 'laser', '#00f', 0.8);
-        }
-    }
-
-    shootRumia(level, isFocused) {
-        // Type A: Darkness (Homing)
-        const speed = 800;
-        this.bulletManager.spawnPlayerBullet(this.x, this.y - 10, 0, -speed, 2.0, 'dark', '#444', 1.5);
-
-        if (level >= 2) {
-            const count = level;
-            for (let i = 0; i < count; i++) {
-                const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.0;
-                this.bulletManager.spawnPlayerBullet(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 1.0, 'snake', '#222', 1);
-            }
-        }
-    }
-
-    shootSans(level, isFocused) {
-        // Type A: Bones (Fast Straight)
-        const speed = 1500;
-        this.bulletManager.spawnPlayerBullet(this.x - 15, this.y - 10, 0, -speed, 2.0, 'bone', '#fff', 1);
-        this.bulletManager.spawnPlayerBullet(this.x + 15, this.y - 10, 0, -speed, 2.0, 'bone', '#fff', 1);
-
-        if (level >= 3) {
-            // Gaster Blaster (Laser)
-            this.bulletManager.spawnPlayerBullet(this.x, this.y - 30, 0, -speed, 3.0, 'laser', '#fff', 1.5);
-        }
-    }
-
-    // shootSans was here, keeping it if it was before.
-    // Actually replacement should start AFTER shootSans.
-
 }
+

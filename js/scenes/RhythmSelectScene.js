@@ -3,7 +3,15 @@ import Background from '../game/Background.js';
 export default class RhythmSelectScene {
     constructor(game) {
         this.game = game;
-        this.options = ['Standard Mode', 'Song Select', 'Catch the Beat', 'Calibration', 'Back'];
+        this.options = [
+            'Circle Mode', 
+            'Arcade Mode', 
+            'Taiko Mode', 
+            'Catch the Beat', 
+            'Song Select', 
+            'Calibration', 
+            'Back'
+        ];
         this.selectedIndex = 0;
         this.blinkTimer = 0;
 
@@ -35,16 +43,25 @@ export default class RhythmSelectScene {
 
     selectOption() {
         const option = this.options[this.selectedIndex];
-        if (option === 'Standard Mode') {
+        
+        if (option === 'Circle Mode') {
             import('./RhythmGameScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
-        } else if (option === 'Song Select') {
-            import('./SongSelectScene.js').then(module => {
+        } else if (option === 'Arcade Mode') {
+            import('./RhythmGameScene_v2.js').then(module => {
+                this.game.sceneManager.changeScene(new module.default(this.game));
+            });
+        } else if (option === 'Taiko Mode') {
+            import('./TaikoGameScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (option === 'Catch the Beat') {
             import('./CatchGameScene.js').then(module => {
+                this.game.sceneManager.changeScene(new module.default(this.game));
+            });
+        } else if (option === 'Song Select') {
+            import('./SongSelectScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
         } else if (option === 'Calibration') {
@@ -77,27 +94,29 @@ export default class RhythmSelectScene {
         ctx.textAlign = 'center';
         ctx.font = 'bold 40px "Times New Roman", serif';
         ctx.fillStyle = '#fff';
-        ctx.fillText('Rhythm Game Mode', w / 2, 100);
+        ctx.fillText('Rhythm Game Mode', w / 2, 80);
 
         // Options
-        const startY = 250;
-        const spacing = 50;
+        const startY = 180;
+        const spacing = 45;
 
         this.options.forEach((opt, index) => {
             let color = '#aaa';
             let shadow = 0;
+            let prefix = "  ";
 
             if (index === this.selectedIndex) {
                 const alpha = Math.abs(Math.sin(this.blinkTimer * 5));
                 color = `rgba(255, 200, 200, ${0.8 + alpha * 0.2})`;
                 shadow = 10;
+                prefix = "> ";
             }
 
             ctx.shadowBlur = shadow;
             ctx.shadowColor = '#f00';
             ctx.fillStyle = color;
-            ctx.font = 'bold 30px "Times New Roman", serif';
-            ctx.fillText(opt, w / 2, startY + index * spacing);
+            ctx.font = 'bold 28px "Times New Roman", serif';
+            ctx.fillText(prefix + opt, w / 2, startY + index * spacing);
         });
 
         ctx.shadowBlur = 0;

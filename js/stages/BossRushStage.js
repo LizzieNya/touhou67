@@ -71,35 +71,50 @@ export const BossRushEvents = (character) => [
                 const Boss = module.default;
                 const nue = new Boss(scene.game, (scene.game.playAreaWidth || scene.game.width) / 2, -50, "Nue Houjuu");
 
-                // Phase 1: Unidentified Objects (Triangles)
-                nue.addPhase(500, 30, (enemy, dt, t) => {
-                    enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2 + Math.cos(t * 2) * 50;
-                    enemy.y = 80 + Math.sin(t) * 30;
-
-                    if (Math.floor(t * 60) % 15 === 0) {
-                        // Tri-color bullets
-                        const colors = ['#f00', '#00f', '#0f0'];
-                        const c = colors[Math.floor(t) % 3];
-                        PatternLibrary.nWay(scene, enemy.x, enemy.y, 3, t * 2, Math.PI, 200, c, 5);
-                    }
-                });
-
-                // Phase 2: Unknown "Red UFO Invasion"
-                nue.addPhase(700, 50, (enemy, dt, t) => {
-                    enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
+                // Phase 1: Unidentified "Red UFO Invasion"
+                nue.addPhase(800, 40, (enemy, dt, t) => {
+                    enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2 + Math.cos(t) * 30;
                     enemy.y = 100;
+                    if(Math.floor(t*60)%10===0) {
+                        // Red bullets raining/rings
+                        PatternLibrary.ring(scene, enemy.x, enemy.y, 5, 250, '#f00', 5);
+                    }
+                    if(Math.floor(t*60)%60===0) {
+                         // Big red clusters
+                         PatternLibrary.circle(scene, scene.player.x, scene.player.y - 200, 10, 150, '#f00', 4, 0);
+                    }
+                }, "Unidentified 'Red UFO Invasion'");
 
-                    // Rain of Red Bullets
+                // Phase 2: Nue Sign "Danmaku Chimera"
+                nue.addPhase(1000, 50, (enemy, dt, t) => {
+                    enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
+                    enemy.y = 100 + Math.sin(t*2)*20;
+                    // Snake-like streams (Green)
                     if (Math.floor(t * 60) % 5 === 0) {
-                        const x = Math.random() * (scene.game.playAreaWidth || scene.game.width);
-                        scene.bulletManager.spawn(x, 0, 0, 250, '#f00', 4);
+                         const a = t + Math.sin(t*5);
+                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*250, Math.sin(a)*250, '#0f0', 4);
                     }
+                    // Blue Bursts
+                    if(Math.floor(t*60)%40===0) {
+                         PatternLibrary.aimedNWay(scene, enemy, 7, 0.8, 400, '#00f', 5);
+                    }
+                }, "Nue Sign 'Danmaku Chimera'");
 
-                    // Snake-like streams
-                    if (Math.floor(t * 60) % 20 === 0) {
-                        PatternLibrary.whip(scene, enemy.x, enemy.y, Math.PI / 2 + Math.sin(t) * 0.5, 200, Math.sin(t) * 2, '#fff', 3);
+                // Phase 3: Unknown "Heian Alien"
+                nue.addPhase(1200, 60, (enemy, dt, t) => {
+                    enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2; 
+                    enemy.y = 120;
+                    // Rotating geometric shapes
+                    if(Math.floor(t*60)%8===0) {
+                         const sides = 3 + Math.floor(t)%4; 
+                         const r = 200;
+                         for(let i=0; i<sides; i++) {
+                             const a = (Math.PI*2/sides)*i + t;
+                             scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*r, Math.sin(a)*r, '#f0f', 5);
+                             scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a+0.1)*r*0.8, Math.sin(a+0.1)*r*0.8, '#fff', 3);
+                         }
                     }
-                }, "Unknown 'Red UFO Invasion'");
+                }, "Unknown 'Heian Alien'");
 
                 nue.start();
                 scene.enemies.push(nue);

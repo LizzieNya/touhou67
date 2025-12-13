@@ -13,8 +13,9 @@ class Particle {
         // Appearance
         this.color = '#fff';
         this.size = 2;
-        this.type = 'square'; // square, circle, spark, ring, smoke
+        this.type = 'square'; // square, circle, spark, ring, smoke, text
         this.blendMode = 'source-over';
+        this.text = ''; // Text content if type is text
         
         // Lifecycle
         this.life = 0;
@@ -44,6 +45,7 @@ class Particle {
         this.size = options.size || 2;
         this.type = options.type || 'square';
         this.blendMode = options.blendMode || 'source-over';
+        this.text = options.text || '';
         
         this.gravity = options.gravity || 0;
         this.friction = options.friction || 1;
@@ -120,6 +122,15 @@ class Particle {
             ctx.beginPath();
             ctx.arc(0, 0, this.size, 0, Math.PI * 2);
             ctx.fill();
+        } else if (this.type === 'text') {
+            ctx.font = `bold ${this.size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(this.text, 0, 0);
+            // Optional outline
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#000';
+            ctx.strokeText(this.text, 0, 0);
         }
         
         ctx.restore();
@@ -339,6 +350,19 @@ export default class ParticleSystem {
     spawnParticle(x, y, vx, vy, color = '#fff', life = 1.0, size = 2) {
         this.emit(x, y, {
             vx, vy, color, life, size, type: 'square'
+        });
+    }
+
+    createFloatingText(x, y, text, color = '#fff') {
+        this.emit(x, y, {
+            vx: 0, 
+            vy: -50, // Float up
+            life: 0.8,
+            color: color,
+            size: 14,
+            type: 'text',
+            text: text,
+            friction: 0.95
         });
     }
 

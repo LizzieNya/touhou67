@@ -76,6 +76,8 @@ export default class Game {
         let manifest;
         if (gameId === 'touhou6') manifest = this.assetManifests.Touhou6Assets;
         else if (gameId === 'touhou7') manifest = this.assetManifests.Touhou7Assets;
+        else if (gameId === 'touhou11') manifest = this.assetManifests.Touhou11Assets;
+        else if (gameId === 'touhou12') manifest = this.assetManifests.Touhou12Assets;
         else if (gameId === 'nocturnal_sunlight') manifest = this.assetManifests.NocturnalSunlightAssets;
 
         if (manifest) {

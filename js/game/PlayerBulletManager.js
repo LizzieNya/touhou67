@@ -101,6 +101,51 @@ class PlayerBullet extends Entity {
             this.width = 16;
             this.height = 16;
             this.color = '#0f0'; // Green
+        } else if (type === 'butterfly') {
+             this.width = 20;
+             this.height = 20;
+             this.color = '#f0f'; // Pink/Ghostly
+        } else if (type === 'bat') {
+             this.width = 16;
+             this.height = 12;
+             this.color = '#f00'; // Red
+        } else if (type === 'spear') {
+             this.width = 12;
+             this.height = 60;
+             this.color = '#f00'; // Red
+             this.piercing = true;
+        } else if (type === 'bubble') {
+             this.width = 16;
+             this.height = 16;
+             this.color = '#00f'; // Blue
+        } else if (type === 'talisman') {
+             this.width = 12;
+             this.height = 24;
+             this.color = '#f00'; // Red
+        } else if (type === 'icicle') {
+             this.width = 8;
+             this.height = 24;
+             this.color = '#aaf'; // Ice
+        } else if (type === 'freeze') {
+             this.width = 12;
+             this.height = 12;
+             this.color = '#0ff';
+        } else if (type === 'spirit') {
+             this.width = 14;
+             this.height = 20;
+             this.color = '#fff';
+        } else if (type === 'crystal') {
+             this.width = 12;
+             this.height = 12;
+             this.color = '#f0f';
+        } else if (type === 'note') {
+             this.width = 16;
+             this.height = 16;
+             this.color = '#ff0';
+        } else if (type === 'chimera') {
+             this.width = 16;
+             this.height = 16;
+             this.color = '#f00';
         } else {
             // Main shot
             this.width = 10;
@@ -195,20 +240,91 @@ class PlayerBullet extends Entity {
             }
         }
 
-        // Orbit/Spiral Logic
-        if (this.type === 'orbit') {
-            const speed = 400;
-            const radius = 50 + this.timer * 100; // Widening
-            const angularSpeed = 5;
-            const angle = this.timer * angularSpeed + this.rotation; // Use initial rotation as offset
+        // --- Custom Movement Logic ---
 
-            // Move relative to a center point that moves up
-            // This is tricky without storing center. 
-            // Alternative: Modify velocity vector to rotate
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed - 200; // General upward drift
-            this.vx = vx;
-            this.vy = vy;
+        // Butterfly Logic (Wavy)
+        if (this.type === 'butterfly') {
+            this.vx += Math.cos(this.timer * 10) * 15;
+            this.rotation = Math.sin(this.timer * 5) * 0.5;
+        }
+
+        // Bat Logic (Soft Homing)
+        if (this.type === 'bat') {
+             if (!this.target || !this.target.active) this.findTarget();
+             if (this.target && this.target.active) {
+                 const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+                 const speed = 700;
+                 // Lerp velocity for curve
+                 this.vx += (Math.cos(angle) * speed - this.vx) * 0.1;
+                 this.vy += (Math.sin(angle) * speed - this.vy) * 0.1;
+                 this.rotation = Math.atan2(this.vy, this.vx) + Math.PI/2;
+             }
+        }
+
+        // Freeze Logic (Cirno B) - Stop then Aim
+        if (this.type === 'freeze') {
+             if (this.timer > 0.4 && this.timer < 0.6) {
+                 this.vx *= 0.5;
+                 this.vy *= 0.5; // Decelerate
+             } else if (this.timer >= 0.6 && this.timer < 0.7) {
+                 // Aim once
+                 if (Math.abs(this.vx) < 50 && Math.abs(this.vy) < 50) { // If stopped
+                     this.findTarget();
+                     if (this.target && this.target.active) {
+                         const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+                         const speed = 1200;
+                         this.vx = Math.cos(angle) * speed;
+                         this.vy = Math.sin(angle) * speed;
+                     } else {
+                         this.vy = -1200; // Shoot up/forward
+                         this.vx = (Math.random() - 0.5) * 200;
+                     }
+                 }
+             }
+             this.rotation += dt * 10;
+        }
+
+        // Chimera Logic (Nue) - Short straight, then unknown direction
+        if (this.type === 'chimera') {
+            if (this.timer > 0.3 && this.timer < 0.4) {
+                 // Randomize direction
+                 const angle = Math.random() * Math.PI * 2;
+                 const speed = 1000;
+                 this.vx = Math.cos(angle) * speed;
+                 this.vy = Math.sin(angle) * speed;
+                 // Or aim at player? No, aim at enemies
+                 this.findTarget();
+                 if (this.target && this.target.active) {
+                     const tAngle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+                     this.vx = Math.cos(tAngle) * speed;
+                     this.vy = Math.sin(tAngle) * speed;
+                 }
+            }
+            this.rotation += dt * 20;
+        }
+
+        // Spirit Logic (Drift + Homing)
+        if (this.type === 'spirit') {
+             this.vx += Math.sin(this.timer * 8) * 10;
+             if (!this.target || !this.target.active) this.findTarget();
+             if (this.target && this.target.active) {
+                 const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+                 const speed = 500;
+                 this.vx += (Math.cos(angle) * speed - this.vx) * 0.05;
+                 this.vy += (Math.sin(angle) * speed - this.vy) * 0.05;
+             }
+             this.rotation = Math.atan2(this.vy, this.vx) + Math.PI/2;
+        }
+
+        // Bubble Logic (Floaty)
+        if (this.type === 'bubble') {
+             this.vx += Math.sin(this.timer * 3) * 5;
+             this.vy -= dt * 100; // Accelerate up
+        }
+
+        // UFO Logic (Wobble)
+        if (this.type === 'ufo') {
+             this.vx += Math.sin(this.timer * 15) * 50;
         }
 
         super.update(dt);
@@ -512,27 +628,204 @@ class PlayerBullet extends Entity {
             renderer.ctx.arc(3, -3, 2, 0, Math.PI * 2);
             renderer.ctx.fill();
 
-        } else if (this.type === 'sword') {
-            // Sword: Long silver blade
-            renderer.ctx.translate(drawX, drawY);
-            renderer.ctx.rotate(this.rotation);
-
-            renderer.ctx.shadowBlur = 8;
-            renderer.ctx.shadowColor = '#fff';
-
-            // Blade
-            renderer.ctx.fillStyle = '#e0e0e0';
-            renderer.ctx.beginPath();
-            renderer.ctx.moveTo(0, -this.height / 2);
-            renderer.ctx.lineTo(this.width / 2, 0);
-            renderer.ctx.lineTo(0, this.height / 2);
-            renderer.ctx.lineTo(-this.width / 2, 0);
-            renderer.ctx.closePath();
-            renderer.ctx.fill();
-
             // Core
             renderer.ctx.fillStyle = '#fff';
             renderer.ctx.fillRect(-1, -this.height / 2 + 2, 2, this.height - 4);
+
+        } else if (this.type === 'butterfly') {
+            renderer.ctx.translate(drawX, drawY);
+            renderer.ctx.rotate(this.rotation);
+            renderer.ctx.shadowBlur = 10;
+            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.fillStyle = this.color;
+            
+            // Wings
+            renderer.ctx.beginPath();
+            renderer.ctx.ellipse(-6, 0, 6, 10, Math.PI/6, 0, Math.PI * 2);
+            renderer.ctx.ellipse(6, 0, 6, 10, -Math.PI/6, 0, Math.PI * 2);
+            renderer.ctx.fill();
+            
+            // Body
+            renderer.ctx.fillStyle = '#fff';
+            renderer.ctx.beginPath();
+            renderer.ctx.ellipse(0, 0, 2, 8, 0, 0, Math.PI * 2);
+            renderer.ctx.fill();
+
+        } else if (this.type === 'bat') {
+            renderer.ctx.translate(drawX, drawY);
+            renderer.ctx.rotate(this.rotation);
+            renderer.ctx.fillStyle = this.color;
+            
+            renderer.ctx.beginPath();
+            renderer.ctx.moveTo(0, 5); // Head
+            renderer.ctx.lineTo(-8, -5); // Left Wing
+            renderer.ctx.quadraticCurveTo(-4, 0, -2, -2);
+            renderer.ctx.lineTo(0, 2); // Body
+            renderer.ctx.lineTo(2, -2);
+            renderer.ctx.quadraticCurveTo(4, 0, 8, -5); // Right Wing
+            renderer.ctx.closePath();
+            renderer.ctx.fill();
+
+        } else if (this.type === 'spear') {
+            renderer.ctx.translate(drawX, drawY);
+            renderer.ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI/2);
+            
+            renderer.ctx.shadowBlur = 15;
+            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.fillStyle = this.color;
+            
+            // Long spear shape
+            renderer.ctx.beginPath();
+            renderer.ctx.moveTo(0, -this.height/2);
+            renderer.ctx.lineTo(this.width/2, this.height/2);
+            renderer.ctx.lineTo(-this.width/2, this.height/2);
+            renderer.ctx.closePath();
+            renderer.ctx.fill();
+            
+            renderer.ctx.fillStyle = '#fff';
+            renderer.ctx.beginPath();
+            renderer.ctx.moveTo(0, -this.height/2 + 5);
+            renderer.ctx.lineTo(this.width/4, this.height/2 - 5);
+            renderer.ctx.lineTo(-this.width/4, this.height/2 - 5);
+            renderer.ctx.closePath();
+            renderer.ctx.fill();
+
+        } else if (this.type === 'bubble') {
+            renderer.ctx.translate(drawX, drawY);
+            renderer.ctx.shadowBlur = 5;
+            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.strokeStyle = this.color;
+            renderer.ctx.lineWidth = 1.5;
+            renderer.ctx.beginPath();
+            renderer.ctx.arc(0, 0, this.width/2, 0, Math.PI*2);
+            renderer.ctx.stroke();
+            renderer.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            renderer.ctx.fill();
+            
+            // Highlight
+            renderer.ctx.fillStyle = '#fff';
+            renderer.ctx.beginPath();
+            renderer.ctx.arc(-this.width/4, -this.width/4, 2, 0, Math.PI*2);
+            renderer.ctx.fill();
+
+        } else if (this.type === 'talisman') {
+            renderer.ctx.translate(drawX, drawY);
+            renderer.ctx.rotate(this.rotation);
+            renderer.ctx.fillStyle = '#fff'; // Paper
+            renderer.ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+            
+            renderer.ctx.fillStyle = 'red'; // Sigil
+            renderer.ctx.fillRect(-this.width/4, -this.height/4, this.width/2, this.height/2);
+
+        } else if (this.type === 'ice' || this.type === 'freeze' || this.type === 'icicle') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.rotate(this.type === 'freeze' ? this.rotation : Math.atan2(this.vy, this.vx) + Math.PI/2);
+             renderer.ctx.shadowBlur = 8;
+             renderer.ctx.shadowColor = this.color;
+             renderer.ctx.fillStyle = 'rgba(200, 240, 255, 0.8)';
+             
+             // Diamond/Crystal shape
+             renderer.ctx.beginPath();
+             renderer.ctx.moveTo(0, -this.height/2);
+             renderer.ctx.lineTo(this.width/2, 0);
+             renderer.ctx.lineTo(0, this.height/2);
+             renderer.ctx.lineTo(-this.width/2, 0);
+             renderer.ctx.closePath();
+             renderer.ctx.fill();
+             
+             renderer.ctx.fillStyle = '#fff';
+             renderer.ctx.beginPath();
+             renderer.ctx.moveTo(0, -this.height/4);
+             renderer.ctx.lineTo(this.width/4, 0);
+             renderer.ctx.lineTo(0, this.height/4);
+             renderer.ctx.lineTo(-this.width/4, 0);
+             renderer.ctx.closePath();
+             renderer.ctx.fill();
+
+        } else if (this.type === 'ufo' || this.type === 'chimera') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.rotate(this.rotation);
+             renderer.ctx.shadowBlur = 10;
+             renderer.ctx.shadowColor = this.color;
+             
+             // Dome
+             renderer.ctx.fillStyle = this.color;
+             renderer.ctx.beginPath();
+             renderer.ctx.arc(0, -2, this.width/2, Math.PI, 0);
+             renderer.ctx.fill();
+             
+             // Disk
+             renderer.ctx.fillStyle = '#ddd';
+             renderer.ctx.beginPath();
+             renderer.ctx.ellipse(0, 2, this.width/1.5, this.height/3, 0, 0, Math.PI * 2);
+             renderer.ctx.fill();
+
+        } else if (this.type === 'spirit') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI/2);
+             renderer.ctx.shadowBlur = 10;
+             renderer.ctx.shadowColor = this.color;
+             
+             // Wisp shape
+             renderer.ctx.fillStyle = this.color;
+             renderer.ctx.beginPath();
+             renderer.ctx.arc(0, 0, this.width/2, 0, Math.PI); // Bottom round
+             renderer.ctx.lineTo(0, -this.height); // Top point
+             renderer.ctx.closePath();
+             renderer.ctx.fill();
+
+        } else if (this.type === 'note') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.shadowBlur = 5;
+             renderer.ctx.shadowColor = this.color;
+             renderer.ctx.fillStyle = this.color;
+             renderer.ctx.font = '20px serif';
+             renderer.ctx.textAlign = 'center';
+             renderer.ctx.textBaseline = 'middle';
+             renderer.ctx.fillText('♪', 0, 0);
+
+        } else if (this.type === 'bone') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI/2);
+             renderer.ctx.fillStyle = '#fff';
+             
+             const w = this.width;
+             const h = this.height;
+             
+             // Bone shaft
+             renderer.ctx.fillRect(-w/4, -h/2 + w/2, w/2, h - w);
+             
+             // Ends
+             renderer.ctx.beginPath();
+             renderer.ctx.arc(-w/3, -h/2 + w/3, w/3, 0, Math.PI*2);
+             renderer.ctx.arc(w/3, -h/2 + w/3, w/3, 0, Math.PI*2);
+             renderer.ctx.arc(-w/3, h/2 - w/3, w/3, 0, Math.PI*2);
+             renderer.ctx.arc(w/3, h/2 - w/3, w/3, 0, Math.PI*2);
+             renderer.ctx.fill();
+
+        } else if (this.type === 'crystal') {
+             renderer.ctx.translate(drawX, drawY);
+             renderer.ctx.rotate(this.rotation + this.timer * 5);
+             renderer.ctx.shadowBlur = 5;
+             renderer.ctx.shadowColor = this.color;
+             renderer.ctx.fillStyle = this.color;
+             
+             renderer.ctx.beginPath();
+             renderer.ctx.moveTo(0, -this.height/2);
+             renderer.ctx.lineTo(this.width/2, 0);
+             renderer.ctx.lineTo(0, this.height/2);
+             renderer.ctx.lineTo(-this.width/2, 0);
+             renderer.ctx.closePath();
+             renderer.ctx.fill();
+             
+             renderer.ctx.fillStyle = 'rgba(255,255,255,0.8)';
+             renderer.ctx.beginPath();
+             renderer.ctx.moveTo(0, -this.height/4);
+             renderer.ctx.lineTo(this.width/4, 0);
+             renderer.ctx.lineTo(0, this.height/4);
+             renderer.ctx.lineTo(-this.width/4, 0);
+             renderer.ctx.closePath();
+             renderer.ctx.fill();
 
         } else {
             // Default / Straight: Simple glowing rectangle
