@@ -314,25 +314,18 @@ export default class LeitmotifManager {
             },
 
             'menu': {
-                tempo: 132, // Slower, haunting
+                tempo: 120, 
                 sequence: [
-                    // A Soul as Red as a Ground Cherry
-                    // Intro / Main Melody
-                    s([zunpet('D5'), guitar('D3'), bass('D2')], 0.75), s(zunpet('C5'), 0.25),
-                    s([zunpet('A4'), guitar('F3')], 0.75), s(zunpet('G4'), 0.25),
-                    s([zunpet('F4'), guitar('A#2'), bass('A#1')], 0.75), s(zunpet('E4'), 0.25),
-                    s([zunpet('D4'), guitar('A2'), bass('A1')], 1.0),
+                    // Melody from User Image: E5, G4, B4, D5, B4, A4, E5
+                    // Using piano/bell like sounds for title screen
                     
-                    s([zunpet('F4'), guitar('D3')], 0.5), s(zunpet('G4'), 0.5),
-                    s([zunpet('A4'), guitar('F3'), bass('D2')], 0.75), s(zunpet('C5'), 0.25),
-                    s([zunpet('D5'), guitar('A#2'), bass('A#1')], 1.0),
-                    s([zunpet('A4'), guitar('A2'), bass('A1')], 1.0),
+                    // Phrase 1
+                    s([zunpet('E5'), guitar('E3'), bass('E2')], 0.25), s(guitar('G4'), 0.25), s(guitar('B4'), 0.25), s(zunpet('D5'), 0.25),
+                    s([zunpet('B4'), guitar('E3')], 0.25), s(zunpet('A4'), 0.25), s([zunpet('E5'), guitar('B3')], 1.5),
 
-                    // Repeat with harmony
-                    s([zunpet('D5'), zunpet('F5'), guitar('D3')], 0.75), s(zunpet('C5'), 0.25),
-                    s([zunpet('A4'), zunpet('C5'), guitar('F3')], 0.75), s(zunpet('G4'), 0.25),
-                    s([zunpet('F4'), zunpet('A4'), bass('A#1')], 0.75), s(zunpet('E4'), 0.25),
-                    s([zunpet('D4'), zunpet('F4'), bass('A1')], 1.0)
+                    // Repeat/Variation
+                     s([zunpet('E5'), guitar('E3'), bass('E2')], 0.25), s(guitar('G4'), 0.25), s(guitar('B4'), 0.25), s(zunpet('D5'), 0.25),
+                    s([zunpet('B4'), guitar('E3')], 0.25), s(zunpet('A4'), 0.25), s([zunpet('G5'), guitar('E4')], 1.5),
                 ]
             },
 
