@@ -386,7 +386,7 @@ export default class SoundManager {
             osc.frequency.setValueAtTime(freq, time);
             
             gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(vol * this.masterVolume, time + 0.02);
+            gain.gain.linearRampToValueAtTime(vol * this.masterVolume, time + 0.01);
             gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
             
             osc.connect(gain);
@@ -396,28 +396,13 @@ export default class SoundManager {
             osc.stop(time + duration + 0.1);
         };
 
-        // Melody: E5, G4, B4, D5, B4, A4, E5
-        // 1(P), 2(X), 3(V), 4(N), 5(V), 6(C), 7(P)
+        // Quick Flourish: E5-B4-E5 (Short & Snappy)
+        playNote(659.25, now, 0.3, 'triangle', 0.4); // E5
+        playNote(493.88, now + 0.08, 0.3, 'sine', 0.3); // B4
+        playNote(1318.51, now + 0.16, 0.6, 'sine', 0.3); // E6 (Sparkle)
         
-        // 1: E5 (High) - Impact
-        playNote(659.25, now, 1.0, 'triangle', 0.3);
-        playNote(659.25, now, 1.0, 'sine', 0.3); // Layer for bell sound
-
-        // Arpeggio Run (G-B-D-B-A)
-        const runStart = now + 0.2;
-        const step = 0.08; // Fast run
-        
-        playNote(392.00, runStart + step * 0, 0.3, 'sine', 0.2); // G4
-        playNote(493.88, runStart + step * 1, 0.3, 'sine', 0.2); // B4
-        playNote(587.33, runStart + step * 2, 0.3, 'sine', 0.2); // D5
-        playNote(493.88, runStart + step * 3, 0.3, 'sine', 0.2); // B4
-        playNote(440.00, runStart + step * 4, 0.3, 'sine', 0.2); // A4
-
-        // 7: E5 (High) - Final resolve
-        const finalTime = runStart + step * 5 + 0.1;
-        playNote(659.25, finalTime, 1.5, 'triangle', 0.3);
-        playNote(329.63, finalTime, 1.5, 'sine', 0.2); // E4 harmonic
-        playNote(1318.51, finalTime, 1.0, 'sine', 0.1); // E6 sparkle
+        // Slight bass pluck
+        playNote(164.81, now, 0.4, 'triangle', 0.4); // E3
     }
 
     renderNotification(ctx, width, height) {

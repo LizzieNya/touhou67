@@ -17,6 +17,7 @@ export default class OptionsScene {
             { key: 'back', name: 'Back to Title', type: 'action' }
         ];
         this.selectedIndex = 0;
+        this.scrollOffset = 0;
     }
 
     update(dt) {
@@ -25,10 +26,12 @@ export default class OptionsScene {
         if (input.isPressed('UP')) {
             this.selectedIndex = (this.selectedIndex - 1 + this.options.length) % this.options.length;
             this.game.soundManager.playSelect();
+            this.fixScroll();
         }
         if (input.isPressed('DOWN')) {
             this.selectedIndex = (this.selectedIndex + 1) % this.options.length;
             this.game.soundManager.playSelect();
+            this.fixScroll();
         }
 
         const selected = this.options[this.selectedIndex];
@@ -54,6 +57,15 @@ export default class OptionsScene {
 
         if (input.isPressed('BOMB')) {
             this.goBack();
+        }
+    }
+
+    fixScroll() {
+        const maxVisible = 8;
+        if (this.selectedIndex < this.scrollOffset) {
+            this.scrollOffset = this.selectedIndex;
+        } else if (this.selectedIndex >= this.scrollOffset + maxVisible) {
+            this.scrollOffset = this.selectedIndex - maxVisible + 1;
         }
     }
 
@@ -105,13 +117,15 @@ export default class OptionsScene {
         ctx.fillText("OPTIONS", w / 2, 60);
         ctx.shadowBlur = 0;
 
-        // Options List
+        // Options List (Scrollable)
         const startY = 120;
         const spacing = 45;
+        const maxVisible = 8;
+        const visibleOptions = this.options.slice(this.scrollOffset, this.scrollOffset + maxVisible);
 
         // Draw a box behind options
         const boxWidth = 500;
-        const boxHeight = this.options.length * spacing + 40;
+        const boxHeight = maxVisible * spacing + 40;
         const boxX = (w - boxWidth) / 2;
         const boxY = startY - 30;
 
@@ -121,9 +135,10 @@ export default class OptionsScene {
         ctx.lineWidth = 2;
         ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
-        this.options.forEach((opt, index) => {
+        visibleOptions.forEach((opt, relativeIndex) => {
+            const index = this.scrollOffset + relativeIndex;
             const isSelected = index === this.selectedIndex;
-            const y = startY + index * spacing;
+            const y = startY + relativeIndex * spacing; // Draw specific to box position
             const color = isSelected ? '#fff' : '#aaa';
 
             // Selection Highlight
@@ -158,6 +173,17 @@ export default class OptionsScene {
                 ctx.fillText("▶", boxX + 15, y);
             }
         });
+
+        // Scroll Indicators
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px Arial';
+        if (this.scrollOffset > 0) {
+            ctx.fillText("▲", w / 2, boxY + 15);
+        }
+        if (this.scrollOffset + maxVisible < this.options.length) {
+            ctx.fillText("▼", w / 2, boxY + boxHeight - 10);
+        }
 
         ctx.textAlign = 'left';
     }

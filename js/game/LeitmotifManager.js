@@ -290,34 +290,61 @@ export default class LeitmotifManager {
             'menu': {
                 tempo: 144, 
                 sequence: [
-                    // A Soul as Red as a Ground Cherry - Authentic Intro
-                    // Bar 1 (Am)
-                    s([bass('A1'), guitar('E3'), zunpet('A4')], 1.50), s([guitar('E3'), zunpet('B4')], 0.50),
-                    s([bass('A1'), guitar('A3'), zunpet('C5')], 1.00), s([guitar('E3'), zunpet('B4')], 1.00),
+                    // Intro (A Soul as Red as a Ground Cherry)
+                    // Bar 1 - Am
+                    s([bass('A1'), guitar('E3'), zunpet('A4'), zunpet('C5')], 1.50), s([guitar('E3'), zunpet('B4'), zunpet('E5')], 0.50),
+                    s([bass('A1'), guitar('A3'), zunpet('C5'), zunpet('A5')], 1.00), s([guitar('E3'), zunpet('B4'), zunpet('G5')], 1.00),
                     
                     // Bar 2
-                    s([bass('A1'), guitar('A3'), zunpet('A4')], 2.00), s([guitar('E3'), zunpet('E5')], 2.00),
+                    s([bass('A1'), guitar('A3'), zunpet('A4'), zunpet('F5')], 2.00), s([guitar('E3'), zunpet('E5'), zunpet('C5')], 2.00),
 
-                    // Bar 3 (G)
-                    s([bass('G1'), guitar('D3'), zunpet('G4')], 1.50), s([guitar('D3'), zunpet('A4')], 0.50),
-                    s([bass('G1'), guitar('G3'), zunpet('B4')], 1.00), s([guitar('D3'), zunpet('A4')], 1.00),
+                    // Bar 3 - G
+                    s([bass('G1'), guitar('D3'), zunpet('G4'), zunpet('B4')], 1.50), s([guitar('D3'), zunpet('A4'), zunpet('D5')], 0.50),
+                    s([bass('G1'), guitar('G3'), zunpet('B4'), zunpet('G5')], 1.00), s([guitar('D3'), zunpet('A4'), zunpet('F#5')], 1.00),
 
                     // Bar 4
-                    s([bass('G1'), guitar('G3'), zunpet('G4')], 2.00), s([guitar('D3'), zunpet('D5')], 2.00),
+                    s([bass('G1'), guitar('G3'), zunpet('G4'), zunpet('E5')], 2.00), s([guitar('D3'), zunpet('D5'), zunpet('B4')], 2.00),
 
-                    // Bar 5 (F)
-                    s([bass('F1'), guitar('C3'), zunpet('F4')], 1.50), s([guitar('C3'), zunpet('G4')], 0.50),
-                    s([bass('F1'), guitar('F3'), zunpet('A4')], 1.00), s([guitar('C3'), zunpet('G4')], 1.00),
+                    // Bar 5 - F
+                    s([bass('F1'), guitar('C3'), zunpet('F4'), zunpet('A4')], 1.50), s([guitar('C3'), zunpet('G4'), zunpet('C5')], 0.50),
+                    s([bass('F1'), guitar('F3'), zunpet('A4'), zunpet('F5')], 1.00), s([guitar('C3'), zunpet('G4'), zunpet('E5')], 1.00),
 
                     // Bar 6
-                    s([bass('F1'), guitar('F3'), zunpet('F4')], 2.00), s([guitar('C3'), zunpet('C5')], 2.00),
+                    s([bass('F1'), guitar('F3'), zunpet('F4'), zunpet('D5')], 2.00), s([guitar('C3'), zunpet('C5'), zunpet('G4')], 2.00),
 
-                    // Bar 7 (E)
-                    s([bass('E1'), guitar('B2'), zunpet('B4')], 1.50), s([guitar('B2'), zunpet('C5')], 0.50),
-                    s([bass('E1'), guitar('E3'), zunpet('D5')], 1.00), s([guitar('B2'), zunpet('C5')], 1.00),
+                    // Bar 7 - E
+                    s([bass('E1'), guitar('B2'), zunpet('B4'), zunpet('G#4')], 1.50), s([guitar('B2'), zunpet('C5'), zunpet('A4')], 0.50),
+                    s([bass('E1'), guitar('E3'), zunpet('D5'), zunpet('B4')], 1.00), s([guitar('B2'), zunpet('C5'), zunpet('A4')], 1.00),
 
-                    // Bar 8
-                    s([bass('E1'), guitar('E3'), zunpet('B4')], 4.00)
+                    // Bar 8 - A resolves to E7/G# turnaround or similar
+                    s([bass('E1'), guitar('E3'), zunpet('B4'), zunpet('E5')], 4.00),
+
+                    // Melody Loop Start (Main Theme)
+                    // Bar 9
+                    s([bass('A1'), zunpet('A4')], 0.5), s(zunpet('B4'), 0.5), s(zunpet('C5'), 0.5), s(zunpet('D5'), 0.5),
+                    s([bass('F1'), zunpet('E5')], 1.0), s(zunpet('D5'), 0.5), s(zunpet('C5'), 0.5),
+                    
+                    // Bar 11
+                    s([bass('G1'), zunpet('D5')], 1.5), s(zunpet('C5'), 0.5),
+                    s([bass('E1'), zunpet('B4')], 1.0), s(zunpet('C5'), 0.5), s(zunpet('B4'), 0.5),
+
+                    // Bar 13 (Am arpeggio)
+                    s([bass('A1'), zunpet('A4')], 0.5), s(zunpet('E5'), 0.5), s(zunpet('A5'), 0.5), s(zunpet('B5'), 0.5),
+                    s([bass('F1'), zunpet('C6')], 1.0), s(zunpet('B5'), 0.5), s(zunpet('A5'), 0.5),
+
+                    // Bar 15
+                    s([bass('G1'), zunpet('B5')], 1.5), s(zunpet('A5'), 0.5),
+                    s([bass('E1'), zunpet('G#5')], 2.0),
+
+                    // Repeat with variation
+                    s([bass('A1'), zunpet('A5')], 0.5), s(zunpet('E5'), 0.5), s(zunpet('C5'), 0.5), s(zunpet('D5'), 0.5),
+                    s([bass('F1'), zunpet('E5')], 1.0), s(zunpet('D5'), 0.5), s(zunpet('C5'), 0.5),
+
+                    s([bass('G1'), zunpet('D5')], 1.5), s(zunpet('C5'), 0.5), 
+                    s([bass('E1'), zunpet('B4')], 1.0), s(zunpet('C5'), 0.5), s(zunpet('B4'), 0.5),
+
+                    s([bass('A1'), zunpet('A4')], 2.0),
+                    s([bass('E1'), zunpet('B4')], 2.0)
                 ]
             },
 
