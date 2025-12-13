@@ -101,6 +101,22 @@ export default class Player extends Entity {
         if (this.game.input.isDown('LEFT')) { dx -= 1; }
         if (this.game.input.isDown('RIGHT')) { dx += 1; }
 
+        // Mouse Movement Override
+        if (this.game.config.mouseMovement && !this.game.input.anyKeyPressed()) {
+            const mx = this.game.input.mouse.x;
+            const my = this.game.input.mouse.y;
+            
+            // Vector to mouse
+            const vx = mx - this.x;
+            const vy = my - this.y;
+            const dist = Math.sqrt(vx*vx + vy*vy);
+
+            if (dist > 5) { // Deadzone
+                dx = vx / dist;
+                dy = vy / dist;
+            }
+        }
+
         // Normalize diagonal
         if (dx !== 0 && dy !== 0) {
             const len = Math.sqrt(dx * dx + dy * dy);

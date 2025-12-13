@@ -12,6 +12,8 @@ export default class OptionsScene {
             { key: 'showHitbox', name: 'Always Show Hitbox', type: 'boolean' },
             { key: 'showFps', name: 'Show FPS', type: 'boolean' },
             { key: 'autoBomb', name: 'Auto Bomb', type: 'boolean' },
+            { key: 'mouseMovement', name: 'Mouse Move', type: 'boolean' },
+            { key: 'audioOffset', name: 'Audio Offset (s)', type: 'number', min: -0.5, max: 0.5, step: 0.01 },
             { key: 'back', name: 'Back to Title', type: 'action' }
         ];
         this.selectedIndex = 0;

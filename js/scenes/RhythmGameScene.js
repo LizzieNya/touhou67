@@ -22,7 +22,7 @@ export default class RhythmGameScene {
         this.comboScale = 1.0;
 
         // Settings
-        this.audioOffset = this.game.settings?.audioOffset || 0;
+        this.audioOffset = this.game.config?.audioOffset || 0;
 
         // Hide HUD
         const sidebar = document.getElementById('sidebar');

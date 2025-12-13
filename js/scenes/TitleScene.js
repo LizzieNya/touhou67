@@ -108,15 +108,17 @@ export default class TitleScene {
         const mClicked = this.game.input.mouseDown && !this.lastMouseDown;
         this.lastMouseDown = this.game.input.mouseDown;
 
-        const startX = this.game.width - 40;
-        const startY = 160;
-        const spacing = 32;
+        const startX = this.game.width - 40; // Right edge alignment
+        const startY = 140; // Matching render startY
+        const spacing = 26; // Matching render spacing
 
         this.options.forEach((opt, index) => {
-            // Approximate hit box for right-aligned text
-            // Text is drawn at baseline y. 
-            // Box: x: [w-250, w], y: [y-20, y+10]
+            // Hitbox for right-aligned text
+            // Text is drawn at startX, y = startY + index * spacing
+            // Approx width 250px
             const y = startY + index * spacing;
+            
+            // Check bounds: x from (right - width) to right, y from (baseline - height) to (baseline)
             if (mx > startX - 300 && mx < startX + 20 &&
                 my > y - 25 && my < y + 10) {
                 
