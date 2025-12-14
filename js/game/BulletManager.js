@@ -188,8 +188,8 @@ export default class BulletManager {
             if (!b.active) continue;
 
             // Interpolate
-            const drawX = b.prevX + (b.x - b.prevX) * alpha;
-            const drawY = b.prevY + (b.y - b.prevY) * alpha;
+            const drawX = (b.prevX !== undefined) ? (b.prevX + (b.x - b.prevX) * alpha) : b.x;
+            const drawY = (b.prevY !== undefined) ? (b.prevY + (b.y - b.prevY) * alpha) : b.y;
 
             // Use Cached Sprite directly
             const sprite = this.getBulletSprite(b.color, b.radius);

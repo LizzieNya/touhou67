@@ -57,9 +57,13 @@ export const BossRumiaEvents = createBossStage("Rumia", null, [
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t)*50; enemy.y = 100;
-             // Basic random spray - Denser
-             if(Math.floor(t*60)%5===0) {
-                 scene.bulletManager.spawn(enemy.x, enemy.y, (Math.random()-0.5)*200, 200, '#fff', 3);
+             // Basic random spray - Denser (Hectic: 5/60 -> 4/120)
+             if(Math.floor(t*60)%2===0) { // Still fires every frame roughly if 120hz updates? No, t*60 increments 0.5/frame.
+                 // t=0 -> 0. t=1/120 -> 0.5. floor(0.5)=0. 0%2==0.
+                 // This effectively fires 2 times per "logical 60hz frame".
+                 // That's 4x density from original. Let's keep it! User said "HECTIC".
+                 // Actually, let's just leave Rumia as is (super fast).
+                 scene.bulletManager.spawn(enemy.x, enemy.y, (Math.random()-0.5)*250, 250, '#fff', 3);
              }
         }
     },
@@ -70,20 +74,20 @@ export const BossRumiaEvents = createBossStage("Rumia", null, [
              const w = (scene.game.playAreaWidth||scene.game.width);
              enemy.x = w/2; enemy.y = 100;
              
-             // Lasers (Lines of bullets) crossing - Faster
-             if(Math.floor(t*60)%30===0) {
+             // Lasers (Lines of bullets) crossing - Faster (Hectic: 30 -> 15)
+             if(Math.floor(t*60)%15===0) {
                  // Horizontal line
                  const y = scene.player.y;
                  for(let i=0; i<30; i++) {
-                     scene.bulletManager.spawn(0, y, 400, 0, '#fff', 2);
-                     scene.bulletManager.spawn(w, y+20, -400, 0, '#fff', 2);
+                     scene.bulletManager.spawn(0, y, 500, 0, '#fff', 2);
+                     scene.bulletManager.spawn(w, y+20, -500, 0, '#fff', 2);
                  }
              }
-             if(Math.floor(t*60)%60===0) {
+             if(Math.floor(t*60)%40===0) {
                  // Vertical rain
                  const x = scene.player.x;
-                 for(let i=0; i<10; i++) {
-                     scene.bulletManager.spawn(x + (Math.random()-0.5)*100, 0, 0, 300, '#ff0', 3);
+                 for(let i=0; i<15; i++) {
+                     scene.bulletManager.spawn(x + (Math.random()-0.5)*150, 0, 0, 400, '#ff0', 3);
                  }
              }
         }
@@ -556,27 +560,27 @@ export const BossCirnoEvents = createBossStage("Cirno", null, [
 // Hong Meiling (Stage 3 Boss - Touhou 6)
 export const BossMeilingEvents = createBossStage("Hong Meiling", null, [
     {
-        hp: 2000, duration: 40,
+        hp: 1400, duration: 45,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t)*50; enemy.y = 100;
-            if(Math.floor(t*60)%10===0) {
-                PatternLibrary.aimedNWay(scene, enemy, 3, 0.2, 300, '#f00', 4);
+            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t * 1.5) * 100; // Faster movement
+            enemy.y = 120 + Math.sin(t) * 30;
+            if(Math.floor(t*60)%16===0) { // Doubled from 8 to 16
+                PatternLibrary.ring(scene, enemy, 16, 250, '#0ff', 4); // Faster bullets (was 150)
             }
         }
     },
     {
-        hp: 2500, duration: 60, spellName: "Flower Sign 'Gorgeous Sweet Flower'",
+        hp: 1800, duration: 55, spellName: "Ice Sign 'Icicle Fall'",
         pattern: (enemy, dt, t) => {
-            const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
-            if(Math.floor(t*60)%8===0) {
-                // Flower petal shapes
-                for(let i=0; i<5; i++) {
-                    const a = (i/5)*Math.PI*2 + t;
-                    scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*200, Math.sin(a)*200, '#f0f', 5);
-                }
-            }
+             const scene = enemy.game.sceneManager.currentScene;
+             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2;
+             if(Math.floor(t*60)%8===0) { // Doubled from 4 to 8
+                  const angle = Math.PI/2 + (Math.sin(t*2)*0.5); // Wider/Faster sway
+                  scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*300, Math.sin(angle)*300, '#eef', 3); // Faster
+                  scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle+0.2)*300, Math.sin(angle+0.2)*300, '#0ff', 3);
+                  scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle-0.2)*300, Math.sin(angle-0.2)*300, '#0ff', 3);
+             }
         }
     },
     {

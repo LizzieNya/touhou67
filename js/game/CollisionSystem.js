@@ -8,41 +8,52 @@ export default class CollisionSystem {
         const bullets = scene.bulletManager.pool;
         const enemies = scene.enemies;
 
+        // Pre-calculate squared radii for player
+        const grazeDistSq = (player.grazeRadius + 5) * (player.grazeRadius + 5); // Approx bullet radius 5
+        const hitDistSq = (player.radius + 3) * (player.radius + 3); // Approx bullet radius 3 (smaller hitbox)
+        
         // 1. Player vs Enemy Bullets
-        for (let i = 0; i < bullets.length; i++) {
+        for (let i = 0; i < scene.bulletManager.activeCount; i++) {
             const b = bullets[i];
             if (!b.active) continue;
 
-            // Simple circle collision
-            const dist = Math.hypot(player.x - b.x, player.y - b.y);
-
+            const dx = player.x - b.x;
+            const dy = player.y - b.y;
+            const distSq = dx * dx + dy * dy;
+            
             // Graze
-            if (!b.grazed && dist < player.grazeRadius + b.radius) {
-                b.grazed = true;
-                scene.hud.graze++;
-                scene.hud.score += 500;
-                // Graze Spark
-                if (scene.particleSystem) {
-                    scene.particleSystem.createGraze(player.x + (b.x - player.x) / 2, player.y + (b.y - player.y) / 2);
-                }
-                // Play Sound
-                if (this.game.soundManager && this.game.soundManager.playGraze) {
-                     this.game.soundManager.playGraze();
+            if (!b.grazed) {
+                const gDist = player.grazeRadius + b.radius;
+                if (distSq < gDist * gDist) {
+                    b.grazed = true;
+                    scene.hud.graze++;
+                    scene.hud.score += 500;
+                    // Graze Spark (visual only, keep lightweight)
+                    if (scene.particleSystem) {
+                        scene.particleSystem.createGraze(player.x + dx / 2, player.y + dy / 2);
+                    }
+                    if (this.game.soundManager && this.game.soundManager.playGraze) {
+                         this.game.soundManager.playGraze();
+                    }
                 }
             }
 
             // Hit
-            if (dist < player.radius + b.radius) {
+            const hDist = player.radius + b.radius * 0.7; // Smaller hitbox for bullets
+            if (distSq < hDist * hDist) {
                 // Player Hit!
-                scene.particleSystem.createExplosion(player.x, player.y, '#f00'); // Big explosion for player death
+                scene.particleSystem.createExplosion(player.x, player.y, '#f00');
                 player.die();
-                b.active = false; // Remove bullet
+                b.active = false;
             }
         }
 
         // 2. Player Bullets vs Enemies
         const playerBullets = scene.playerBulletManager.pool;
-
+        
+        // Loop enemies first if fewer? No, usually fewer enemies, but many P-bullets.
+        // O(Pb * E) is fine.
+        
         for (let i = 0; i < playerBullets.length; i++) {
             const pb = playerBullets[i];
             if (!pb.active) continue;
@@ -51,28 +62,26 @@ export default class CollisionSystem {
                 const enemy = enemies[j];
                 if (!enemy.active) continue;
 
-                // Simple AABB/Circle check
-                const dist = Math.hypot(pb.x - enemy.x, pb.y - enemy.y);
-                if (dist < enemy.radius + 8) { // 8 is approx bullet radius
+                // Hitbox check
+                const dx = pb.x - enemy.x;
+                const dy = pb.y - enemy.y;
+                const distSq = dx * dx + dy * dy;
+                const hitDist = enemy.radius + pb.width/2; // Approx
+
+                if (distSq < hitDist * hitDist) {
                     enemy.takeDamage(pb.damage);
 
-                    // Impact Effect
-                    if (scene.particleSystem) {
-                         // Spark impact
+                    // Impact Effect (Throttle?)
+                    if (scene.particleSystem && Math.random() < 0.3) {
                         scene.particleSystem.spawnParticle(pb.x, pb.y, (Math.random()-0.5)*200, (Math.random()-0.5)*200, pb.color || '#fff', 0.2, 3);
                     }
 
                     if (!pb.piercing) {
                         pb.active = false;
                         scene.hud.score += 10;
-                        break; // Bullet hits one enemy and dies
+                        break; 
                     } else {
-                        // Piercing bullet (Laser)
-                        // Add score but don't destroy bullet
-                        // To prevent massive score farming on one enemy per frame, maybe reduce score or only add on first hit?
-                        // For now, just add score.
-                        scene.hud.score += 1; // Lower score for continuous hits
-                        // Don't break, check other enemies (piercing)
+                        scene.hud.score += 1;
                     }
                 }
             }

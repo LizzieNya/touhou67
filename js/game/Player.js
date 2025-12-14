@@ -779,6 +779,9 @@ export default class Player extends Entity {
         if (this.state === 'dead') return;
         if (this.invulnerableTimer > 0 && Math.floor(Date.now() / 100) % 2 === 0) return; // Flicker
 
+        const drawX = this.prevX ? (this.prevX + (this.x - this.prevX) * alpha) : this.x;
+        const drawY = this.prevY ? (this.prevY + (this.y - this.prevY) * alpha) : this.y;
+
         // Draw character sprite
         // Ensure character name matches asset keys (lowercase)
         let spriteKey;
@@ -801,9 +804,7 @@ export default class Player extends Entity {
         });
         ctx.restore();
 
-        // Draw the sprite
-        const drawX = this.prevX ? (this.prevX + (this.x - this.prevX) * alpha) : this.x;
-        const drawY = this.prevY ? (this.prevY + (this.y - this.prevY) * alpha) : this.y;
+        // Main Sprite
         
         renderer.drawSprite(spriteKey, drawX, drawY, 32, 48);
 

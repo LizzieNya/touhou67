@@ -103,6 +103,12 @@ export default class Boss extends Enemy {
         this.invulnerableTimer = 0.5;
 
         console.log(`Boss Phase ${index}: ${this.spellCardName}`);
+        
+        // Cache Name Width for UI
+        // We need a dummy context or estimate. 
+        // We can just set a flag to measure it once in render.
+        this.nameWidth = 0; 
+        this.needsMeasure = true;
     }
 
     takeDamage(amount) {
@@ -282,14 +288,16 @@ export default class Boss extends Enemy {
 
         // Remaining Phases (Stars) next to name
         // Calculate width of name to place stars after it
-        ctx.save();
-        ctx.font = 'bold 20px "Times New Roman", serif';
-        const nameWidth = ctx.measureText(this.name).width;
+        // Cache measurement
+        if (!this.nameWidth || this.needsMeasure) {
+             this.nameWidth = ctx.measureText(this.name).width;
+             this.needsMeasure = false;
+        }
         ctx.restore();
 
         const remainingPhases = this.phases.length - 1 - this.currentPhaseIndex;
         for (let i = 0; i < remainingPhases; i++) {
-            renderer.drawText("★", barX + nameWidth + 20 + i * 20, barY - 8, 16, '#ff0');
+            renderer.drawText("★", barX + this.nameWidth + 20 + i * 20, barY - 8, 16, '#ff0');
         }
 
 
