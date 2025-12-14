@@ -78,7 +78,8 @@ export default class TitleScene {
             // Auto-start title interaction if desired, or just wait for input
             // Removing any potentially blocking 'blinkTimer' or 'fade' logic if present
             
-            if (this.game.input.isPressed('SHOOT') || this.game.input.isPressed('Confirm')) {
+            // Accept ANY key or click/tap to start the menu
+            if (this.game.input.anyKeyPressed()) {
                 this.started = true;
                 this.game.soundManager.playMenuMove();
             }
@@ -227,7 +228,11 @@ export default class TitleScene {
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 30px "Times New Roman", serif';
             ctx.textAlign = 'center';
-            ctx.fillText("Press Z to Start", w / 2, h / 2);
+            if (this.game.virtualControls && this.game.virtualControls.active) {
+                ctx.fillText("Tap Screen to Start", w / 2, h / 2);
+            } else {
+                ctx.fillText("Press Z to Start", w / 2, h / 2);
+            }
             ctx.textAlign = 'left';
             return;
         }

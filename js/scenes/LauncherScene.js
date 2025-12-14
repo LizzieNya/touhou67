@@ -125,6 +125,7 @@ export default class LauncherScene {
 
         // Start music after user interaction (Keyboard OR Click)
         if (!this.started) {
+            // Check for any input (Keyboard, Mouse-Click, or Virtual Button)
             if (this.game.input.anyKeyPressed() || mClicked) {
                 this.started = true;
                 this.game.soundManager.playMenuSelect();
@@ -357,7 +358,11 @@ export default class LauncherScene {
             ctx.font = 'bold 32px Arial';
             ctx.shadowColor = '#0ff';
             ctx.shadowBlur = 10;
-            ctx.fillText("PRESS ANY KEY TO START", w / 2, h * 0.6);
+            if (this.game.virtualControls && this.game.virtualControls.active) {
+                ctx.fillText("TAP SCREEN TO START", w / 2, h * 0.6);
+            } else {
+                ctx.fillText("PRESS ANY KEY TO START", w / 2, h * 0.6);
+            }
             ctx.restore();
             return; // Don't draw options yet
         }
