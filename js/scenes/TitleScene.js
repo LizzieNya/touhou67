@@ -229,6 +229,9 @@ export default class TitleScene {
             ctx.font = 'bold 30px "Times New Roman", serif';
             ctx.textAlign = 'center';
             if (this.game.virtualControls && this.game.virtualControls.active) {
+                // Flash effect
+                const alpha = Math.abs(Math.sin(this.blinkTimer * 3));
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
                 ctx.fillText("Tap Screen to Start", w / 2, h / 2);
             } else {
                 ctx.fillText("Press Z to Start", w / 2, h / 2);

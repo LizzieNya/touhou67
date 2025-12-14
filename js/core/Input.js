@@ -204,6 +204,8 @@ export default class Input {
             if (this.virtualControls.buttons.some(b => b.active)) return true;
              const stick = this.virtualControls.getStickInput();
              if (Math.abs(stick.x) > 0.3 || Math.abs(stick.y) > 0.3) return true;
+             // Critical Fix: Register ANY touch as a key press for "Press Any Key" screens
+             if (this.virtualControls.touches && this.virtualControls.touches.length > 0) return true;
         }
         return false;
     }
