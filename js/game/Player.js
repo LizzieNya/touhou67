@@ -9,7 +9,15 @@ export default class Player extends Entity {
         this.type = 'player';
 
         // Stats based on character
-        if (this.character === 'Marisa') {
+        if (typeof this.character === 'object') {
+            // Custom Character Config
+            this.speed = this.character.speed || 260;
+            this.focusSpeed = this.character.focusSpeed || 100;
+            this.color = this.character.color || '#f00';
+            this.shotType = this.character.shotType || this.shotType;
+            // Map sprite string if needed, or use 'reimu' default
+            this.spriteName = this.character.sprite || 'reimu';
+        } else if (this.character === 'Marisa') {
             this.speed = 300;
             this.focusSpeed = 120;
             this.color = '#ff0'; // Marisa yellow
@@ -771,7 +779,12 @@ export default class Player extends Entity {
 
         // Draw character sprite
         // Ensure character name matches asset keys (lowercase)
-        let spriteKey = this.character.toLowerCase();
+        let spriteKey;
+        if (typeof this.character === 'object') {
+            spriteKey = (this.spriteName || 'reimu').toLowerCase();
+        } else {
+            spriteKey = this.character.toLowerCase();
+        }
 
         // Handle special cases or alternate names if necessary
         if (spriteKey === 'hong meiling') spriteKey = 'meiling';

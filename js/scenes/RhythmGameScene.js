@@ -146,7 +146,7 @@ export default class RhythmGameScene {
         // Input
         // Any key in range (Z,X,C,V etc) triggers hit check
         // Simplified: Any key down event checks for hit
-        const keys = ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'Space', 'Enter'];
+        const keys = ['KeyZ', 'KeyX', 'KeyV', 'KeyD', 'KeyF', 'KeyJ', 'KeyK', 'Space', 'Enter'];
         let hitPressed = false;
         
         // Check standard inputs
@@ -155,13 +155,33 @@ export default class RhythmGameScene {
         // Also check raw keys if input manager exposes them or if we mapped them
         if (this.game.input.keys['KeyZ'] && !this.game.input.prevKeys['KeyZ']) hitPressed = true;
         if (this.game.input.keys['KeyX'] && !this.game.input.prevKeys['KeyX']) hitPressed = true;
+        // C is back
+        // V is optional extra
+        if (this.game.input.keys['KeyD'] && !this.game.input.prevKeys['KeyD']) hitPressed = true;
+        if (this.game.input.keys['KeyF'] && !this.game.input.prevKeys['KeyF']) hitPressed = true;
+        if (this.game.input.keys['KeyJ'] && !this.game.input.prevKeys['KeyJ']) hitPressed = true;
+        if (this.game.input.keys['KeyK'] && !this.game.input.prevKeys['KeyK']) hitPressed = true;
         
         if (hitPressed) {
             this.checkHit(visualProgamTime);
         }
 
+        if (this.game.input.keys['KeyC']) {
+             // C is Back
+             const cPrev = this.game.input.prevKeys['KeyC'];
+             // Wait, C is also a hit key above?
+             // User said: "only c should bring back not x"
+             // But usually rhythm games use dedicated keys like ESC or Hold specific key.
+             // If C is hit key, it can't be back.
+             // User Request: "z x and d f and jk should all work and only c should bring back not x".
+             // Interpretation: C is NOT a hit key, it IS the back key.
+             // So I must remove C from hit keys above.
+         }
+         
+         // Let's fix loop above first.
+         
         // Exit
-        if (this.game.input.isPressed('BOMB') || this.game.input.isPressed('ESC')) {
+        if (this.game.input.keys['KeyC'] && !this.game.input.prevKeys['KeyC'] || this.game.input.isPressed('ESC')) {
             this.game.soundManager.stopBossTheme();
             import('./RhythmSelectScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
@@ -269,42 +289,54 @@ export default class RhythmGameScene {
         // Background
         this.background.render(renderer);
         
-        // Darken background slightly for contrast
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        // Darken background significantly for contrast
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
         ctx.fillRect(0, 0, w, h);
         
         // Beat Pulse (Visual)
         const beatTime = (performance.now()/1000) % 0.5; // Approx pulse
-        const pulse = 1.0 + (beatTime < 0.1 ? 0.05 : 0);
+        const pulse = 1.0 + (beatTime < 0.1 ? 0.02 : 0);
 
         const cx = w / 2;
         const cy = h / 2;
-        const radius = 200 * pulse;
+        const radius = 220 * pulse; // Slightly larger
 
-        // Draw Ring
-        ctx.strokeStyle = '#0ff';
-        ctx.lineWidth = 5;
+        // Draw Ring (Hit Line)
+        ctx.strokeStyle = '#fff'; // White for max visibility
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#0ff';
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.shadowBlur = 0;
 
         // Draw Notes
         this.notes.forEach(note => {
-            const startDist = radius + 400;
+            const startDist = radius + 500; // Spawn further out
             const endDist = radius; // Target radius
             const r = startDist - (startDist - endDist) * note.progress;
 
             const x = cx + Math.cos(note.angle) * r;
             const y = cy + Math.sin(note.angle) * r;
 
+            // Note Body
             ctx.fillStyle = note.color;
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 15; // Glow
             ctx.shadowColor = note.color;
             ctx.beginPath();
-            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.arc(x, y, 20, 0, Math.PI * 2); // Larger notes
             ctx.fill();
+            
+            // Note Center (Readability)
+            ctx.fillStyle = '#fff';
             ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
             ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
             ctx.stroke();
         });
         

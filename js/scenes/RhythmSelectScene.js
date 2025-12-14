@@ -5,12 +5,11 @@ export default class RhythmSelectScene {
         this.game = game;
         this.options = [
             'Circle Mode', 
-            'Arcade Mode', 
-            'Taiko Mode', 
-            'Catch the Beat', 
-            'Song Select', 
+            '4 Key Mode', 
+            'IIDX Mode', 
+            'Groove Mode', 
             'Calibration', 
-            'Back'
+            'Back' // Song Select is likely integrated or not fully avail
         ];
         this.selectedIndex = 0;
         this.blinkTimer = 0;
@@ -48,21 +47,21 @@ export default class RhythmSelectScene {
             import('./RhythmGameScene.js').then(module => {
                 this.game.sceneManager.changeScene(new module.default(this.game));
             });
-        } else if (option === 'Arcade Mode') {
+        } else if (option === '4 Key Mode') {
             import('./RhythmGameScene_v2.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
+                this.game.sceneManager.changeScene(new module.default(this.game, 4));
             });
-        } else if (option === 'Taiko Mode') {
-            import('./TaikoGameScene.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
+        } else if (option === 'IIDX Mode') {
+            import('./RhythmGameScene_v2.js').then(module => {
+                this.game.sceneManager.changeScene(new module.default(this.game, 7));
             });
-        } else if (option === 'Catch the Beat') {
-            import('./CatchGameScene.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
-            });
-        } else if (option === 'Song Select') {
-            import('./SongSelectScene.js').then(module => {
-                this.game.sceneManager.changeScene(new module.default(this.game));
+        } else if (option === 'Groove Mode') {
+            // Placeholder or simple implementation using Circle Mode logic but on a path?
+            // Reusing Circle Mode for now as it's closest to "visual"
+            import('./RhythmGameScene.js').then(module => {
+                const scene = new module.default(this.game);
+                scene.cameraShake = 50; // CHAOS
+                this.game.sceneManager.changeScene(scene);
             });
         } else if (option === 'Calibration') {
             import('./CalibrationScene.js').then(module => {
