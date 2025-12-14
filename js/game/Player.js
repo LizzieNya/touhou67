@@ -110,9 +110,11 @@ export default class Player extends Entity {
         if (this.game.input.isDown('RIGHT')) { dx += 1; }
 
         // Mouse Movement Override
-        if (this.game.config.mouseMovement && !this.game.input.anyKeyPressed()) {
-            const mx = this.game.input.mouse.x;
-            const my = this.game.input.mouse.y;
+        // Allow mouse movement if not moving via keyboard
+        // "Mouse Move" is now default enabled unless config says false
+        if (dx === 0 && dy === 0 && this.game.config.mouseMovement !== false) {
+            const mx = this.game.input.mouseX; // Use getter
+            const my = this.game.input.mouseY;
             
             // Vector to mouse
             const vx = mx - this.x;

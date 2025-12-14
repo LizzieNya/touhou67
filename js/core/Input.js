@@ -19,7 +19,8 @@ export default class Input {
 
         // Ensure canvas can receive focus
         const canvas = document.getElementById('gameCanvas');
-        this.mouse = { x: 0, y: 0, down: false };
+        this.mouse = { x: 0, y: 0, down: false, rightDown: false };
+        this.prevMouse = { x: 0, y: 0, down: false, rightDown: false };
 
         if (canvas) {
             canvas.setAttribute('tabindex', '0');
@@ -37,13 +38,21 @@ export default class Input {
                 this.mouse.y = (e.clientY - rect.top) * scaleY;
             });
 
-            canvas.addEventListener('mousedown', () => {
-                this.mouse.down = true;
+            canvas.addEventListener('mousedown', (e) => {
+                if (e.button === 0) this.mouse.down = true;
+                if (e.button === 2) this.mouse.rightDown = true;
                 if (this.soundManager) this.soundManager.resume();
             });
 
-            canvas.addEventListener('mouseup', () => {
-                this.mouse.down = false;
+            canvas.addEventListener('mouseup', (e) => {
+                if (e.button === 0) this.mouse.down = false;
+                if (e.button === 2) this.mouse.rightDown = false;
+            });
+
+            // Prevent context menu
+            canvas.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
             });
         }
 
@@ -93,6 +102,11 @@ export default class Input {
             if (action === 'RIGHT' && stick.x > threshold) return true;
         }
 
+        // Check Mouse
+        if (action === 'SHOOT' && this.mouse.down) return true;
+        if (action === 'BOMB' && this.mouse.rightDown) return true;
+        if (action === 'Confirm' && this.mouse.down) return true;
+
         return keyDown;
     }
 
@@ -138,6 +152,11 @@ export default class Input {
                 }
             }
         }
+        // Check Mouse Press
+        if (action === 'SHOOT' && this.mouse.down && !this.prevMouse.down) return true;
+        if (action === 'Confirm' && this.mouse.down && !this.prevMouse.down) return true;
+        if (action === 'BOMB' && this.mouse.rightDown && !this.prevMouse.rightDown) return true;
+
         return false;
     }
 
@@ -152,5 +171,12 @@ export default class Input {
     update() {
         // Store current key state as previous state for next frame
         this.prevKeys = { ...this.keys };
+        this.prevMouse = { ...this.mouse };
     }
+
+    // Getters for cleaner access appropriately
+    get mouseX() { return this.mouse.x; }
+    get mouseY() { return this.mouse.y; }
+    get mouseDown() { return this.mouse.down; }
+    get rightMouseDown() { return this.mouse.rightDown; }
 }

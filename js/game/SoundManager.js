@@ -369,9 +369,7 @@ export default class SoundManager {
         if (this.notificationTimer > 0) {
             this.notificationTimer -= dt;
         }
-        if (this.leitmotifManager) {
-            this.leitmotifManager.update(dt);
-        }
+        // LeitmotifManager v2 uses setTimeout/scheduling, no update loop needed
     }
 
     playGameStartJingle() {
