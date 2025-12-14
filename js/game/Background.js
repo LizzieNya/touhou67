@@ -44,6 +44,61 @@ export default class Background {
                 cloud.x = Math.random() * (this.game.playAreaWidth || this.game.width);
             }
         });
+        
+        // Update Stars/Dust
+        if (!this.stars) {
+            this.stars = [];
+            for(let i=0; i<50; i++) {
+                this.stars.push({
+                    x: Math.random() * (this.game.playAreaWidth || this.game.width),
+                    y: Math.random() * this.game.height,
+                    speed: 5 + Math.random() * 10,
+                    size: Math.random() * 2,
+                    alpha: 0.3 + Math.random() * 0.7
+                });
+            }
+        }
+        
+        this.stars.forEach(star => {
+            star.y += star.speed * dt;
+            if (star.y > this.game.height) {
+                star.y = 0;
+                star.x = Math.random() * (this.game.playAreaWidth || this.game.width);
+            }
+        });
+
+        // Update Petals (Foreground)
+        if (!this.petals) {
+            this.petals = [];
+            for(let i=0; i<15; i++) {
+                this.petals.push({
+                    x: Math.random() * (this.game.playAreaWidth || this.game.width),
+                    y: Math.random() * this.game.height,
+                    vx: 10 + Math.random() * 10, // Drift right
+                    vy: 30 + Math.random() * 20, // Fall down
+                    rotation: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 2,
+                    size: 4 + Math.random() * 3,
+                    color: '#fce' // Pink
+                });
+            }
+        }
+
+        this.petals.forEach(p => {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.rotation += p.rotSpeed * dt;
+            // Oscillate sway
+            p.x += Math.sin(this.game.accumulator + p.y * 0.01) * 0.5;
+
+            if (p.y > this.game.height + 10) {
+                p.y = -10;
+                p.x = Math.random() * (this.game.playAreaWidth || this.game.width) - 50; // Allow drift in from left
+            }
+            if (p.x > (this.game.playAreaWidth || this.game.width) + 10) {
+                p.x = -10;
+            }
+        });
     }
 
     loadBackgroundImage(stage) {
@@ -142,11 +197,25 @@ export default class Background {
             ctx.save();
             this.clouds.forEach(cloud => {
                 ctx.globalAlpha = cloud.alpha;
-                ctx.fillStyle = '#fff';
+                const grad = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, cloud.size);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = grad;
                 ctx.beginPath();
                 ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
                 ctx.fill();
             });
+            ctx.restore();
+            
+            // Render Stars/Dust
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            if (this.stars) {
+                this.stars.forEach(star => {
+                   ctx.globalAlpha = star.alpha;
+                   ctx.fillRect(star.x, star.y, star.size, star.size);
+                });
+            }
             ctx.restore();
         }
 
@@ -224,5 +293,26 @@ export default class Background {
             
             ctx.restore();
         }
+    }
+
+    renderForeground(renderer) {
+        if (!this.petals) return;
+        
+        const ctx = renderer.ctx;
+        ctx.save();
+        ctx.fillStyle = '#ffccee'; // Soft pink
+        
+        this.petals.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            // Draw petal shape (simple oval-ish)
+            ctx.beginPath();
+            ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        });
+        
+        ctx.restore();
     }
 }

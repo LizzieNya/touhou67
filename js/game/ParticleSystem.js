@@ -138,6 +138,22 @@ class Particle {
             ctx.lineWidth = 1;
             ctx.strokeStyle = '#000';
             ctx.strokeText(this.text, 0, 0);
+        } else if (this.type === 'flare') {
+            // Horizontal flare with fade on edges
+            const grad = ctx.createLinearGradient(-this.size * 2, 0, this.size * 2, 0);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(0.5, this.color);
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(-this.size * 2, -1, this.size * 4, 2);
+            
+            // Vertical cross
+            ctx.save();
+            ctx.rotate(Math.PI / 2);
+            ctx.fillStyle = grad; // Reuse? need scaled?
+            // Recreate for vertical or just scale rect
+            ctx.fillRect(-this.size, -1, this.size * 2, 2);
+            ctx.restore();
         }
         
         ctx.restore();
@@ -199,7 +215,7 @@ export default class ParticleSystem {
             color: color,
             size: 10,
             type: 'ring',
-            scaleSpeed: 200, // Expand fast
+            scaleSpeed: 200, 
             blendMode: 'lighter'
         });
         
@@ -216,6 +232,21 @@ export default class ParticleSystem {
                 type: 'spark',
                 rotation: angle, 
                 friction: 0.9,
+                blendMode: 'lighter'
+            });
+        }
+        
+        // Debris / Flares
+        for(let i=0; i<2; i++) {
+            this.emit(x, y, {
+                vx: (Math.random()-0.5)*50,
+                vy: (Math.random()-0.5)*50,
+                life: 0.3,
+                color: '#fff',
+                size: 20,
+                type: 'flare',
+                rotation: Math.random() * Math.PI,
+                scaleSpeed: -20,
                 blendMode: 'lighter'
             });
         }
@@ -238,15 +269,29 @@ export default class ParticleSystem {
     }
     
     createGraze(x, y) {
+        // High energy spark
         this.emit(x, y, {
             vx: (Math.random() - 0.5) * 50,
-            vy: -50 - Math.random() * 50, // Fly up
+            vy: -50 - Math.random() * 50,
             life: 0.3,
             color: '#fff',
             size: 3,
             type: 'spark',
             blendMode: 'lighter'
         });
+        
+        // Lens Flare flash
+        this.emit(x, y, {
+            vx: 0, vy: 0,
+            life: 0.1, // Very quick
+            color: '#fff',
+            size: 15,
+            type: 'flare',
+            rotation: Math.random() * Math.PI, // Random angle
+            scaleSpeed: -50,
+            blendMode: 'lighter'
+        });
+
          this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.2,
@@ -259,14 +304,28 @@ export default class ParticleSystem {
     }
 
     createSpawnEffect(x, y, color = '#fff') {
-        // Reverse implosion or just a ring expanding
+        // Vertical Light Pillar (Warp In)
+        this.emit(x, y, {
+            vx: 0, vy: 0,
+            life: 0.5,
+            color: color,
+            size: 10, // Width
+            type: 'flare',
+            rotation: Math.PI / 2, // Vertical
+            scaleSpeed: 100, // Stretch out? Actually flare logic uses size for length? 
+            // My flare logic uses size*4 for width, size*2 for height of cross.
+            // Let's rely on standard flare for a "flash"
+            blendMode: 'lighter'
+        });
+
+        // Expanding Ring
         this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.4,
             color: color,
             size: 5,
             type: 'ring',
-            scaleSpeed: 100,
+            scaleSpeed: 150,
             blendMode: 'lighter'
         });
         

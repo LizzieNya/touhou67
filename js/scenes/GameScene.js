@@ -382,6 +382,8 @@ export default class GameScene {
             ctx.restore();
         }
 
+        this.background.renderForeground(renderer);
+
         this.hud.render(renderer);
         this.dialogueManager.render(renderer);
         this.pauseMenu.render(renderer);
@@ -390,8 +392,15 @@ export default class GameScene {
             const ctx = renderer.ctx;
             ctx.save();
             ctx.fillStyle = `rgba(255, 255, 255, ${this.screenFlash})`;
-            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalCompositeOperation = 'lighter'; // Keep lighter for pure brightness
             ctx.fillRect(0, 0, this.game.width, this.game.height);
+            
+            // Second layer for "Bloom" feel
+            if (this.screenFlash > 0.5) {
+                ctx.globalCompositeOperation = 'overlay'; 
+                ctx.fillStyle = `rgba(200, 200, 255, ${this.screenFlash * 0.5})`;
+                ctx.fillRect(0, 0, this.game.width, this.game.height);
+            }
             ctx.restore();
         }
 

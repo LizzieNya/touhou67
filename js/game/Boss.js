@@ -62,6 +62,7 @@ export default class Boss extends Enemy {
         }
 
         scene.screenFlash = 1.0;
+        scene.cameraShake = 30; // Massive shake on boss death
 
         // Drop LOTS of items
         if (scene.itemManager) {
@@ -162,6 +163,22 @@ export default class Boss extends Enemy {
 
         if (this.invulnerableTimer > 0) {
             this.invulnerableTimer -= dt;
+        }
+
+        // Aura Particles (Visual only)
+        if (this.game.accumulator % 0.1 < 0.02) {
+             const scene = this.game.sceneManager.currentScene;
+             if (scene.particleSystem) {
+                 scene.particleSystem.emit(this.x + (Math.random()-0.5)*40, this.y + (Math.random()-0.5)*40, {
+                     vx: 0, vy: -50 - Math.random()*50, // Rise up
+                     life: 0.8,
+                     color: this.color,
+                     size: 4 + Math.random() * 4,
+                     type: 'smoke', // Soft rising smoke/aura
+                     blendMode: 'lighter',
+                     scaleSpeed: -5
+                 });
+             }
         }
 
         super.update(dt);
@@ -266,10 +283,20 @@ export default class Boss extends Enemy {
         const barH = 10;
 
         // Background
-        renderer.drawRect(barX, barY, barW, barH, '#500');
+        renderer.drawRect(barX, barY, barW, barH, '#300');
         // Fill
-        renderer.drawRect(barX, barY, barW * hpPercent, barH, '#f00');
-        // Border
+        const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+        const time = Date.now() / 200;
+        grad.addColorStop(0, '#c00');
+        // Moving highlight
+        const highlightPos = 0.5 + Math.sin(time) * 0.4;
+        grad.addColorStop(highlightPos, '#f44'); // Bright red center
+        grad.addColorStop(1, '#900');
+        
+        ctx.fillStyle = grad;
+        ctx.fillRect(barX, barY, barW * hpPercent, barH);
+        
+        // Simple Border (No expensive strokeRect over drawRect if we can avoid it, but simple stroke is fast enough)
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1;
         ctx.strokeRect(barX, barY, barW, barH);

@@ -90,13 +90,18 @@ export default class Player extends Entity {
         this.prevX = this.x;
         this.prevY = this.y;
 
-        // Update Trail
-        if (this.game.accumulator % 0.05 < 0.02) { // Add trail point every few frames basically
-             this.trail.push({ x: this.x, y: this.y, alpha: 0.5 });
-             if (this.trail.length > 5) this.trail.shift();
+        // Update Trail - Enhanced
+        if (this.game.accumulator % 0.05 < 0.02) { 
+             this.trail.push({ 
+                 x: this.x, 
+                 y: this.y, 
+                 alpha: 0.6,
+                 color: this.color // Store current color
+             });
+             if (this.trail.length > 8) this.trail.shift(); // Longer trail
         }
         // Fade trails
-        this.trail.forEach(t => t.alpha -= dt * 2);
+        this.trail.forEach(t => t.alpha -= dt * 2.5);
         this.trail = this.trail.filter(t => t.alpha > 0);
 
         // Movement
@@ -796,10 +801,16 @@ export default class Player extends Entity {
 
          // Render Trail
         if (!this.active) return; // Safety
+        // Render Trail - Enhanced
+        if (!this.active) return; // Safety
         const ctx = renderer.ctx;
         ctx.save();
+        ctx.globalCompositeOperation = 'lighter'; // Additive blending for cool ghost effect
         this.trail.forEach(t => {
-            ctx.globalAlpha = t.alpha * 0.5;
+            ctx.globalAlpha = t.alpha * 0.4;
+            // Draw silhouette or sprite? Sprite is better but expensive. 
+            // Let's draw a tinted rect/shape for performance + style, or the sprite if cached.
+            // Using the full sprite with lighter blend looks awesome.
             renderer.drawSprite(spriteKey, t.x, t.y, 32, 48);
         });
         ctx.restore();

@@ -35,15 +35,22 @@ export default class HUD {
         // Draw canvas-based sidebar (Touhou style)
         ctx.save();
 
-        // Sidebar background (Solid to separate from play area)
+        // Sidebar Background
         const sidebarX = this.game.playAreaWidth;
         const sidebarY = 0;
         const sidebarW = this.game.width - sidebarX;
         const sidebarH = this.game.height;
 
-        // Solid Background (Dark Grey/Black)
-        ctx.fillStyle = '#222';
+        // Premium Dark Gradient
+        const grad = ctx.createLinearGradient(sidebarX, 0, this.game.width, 0);
+        grad.addColorStop(0, '#222');
+        grad.addColorStop(0.5, '#333');
+        grad.addColorStop(1, '#222');
+        ctx.fillStyle = grad;
         ctx.fillRect(sidebarX, sidebarY, sidebarW, sidebarH);
+        
+        // Subtle pattern/texture overlay could be added here if desired, 
+        // but a gradient is clean and fresh.
 
         // Border Line (Left edge of sidebar)
         ctx.strokeStyle = '#fff';
