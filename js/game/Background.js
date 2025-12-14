@@ -181,9 +181,9 @@ export default class Background {
         if (spellActive) {
             ctx.save();
             // Negative/Magical Tint
-            ctx.globalCompositeOperation = 'exclusion'; 
+            ctx.globalCompositeOperation = 'overlay'; 
             ctx.fillStyle = bossColor;
-            ctx.globalAlpha = 0.5;
+            ctx.globalAlpha = 0.3;
             ctx.fillRect(0, 0, w, this.game.height);
             
             // Rotating Magic Square Background + Scrolling Lines

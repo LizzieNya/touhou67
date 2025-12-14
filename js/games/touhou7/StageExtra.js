@@ -41,7 +41,7 @@ export const StageExtraEvents = (character) => [
                 const chen = new Boss(scene.game, (scene.game.playAreaWidth || scene.game.width) / 2, -50, "Chen");
                 chen.color = '#fa0';
 
-                chen.addPhase(1500, 40, (enemy, dt, t) => {
+                chen.addPhase(5000, 40, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2 + Math.sin(t * 4) * 200; // Very fast movement
                     enemy.y = 150 + Math.cos(t * 2) * 50;
 
@@ -75,7 +75,7 @@ export const StageExtraEvents = (character) => [
                 ran.color = '#fd0'; // Fox colors
 
                 // Phase 1: Shikigami "Protection of Zenki and Goki"
-                ran.addPhase(2000, 60, (enemy, dt, t) => {
+                ran.addPhase(6000, 60, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
                     enemy.y = 100;
                     if (Math.floor(t * 60) % 30 === 0) {
@@ -91,7 +91,7 @@ export const StageExtraEvents = (character) => [
                 }, "Shikigami 'Protection of Zenki and Goki'");
 
                 // Phase 2: Shikigami "Dakini's Heavenly Possession"
-                ran.addPhase(2500, 70, (enemy, dt, t) => {
+                ran.addPhase(8000, 70, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2 + Math.sin(t) * 100;
                     enemy.y = 100;
                     if (Math.floor(t * 60) % 10 === 0) {
@@ -100,7 +100,7 @@ export const StageExtraEvents = (character) => [
                 }, "Shikigami 'Dakini's Heavenly Possession'");
 
                 // Phase 3: "Illusion God 'Descent of Izuna-Gongen'"
-                ran.addPhase(3000, 90, (enemy, dt, t) => {
+                ran.addPhase(12000, 90, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth || scene.game.width) / 2;
                     enemy.y = 120;
                     // Complex math pattern (Lissajous bullets)

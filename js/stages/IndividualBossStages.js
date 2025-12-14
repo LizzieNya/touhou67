@@ -53,28 +53,28 @@ const createBossStage = (bossName, bossClass, phases) => (character) => [
 // Rumia (Stage 1 Boss - Touhou 6)
 export const BossRumiaEvents = createBossStage("Rumia", null, [
     {
-        hp: 600, duration: 40,
+        hp: 1200, duration: 40,
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t)*50; enemy.y = 100;
-             // Basic random spray
-             if(Math.floor(t*60)%10===0) {
+             // Basic random spray - Denser
+             if(Math.floor(t*60)%5===0) {
                  scene.bulletManager.spawn(enemy.x, enemy.y, (Math.random()-0.5)*200, 200, '#fff', 3);
              }
         }
     },
     {
-        hp: 800, duration: 50, spellName: "Moon Sign 'Moonlight Ray'",
+        hp: 1600, duration: 50, spellName: "Moon Sign 'Moonlight Ray'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              const w = (scene.game.playAreaWidth||scene.game.width);
              enemy.x = w/2; enemy.y = 100;
              
-             // Lasers (Lines of bullets) crossing
-             if(Math.floor(t*60)%40===0) {
+             // Lasers (Lines of bullets) crossing - Faster
+             if(Math.floor(t*60)%30===0) {
                  // Horizontal line
                  const y = scene.player.y;
-                 for(let i=0; i<20; i++) {
+                 for(let i=0; i<30; i++) {
                      scene.bulletManager.spawn(0, y, 400, 0, '#fff', 2);
                      scene.bulletManager.spawn(w, y+20, -400, 0, '#fff', 2);
                  }
@@ -89,13 +89,13 @@ export const BossRumiaEvents = createBossStage("Rumia", null, [
         }
     },
     {
-        hp: 1000, duration: 60, spellName: "Night Sign 'Night Bird'",
+        hp: 2000, duration: 60, spellName: "Night Sign 'Night Bird'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t)*100;enemy.y = 100;
-             if(Math.floor(t*60)%8===0) {
+             if(Math.floor(t*60)%6===0) {
                  // Aimed cluster
-                 PatternLibrary.aimedNWay(scene, enemy, 5, 0.4, 250, '#0ff', 4);
+                 PatternLibrary.aimedNWay(scene, enemy, 7, 0.4, 250, '#0ff', 4);
              }
              if(Math.floor(t*60)%60===0) {
                  PatternLibrary.circle(scene, enemy.x, enemy.y, 10, 150, '#00f', 5, t);
@@ -107,25 +107,25 @@ export const BossRumiaEvents = createBossStage("Rumia", null, [
 // Parsee Mizuhashi - Bridge Princess, Jealousy Youkai (Touhou 11 Stage 2 Boss)
 export const BossParseeEvents = createBossStage("Parsee Mizuhashi", null, [
     {
-        hp: 1000, duration: 35, // Non-spell 1
+        hp: 2000, duration: 35, // Non-spell 1
         pattern: (enemy, dt, t) => {
-            const scene = enemy.game.sceneManager.currentScene;
-            enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t*2)*80;
-            enemy.y = 100;
-            if(Math.floor(t*60)%5===0) {
-                // Jealous green needles
-                const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
-                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*350, Math.sin(angle)*350, '#0f0', 3);
-            }
+             const scene = enemy.game.sceneManager.currentScene;
+             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t*2)*80;
+             enemy.y = 100;
+             if(Math.floor(t*60)%3===0) {
+                 // Jealous green needles - Fast
+                 const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
+                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*350, Math.sin(angle)*350, '#0f0', 3);
+             }
         }
     },
     {
-        hp: 1500, duration: 50, spellName: "Jealousy Sign 'Green-Eyed Monster'",
+        hp: 3000, duration: 50, spellName: "Jealousy Sign 'Green-Eyed Monster'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
             // Waves of jealousy
-            if(Math.floor(t*60)%4===0) {
+            if(Math.floor(t*60)%3===0) {
                 const a = t*4;
                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(a)*250, Math.sin(a)*250, '#0f0', 4);
                 scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(-a)*250, Math.sin(-a)*250, '#8f0', 4);
@@ -137,24 +137,24 @@ export const BossParseeEvents = createBossStage("Parsee Mizuhashi", null, [
         }
     },
     {
-        hp: 1200, duration: 45, // Non-spell 2
+        hp: 2400, duration: 45, // Non-spell 2
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t)*100;
             enemy.y = 120;
-            if(Math.floor(t*60)%8===0) {
+            if(Math.floor(t*60)%5===0) {
                  scene.bulletManager.spawn(enemy.x, enemy.y, 0, 200, '#0f0', 4);
                  scene.bulletManager.spawn(enemy.x, enemy.y, 0, 250, '#0f0', 4);
             }
         }
     },
     {
-        hp: 1800, duration: 60, spellName: "Envy 'Green-Eyed Invisible Monster'",
+        hp: 3500, duration: 60, spellName: "Envy 'Green-Eyed Invisible Monster'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             // Bullets that fade or are hard to see? 
             // We simulate by spawning from "nowhere" near player
-            if(Math.floor(t*60)%5===0) {
+            if(Math.floor(t*60)%3===0) {
                 const px = scene.player.x + (Math.random()-0.5)*200;
                 const py = scene.player.y - 300; 
                 if(py > 0) {
@@ -168,12 +168,12 @@ export const BossParseeEvents = createBossStage("Parsee Mizuhashi", null, [
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Grandpa Hanasaka",
+        hp: 4000, duration: 60, spellName: "Grandpa Hanasaka",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
              // Ash/Pink bullets
-             if(Math.floor(t*60)%3===0) {
+             if(Math.floor(t*60)%2===0) {
                  const x = Math.random()*(scene.game.playAreaWidth||scene.game.width);
                  scene.bulletManager.spawn(x, -20, (Math.random()-0.5)*50, 200, '#fcc', 4);
              }
@@ -189,15 +189,15 @@ export const BossParseeEvents = createBossStage("Parsee Mizuhashi", null, [
 export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     {
         // Non-spell 1
-        hp: 800, duration: 40,
+        hp: 2000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
             enemy.x = w/2 + Math.sin(t*2)*80;
             enemy.y = 100 + Math.cos(t)*30;
             
-            // Trident-like spread
-            if(Math.floor(t*60)%10===0) {
+            // Trident-like spread - Dense
+            if(Math.floor(t*60)%6===0) {
                 const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
                 for(let i=-1; i<=1; i++) {
                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle+i*0.3)*250, Math.sin(angle+i*0.3)*250, '#f00', 3);
@@ -207,7 +207,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 1: Ominous Clouds "Heian Dark Clouds"
-        hp: 1200, duration: 50, spellName: "Ominous Clouds 'Heian Dark Clouds'",
+        hp: 3000, duration: 50, spellName: "Ominous Clouds 'Heian Dark Clouds'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -215,32 +215,32 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
             enemy.y = 100;
 
             // Snake trails
-            if(Math.floor(t*60)%20===0) {
+             if(Math.floor(t*60)%15===0) {
                  const startX = Math.random() * w;
                  const color = Math.random()>0.5 ? '#f00' : '#00f';
                  for(let i=0; i<15; i++) {
-                     const delay = i*50;
+                     const delay = i*40;
                      const curve = (Math.random()-0.5)*2;
                      setTimeout(() => {
                          scene.bulletManager.spawn(startX + Math.sin(i*0.5)*20, -20, Math.sin(i*0.2 + curve)*50, 150, color, 4);
                      }, delay);
                  }
             }
-            if(Math.floor(t*60)%5===0) {
+            if(Math.floor(t*60)%4===0) {
                 PatternLibrary.aimed(scene, enemy, 300, '#fff', 2);
             }
         }
     },
     {
         // Spell 2: Unidentified "Red UFO Invasion of Rage"
-        hp: 1500, duration: 60, spellName: "Unidentified 'Red UFO Invasion of Rage'",
+        hp: 3500, duration: 60, spellName: "Unidentified 'Red UFO Invasion of Rage'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
             enemy.x = w/2 + Math.cos(t)*50; 
             
             // Dense vertical rain (Red UFOs)
-            if(Math.floor(t*60)%4===0) {
+            if(Math.floor(t*60)%3===0) {
                 const x = Math.random() * w;
                 scene.bulletManager.spawn(x, -20, 0, 300 + Math.random()*100, '#f00', 6);
             }
@@ -254,13 +254,13 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 3: Unidentified "Blue UFO Invasion of Grief"
-        hp: 1500, duration: 60, spellName: "Unidentified 'Blue UFO Invasion of Grief'",
+        hp: 3500, duration: 60, spellName: "Unidentified 'Blue UFO Invasion of Grief'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
             
             // Blue UFOs come from sides and curve
-            if(Math.floor(t*60)%8===0) {
+            if(Math.floor(t*60)%5===0) {
                 const left = Math.random() > 0.5;
                 const startX = left ? -20 : w+20;
                 const startY = Math.random() * (scene.game.height/2);
@@ -279,7 +279,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 4: Unidentified "Green UFO Invasion of Justice"
-        hp: 1500, duration: 60, spellName: "Unidentified 'Green UFO Invasion of Justice'",
+        hp: 3500, duration: 60, spellName: "Unidentified 'Green UFO Invasion of Justice'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -305,7 +305,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 5: Unidentified "Rainbow UFO Invasion of Terror"
-        hp: 2000, duration: 70, spellName: "Unidentified 'Rainbow UFO Invasion of Terror'",
+        hp: 4500, duration: 70, spellName: "Unidentified 'Rainbow UFO Invasion of Terror'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -324,7 +324,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 6: Nue "Undefined Darkness"
-        hp: 2500, duration: 90, spellName: "Nue 'Undefined Darkness'",
+        hp: 6000, duration: 90, spellName: "Nue 'Undefined Darkness'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2;
@@ -343,7 +343,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
     },
     {
         // Spell 7: Nightmare of Heiankyou
-        hp: 3000, duration: 99, spellName: "Nightmare of Heiankyou",
+        hp: 8000, duration: 99, spellName: "Nightmare of Heiankyou",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -369,7 +369,7 @@ export const BossNueEvents = createBossStage("Nue Houjuu", null, [
 // THE ULTIMATE NUCLEAR HELL RAVEN - Authentic nuclear apocalypse patterns!
 export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
     {
-        hp: 2000, duration: 40, 
+        hp: 5000, duration: 40, 
         pattern: (enemy, dt, t) => {
             // Warning sirens visually
             const scene = enemy.game.sceneManager.currentScene;
@@ -381,7 +381,7 @@ export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
         }
     },
     {
-        hp: 2500, duration: 60, spellName: "Atomic Fire 'Nuclear Fusion'",
+        hp: 6000, duration: 60, spellName: "Atomic Fire 'Nuclear Fusion'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -401,7 +401,7 @@ export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
         }
     },
     {
-        hp: 3000, duration: 70, spellName: "Explosion Sign 'Mega Flare'",
+        hp: 7000, duration: 70, spellName: "Explosion Sign 'Mega Flare'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
              // Huge slower bullets
@@ -415,7 +415,7 @@ export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
         }
     },
     {
-        hp: 3500, duration: 80, spellName: "Blazing Star 'Fixed Star'",
+        hp: 8000, duration: 80, spellName: "Blazing Star 'Fixed Star'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             // Rings of suns
@@ -426,7 +426,7 @@ export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
         }
     },
     {
-        hp: 5000, duration: 120, spellName: "Hell's Artificial Sun 'Subterranean Sun'",
+        hp: 10000, duration: 120, spellName: "Hell's Artificial Sun 'Subterranean Sun'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = (scene.game.playAreaWidth||scene.game.width);
@@ -457,7 +457,7 @@ export const BossOkuuEvents = createBossStage("Utsuho Reiuji", null, [
 // Remilia (Vampire)
 export const BossRemiliaEvents = createBossStage("Remilia Scarlet", null, [
     {
-        hp: 2000, duration: 40,
+        hp: 4000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t)*100; enemy.y = 100;
@@ -467,7 +467,7 @@ export const BossRemiliaEvents = createBossStage("Remilia Scarlet", null, [
         }
     },
     {
-        hp: 2500, duration: 60, spellName: "Divine Spear 'Spear the Gungnir'",
+        hp: 5000, duration: 60, spellName: "Divine Spear 'Spear the Gungnir'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -484,7 +484,7 @@ export const BossRemiliaEvents = createBossStage("Remilia Scarlet", null, [
         }
     },
     {
-        hp: 4000, duration: 90, spellName: "Scarlet Sign 'Red Magic'",
+        hp: 8000, duration: 90, spellName: "Scarlet Sign 'Red Magic'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 120;
@@ -504,7 +504,7 @@ export const BossRemiliaEvents = createBossStage("Remilia Scarlet", null, [
 // Cirno (Stage 2 Boss - Touhou 6)
 export const BossCirnoEvents = createBossStage("Cirno", null, [
     {
-        hp: 1000, duration: 40, 
+        hp: 1500, duration: 40, 
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t*2)*80; enemy.y = 100;
@@ -514,7 +514,7 @@ export const BossCirnoEvents = createBossStage("Cirno", null, [
         }
     },
     {
-        hp: 1200, duration: 60, spellName: "Ice Sign 'Icicle Fall' (Easy)",
+        hp: 2000, duration: 60, spellName: "Ice Sign 'Icicle Fall' (Easy)",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -535,7 +535,7 @@ export const BossCirnoEvents = createBossStage("Cirno", null, [
         }
     },
     {
-        hp: 1500, duration: 60, spellName: "Freeze Sign 'Perfect Freeze'",
+        hp: 2500, duration: 60, spellName: "Freeze Sign 'Perfect Freeze'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 120;
@@ -556,7 +556,7 @@ export const BossCirnoEvents = createBossStage("Cirno", null, [
 // Hong Meiling (Stage 3 Boss - Touhou 6)
 export const BossMeilingEvents = createBossStage("Hong Meiling", null, [
     {
-        hp: 1200, duration: 40,
+        hp: 2000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.cos(t)*50; enemy.y = 100;
@@ -566,7 +566,7 @@ export const BossMeilingEvents = createBossStage("Hong Meiling", null, [
         }
     },
     {
-        hp: 1500, duration: 60, spellName: "Flower Sign 'Gorgeous Sweet Flower'",
+        hp: 2500, duration: 60, spellName: "Flower Sign 'Gorgeous Sweet Flower'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -580,7 +580,7 @@ export const BossMeilingEvents = createBossStage("Hong Meiling", null, [
         }
     },
     {
-        hp: 1800, duration: 60, spellName: "Colorful Rain",
+        hp: 3000, duration: 60, spellName: "Colorful Rain",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             if(Math.floor(t*60)%4===0) {
@@ -618,7 +618,7 @@ export const BossPatchouliEvents = createBossStage("Patchouli Knowledge", null, 
         }
     },
     {
-        hp: 1600, duration: 60, spellName: "Fire Water Sign 'Phlogistic Rain'",
+        hp: 3000, duration: 60, spellName: "Fire Water Sign 'Phlogistic Rain'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -634,7 +634,7 @@ export const BossPatchouliEvents = createBossStage("Patchouli Knowledge", null, 
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Sun Sign 'Royal Flare'",
+        hp: 3500, duration: 60, spellName: "Sun Sign 'Royal Flare'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 120;
@@ -653,7 +653,7 @@ export const BossPatchouliEvents = createBossStage("Patchouli Knowledge", null, 
 // Sakuya Izayoi (Stage 5 Boss - Touhou 6)
 export const BossSakuyaEvents = createBossStage("Sakuya Izayoi", null, [
     {
-        hp: 1600, duration: 40,
+        hp: 3000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t*3)*100;
@@ -667,7 +667,7 @@ export const BossSakuyaEvents = createBossStage("Sakuya Izayoi", null, [
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Conjuring 'Misdirection'",
+        hp: 4000, duration: 60, spellName: "Conjuring 'Misdirection'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              const w = (scene.game.playAreaWidth||scene.game.width);
@@ -683,7 +683,7 @@ export const BossSakuyaEvents = createBossStage("Sakuya Izayoi", null, [
         }
     },
     {
-        hp: 2500, duration: 70, spellName: "Illusion World 'The World'",
+        hp: 5000, duration: 70, spellName: "Illusion World 'The World'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 120;
@@ -716,7 +716,7 @@ export const BossSakuyaEvents = createBossStage("Sakuya Izayoi", null, [
 export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     {
         // Non-spell 1
-        hp: 1500, duration: 40,
+        hp: 3000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -730,7 +730,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Taboo "Cranberry Trap"
-        hp: 2000, duration: 60, spellName: "Taboo 'Cranberry Trap'",
+        hp: 4000, duration: 60, spellName: "Taboo 'Cranberry Trap'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -749,7 +749,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Taboo "Laevateinn"
-        hp: 2500, duration: 60, spellName: "Taboo 'Laevateinn'",
+        hp: 5000, duration: 60, spellName: "Taboo 'Laevateinn'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -775,7 +775,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Taboo "Four of a Kind"
-        hp: 3000, duration: 70, spellName: "Taboo 'Four of a Kind'",
+        hp: 6000, duration: 70, spellName: "Taboo 'Four of a Kind'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -806,7 +806,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Taboo "Kagome, Kagome"
-        hp: 2500, duration: 60, spellName: "Taboo 'Kagome, Kagome'",
+        hp: 6000, duration: 60, spellName: "Taboo 'Kagome, Kagome'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2; 
@@ -828,7 +828,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Taboo "Maze of Love"
-        hp: 2800, duration: 60, spellName: "Taboo 'Maze of Love'",
+        hp: 6000, duration: 60, spellName: "Taboo 'Maze of Love'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2; 
@@ -851,7 +851,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Forbidden Barrage "Starbow Break"
-        hp: 3000, duration: 80, spellName: "Forbidden Barrage 'Starbow Break'",
+        hp: 7000, duration: 80, spellName: "Forbidden Barrage 'Starbow Break'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2; 
@@ -879,7 +879,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Forbidden Barrage "Catadioptric"
-        hp: 3000, duration: 80, spellName: "Forbidden Barrage 'Catadioptric'",
+        hp: 7000, duration: 80, spellName: "Forbidden Barrage 'Catadioptric'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -905,7 +905,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Forbidden Barrage "Counter Clock"
-        hp: 3000, duration: 80, spellName: "Forbidden Barrage 'Counter Clock'",
+        hp: 7500, duration: 80, spellName: "Forbidden Barrage 'Counter Clock'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth || scene.game.width)/2; 
@@ -922,7 +922,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Secret Barrage "And Then Will There Be None?"
-        hp: 4000, duration: 99, spellName: "Taboo 'And Then Will There Be None?'",
+        hp: 9000, duration: 99, spellName: "Taboo 'And Then Will There Be None?'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -944,7 +944,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
     },
     {
         // Q.E.D. "Ripples of 495 Years"
-        hp: 6000, duration: 120, spellName: "Q.E.D. 'Ripples of 495 Years'",
+        hp: 12000, duration: 120, spellName: "Q.E.D. 'Ripples of 495 Years'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth || scene.game.width;
@@ -976,7 +976,7 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
 export const BossSansEvents = createBossStage("Sans", null, [
     {
         // Phase 1: Bone Wave Introduction
-        hp: 1200, duration: 60, spellName: "Undertale 'Bone Cage'",
+        hp: 2500, duration: 60, spellName: "Undertale 'Bone Cage'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth||scene.game.width;
@@ -1033,7 +1033,7 @@ export const BossSansEvents = createBossStage("Sans", null, [
     },
     {
         // Phase 2: Blue Mode (Gravity Platformer)
-        hp: 1400, duration: 60, spellName: "Blue Soul 'Gravity Jump'",
+        hp: 3000, duration: 60, spellName: "Blue Soul 'Gravity Jump'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth||scene.game.width;
@@ -1108,7 +1108,7 @@ export const BossSansEvents = createBossStage("Sans", null, [
     },
     {
         // Phase 3: Gaster Blasters
-        hp: 2000, duration: 80, spellName: "Gaster Blaster 'Bad Time'",
+        hp: 4000, duration: 80, spellName: "Gaster Blaster 'Bad Time'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = scene.game.playAreaWidth||scene.game.width;
@@ -1170,7 +1170,7 @@ export const BossSansEvents = createBossStage("Sans", null, [
     },
     {
         // Phase 4: Final Attack
-        hp: 3000, duration: 99, spellName: "Undertale 'The End'",
+        hp: 6000, duration: 99, spellName: "Undertale 'The End'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              const w = scene.game.playAreaWidth||scene.game.width;
@@ -1205,7 +1205,7 @@ export const BossSansEvents = createBossStage("Sans", null, [
 // Pepe (The Frog)
 export const BossPepeEvents = createBossStage("Pepe", null, [
     {
-        hp: 2000, duration: 40, // Non-spell - Increased HP
+        hp: 4000, duration: 40, // Non-spell - Increased HP
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = scene.game.width / 2 + Math.sin(t) * 50;
@@ -1218,7 +1218,7 @@ export const BossPepeEvents = createBossStage("Pepe", null, [
         }
     },
     {
-        hp: 2500, duration: 60, spellName: "Meme Sign 'Feels Bad Man'", // Increased HP
+        hp: 5000, duration: 60, spellName: "Meme Sign 'Feels Bad Man'", // Increased HP
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = scene.game.width / 2;
@@ -1235,7 +1235,7 @@ export const BossPepeEvents = createBossStage("Pepe", null, [
         }
     },
     {
-        hp: 3000, duration: 60, spellName: "Rare Pepe 'Market Crash'", // Increased HP
+        hp: 6000, duration: 60, spellName: "Rare Pepe 'Market Crash'", // Increased HP
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = scene.game.width / 2;
@@ -1252,7 +1252,7 @@ export const BossPepeEvents = createBossStage("Pepe", null, [
         }
     },
     {
-        hp: 4000, duration: 80, spellName: "Rage Sign 'REEEEEEEEE'", // New Phase
+        hp: 8000, duration: 80, spellName: "Rage Sign 'REEEEEEEEE'", // New Phase
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = scene.game.width / 2 + Math.random() * 20 - 10; // Shaking
@@ -1274,7 +1274,7 @@ export const BossPepeEvents = createBossStage("Pepe", null, [
 // Koishi Komeiji (Touhou 11 Extra Boss)
 export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
     {
-        hp: 1200, duration: 35, 
+        hp: 2500, duration: 35, 
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2 + Math.sin(t*3)*100;
@@ -1286,7 +1286,7 @@ export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
         }
     },
     {
-        hp: 1600, duration: 55, spellName: "Instinct 'Release of the Id'",
+        hp: 3500, duration: 55, spellName: "Instinct 'Release of the Id'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -1303,7 +1303,7 @@ export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
         }
     },
     {
-        hp: 1800, duration: 60, spellName: "Suppression 'Super-Ego'",
+        hp: 4000, duration: 60, spellName: "Suppression 'Super-Ego'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              const w = (scene.game.playAreaWidth||scene.game.width);
@@ -1318,7 +1318,7 @@ export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Response 'Youma Interrogation'",
+        hp: 5000, duration: 60, spellName: "Response 'Youma Interrogation'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             if(Math.floor(t*60)%4===0) {
@@ -1330,7 +1330,7 @@ export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
         }
     },
     {
-        hp: 3000, duration: 90, spellName: "Subconscious 'Genetics of the Subconscious'",
+        hp: 7000, duration: 90, spellName: "Subconscious 'Genetics of the Subconscious'",
         pattern: (enemy, dt, t) => {
              const scene = enemy.game.sceneManager.currentScene;
              enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;
@@ -1354,7 +1354,7 @@ export const BossKoishiEvents = createBossStage("Koishi Komeiji", null, [
 export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     {
         // Non-spell 1: Fast wind attacks
-        hp: 800, duration: 35,
+        hp: 2000, duration: 35,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1378,7 +1378,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     },
     {
         // Spell 1: Wind Sign "Wind God Hidden Among Tree Leaves"
-        hp: 1200, duration: 50, spellName: "Wind Sign 'Wind God Hidden Among Tree Leaves'",
+        hp: 3000, duration: 50, spellName: "Wind Sign 'Wind God Hidden Among Tree Leaves'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1405,7 +1405,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     },
     {
         // Non-spell 2
-        hp: 900, duration: 40,
+        hp: 2500, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1428,7 +1428,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     },
     {
         // Spell 2: Shutter "Telephoto Shot"
-        hp: 1500, duration: 55, spellName: "Shutter 'Telephoto Shot'",
+        hp: 4000, duration: 55, spellName: "Shutter 'Telephoto Shot'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1455,7 +1455,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     },
     {
         // Non-spell 3
-        hp: 1000, duration: 40,
+        hp: 3000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1478,7 +1478,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
     },
     {
         // Spell 3: Wind God "Tengu's Fall Wind"
-        hp: 2000, duration: 70, spellName: "Wind God 'Tengu's Fall Wind'",
+        hp: 5000, duration: 70, spellName: "Wind God 'Tengu's Fall Wind'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1519,7 +1519,7 @@ export const BossAyaEvents = createBossStage("Aya Shameimaru", null, [
 export const BossJunkoEvents = createBossStage("Junko", null, [
     {
         // Non-spell 1: Pure attacks
-        hp: 1500, duration: 40,
+        hp: 4000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1538,7 +1538,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Spell 1: Pure Sign "Pristinely Perfect Purification"
-        hp: 2000, duration: 60, spellName: "Pure Sign 'Pristinely Perfect Purification'",
+        hp: 5000, duration: 60, spellName: "Pure Sign 'Pristinely Perfect Purification'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1563,7 +1563,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Non-spell 2
-        hp: 1800, duration: 45,
+        hp: 4500, duration: 45,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1582,7 +1582,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Spell 2: Purity "Pure Light of the Palm"
-        hp: 2500, duration: 65, spellName: "Purity 'Pure Light of the Palm'",
+        hp: 6000, duration: 65, spellName: "Purity 'Pure Light of the Palm'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1613,7 +1613,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Non-spell 3
-        hp: 2000, duration: 50,
+        hp: 5000, duration: 50,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1629,7 +1629,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Spell 3: Hatred "Pure Furies of Hatred"
-        hp: 3000, duration: 80, spellName: "Hatred 'Pure Furies of Hatred'",
+        hp: 7000, duration: 80, spellName: "Hatred 'Pure Furies of Hatred'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1673,7 +1673,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
     },
     {
         // Final Spell: Lunatic Impact "Pure Impact"
-        hp: 4000, duration: 120, spellName: "Lunatic Impact 'Pure Impact'",
+        hp: 10000, duration: 120, spellName: "Lunatic Impact 'Pure Impact'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1712,7 +1712,7 @@ export const BossJunkoEvents = createBossStage("Junko", null, [
 export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     {
         // Non-spell 1: Butterfly spirits
-        hp: 1200, duration: 40,
+        hp: 3000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1731,7 +1731,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Spell 1: Deadly Butterfly "Everlasting Wandering"
-        hp: 1800, duration: 55, spellName: "Deadly Butterfly 'Everlasting Wandering'",
+        hp: 4500, duration: 55, spellName: "Deadly Butterfly 'Everlasting Wandering'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1756,7 +1756,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Non-spell 2
-        hp: 1500, duration: 45,
+        hp: 4000, duration: 45,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1776,7 +1776,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Spell 2: Ghostly Butterfly "Ghostly Butterfly's Nightmare"
-        hp: 2200, duration: 60, spellName: "Ghostly Butterfly 'Ghostly Butterfly's Nightmare'",
+        hp: 5500, duration: 60, spellName: "Ghostly Butterfly 'Ghostly Butterfly's Nightmare'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1801,7 +1801,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Non-spell 3
-        hp: 1800, duration: 50,
+        hp: 4500, duration: 50,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1816,7 +1816,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Spell 3: Resurrection Butterfly "-80% Reflowering-"
-        hp: 2800, duration: 70, spellName: "Resurrection Butterfly '-80% Reflowering-'",
+        hp: 7000, duration: 70, spellName: "Resurrection Butterfly '-80% Reflowering-'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1848,7 +1848,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
     },
     {
         // Final Spell: Saigyouji Flawless Nirvana
-        hp: 4000, duration: 120, spellName: "Saigyouji Flawless Nirvana",
+        hp: 10000, duration: 120, spellName: "Saigyouji Flawless Nirvana",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1900,7 +1900,7 @@ export const BossYuyukoEvents = createBossStage("Yuyuko Saigyouji", null, [
 // Tewi Inaba - Earth Rabbit (Touhou 8 Stage 5 Mid-boss)
 export const BossTewīEvents = createBossStage("Tewi Inaba", null, [
     {
-        hp: 600, duration: 30,
+        hp: 1500, duration: 30,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1916,7 +1916,7 @@ export const BossTewīEvents = createBossStage("Tewi Inaba", null, [
         }
     },
     {
-        hp: 1000, duration: 45, spellName: "Rabbit Sign 'Great Fortune Crest'",
+        hp: 2500, duration: 45, spellName: "Rabbit Sign 'Great Fortune Crest'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1934,7 +1934,7 @@ export const BossTewīEvents = createBossStage("Tewi Inaba", null, [
         }
     },
     {
-        hp: 1200, duration: 50, spellName: "Luck Sign 'Lucky Rabbit's Foot'",
+        hp: 3000, duration: 50, spellName: "Luck Sign 'Lucky Rabbit's Foot'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1956,7 +1956,7 @@ export const BossTewīEvents = createBossStage("Tewi Inaba", null, [
 // Reisen Udongein Inaba - Lunatic Red Eyes (Touhou 8 Stage 5 Boss)
 export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
     {
-        hp: 1000, duration: 35,
+        hp: 2500, duration: 35,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1970,7 +1970,7 @@ export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
         }
     },
     {
-        hp: 1500, duration: 55, spellName: "Visionary 'Lunatic Red Eyes'",
+        hp: 3500, duration: 55, spellName: "Visionary 'Lunatic Red Eyes'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -1994,7 +1994,7 @@ export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
         }
     },
     {
-        hp: 1200, duration: 45,
+        hp: 3000, duration: 45,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2012,7 +2012,7 @@ export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
         }
     },
     {
-        hp: 1800, duration: 60, spellName: "Illusion Sign 'Paranoia'",
+        hp: 4500, duration: 60, spellName: "Illusion Sign 'Paranoia'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2044,7 +2044,7 @@ export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
         }
     },
     {
-        hp: 2200, duration: 70, spellName: "Lunatic 'Mind Starmine'",
+        hp: 5500, duration: 70, spellName: "Lunatic 'Mind Starmine'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2077,7 +2077,7 @@ export const BossReisenEvents = createBossStage("Reisen Udongein Inaba", null, [
 // Eirin Yagokoro - Brain of the Moon (Touhou 8 Stage 6 Boss)
 export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
     {
-        hp: 1500, duration: 40,
+        hp: 3500, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2093,7 +2093,7 @@ export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Medicine Sign 'Galaxy in a Pot'",
+        hp: 4500, duration: 60, spellName: "Medicine Sign 'Galaxy in a Pot'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2115,7 +2115,7 @@ export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
         }
     },
     {
-        hp: 1800, duration: 50,
+        hp: 4000, duration: 50,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2133,7 +2133,7 @@ export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
         }
     },
     {
-        hp: 2500, duration: 70, spellName: "Bow Sign 'Apollo 13'",
+        hp: 5500, duration: 70, spellName: "Bow Sign 'Apollo 13'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2159,7 +2159,7 @@ export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
         }
     },
     {
-        hp: 3000, duration: 90, spellName: "Heaven Spider's Butterfly-Capturing Web",
+        hp: 7000, duration: 90, spellName: "Heaven Spider's Butterfly-Capturing Web",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2187,7 +2187,7 @@ export const BossEirinEvents = createBossStage("Eirin Yagokoro", null, [
 // Kaguya Houraisan - The Eternal Princess (Touhou 8 Stage 6B Boss)
 export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
     {
-        hp: 1500, duration: 40,
+        hp: 3500, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2201,7 +2201,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
         }
     },
     {
-        hp: 2000, duration: 60, spellName: "Divine Treasure 'Buddhist Diamond'",
+        hp: 4500, duration: 60, spellName: "Divine Treasure 'Buddhist Diamond'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2225,7 +2225,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
         }
     },
     {
-        hp: 2200, duration: 65, spellName: "Divine Treasure 'Jewel from Hourain'",
+        hp: 5000, duration: 65, spellName: "Divine Treasure 'Jewel from Hourain'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2243,7 +2243,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
         }
     },
     {
-        hp: 2500, duration: 70, spellName: "Divine Treasure 'Fire Rat's Robe'",
+        hp: 5500, duration: 70, spellName: "Divine Treasure 'Fire Rat's Robe'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2265,7 +2265,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
         }
     },
     {
-        hp: 3000, duration: 80, spellName: "Divine Treasure 'Swallow's Cowrie Shell'",
+        hp: 7000, duration: 80, spellName: "Divine Treasure 'Swallow's Cowrie Shell'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2285,7 +2285,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
         }
     },
     {
-        hp: 4000, duration: 120, spellName: "'Imperishable Shooting'",
+        hp: 10000, duration: 120, spellName: "'Imperishable Shooting'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2317,7 +2317,7 @@ export const BossKaguyaEvents = createBossStage("Kaguya Houraisan", null, [
 // Fujiwara no Mokou - The Immortal Phoenix (Touhou 8 Extra Stage Boss)
 export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
     {
-        hp: 1500, duration: 40,
+        hp: 4000, duration: 40,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2331,7 +2331,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
         }
     },
     {
-        hp: 2000, duration: 55, spellName: "Blaze Sign 'Phoenix Wing Rise'",
+        hp: 5000, duration: 55, spellName: "Blaze Sign 'Phoenix Wing Rise'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2352,7 +2352,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
         }
     },
     {
-        hp: 1800, duration: 50,
+        hp: 4500, duration: 50,
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2365,7 +2365,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
         }
     },
     {
-        hp: 2500, duration: 65, spellName: "Immortal 'Fire Bird - Flying Phoenix'",
+        hp: 6000, duration: 65, spellName: "Immortal 'Fire Bird - Flying Phoenix'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2387,7 +2387,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
         }
     },
     {
-        hp: 3000, duration: 80, spellName: "Forgiveness 'Honest Man's Death'",
+        hp: 7000, duration: 80, spellName: "Forgiveness 'Honest Man's Death'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2402,7 +2402,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
         }
     },
     {
-        hp: 4500, duration: 120, spellName: "'Possessed by Phoenix'",
+        hp: 9000, duration: 120, spellName: "'Possessed by Phoenix'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const playAreaWidth = scene.game.playAreaWidth || scene.game.width;
@@ -2437,7 +2437,7 @@ export const BossMokouEvents = createBossStage("Fujiwara no Mokou", null, [
 
 export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, [
     {
-        hp: 1500, duration: 50, spellName: "Lunasa 'Solo - Violin'",
+        hp: 3500, duration: 50, spellName: "Lunasa 'Solo - Violin'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = (scene.game.playAreaWidth||scene.game.width);
@@ -2455,7 +2455,7 @@ export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, 
         }
     },
     {
-        hp: 1500, duration: 50, spellName: "Merlin  'Solo - Trumpet'",
+        hp: 3500, duration: 50, spellName: "Merlin  'Solo - Trumpet'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = (scene.game.playAreaWidth||scene.game.width);
@@ -2474,7 +2474,7 @@ export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, 
         }
     },
     {
-        hp: 1500, duration: 50, spellName: "Lyrica 'Solo - Keyboard'",
+        hp: 3500, duration: 50, spellName: "Lyrica 'Solo - Keyboard'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = (scene.game.playAreaWidth||scene.game.width);
@@ -2494,7 +2494,7 @@ export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, 
         }
     },
     {
-        hp: 3500, duration: 90, spellName: "Funeral Concert 'Prismriver Concerto'",
+        hp: 8000, duration: 90, spellName: "Funeral Concert 'Prismriver Concerto'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             const w = (scene.game.playAreaWidth||scene.game.width);
@@ -2534,7 +2534,7 @@ export const BossPrismriverEvents = createBossStage("Prismriver Sisters", null, 
 
 export const BossYukariEvents = createBossStage("Yukari Yakumo", null, [
     {
-        hp: 3000, duration: 60, spellName: "Boundary 'Boundary of Life and Death'",
+        hp: 7000, duration: 60, spellName: "Boundary 'Boundary of Life and Death'",
         pattern: (enemy, dt, t) => {
             const scene = enemy.game.sceneManager.currentScene;
             enemy.x = (scene.game.playAreaWidth||scene.game.width)/2; enemy.y = 100;

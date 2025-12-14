@@ -83,18 +83,29 @@ class Particle {
         this.rotation += this.rotationSpeed * dt;
     }
 
-    render(renderer, alpha = 1.0) {
+    render(ctx, alpha = 1.0) { // Changed signature to take ctx directly
         if (!this.active) return;
         
         const drawX = this.prevX + (this.x - this.prevX) * alpha;
         const drawY = this.prevY + (this.y - this.prevY) * alpha;
-        
         const lifeRatio = this.life / this.maxLife;
         
-        const ctx = renderer.ctx;
+        // Fast path for simple non-rotated particles
+        if (this.rotation === 0 && (this.type === 'square' || this.type === 'circle')) {
+            ctx.globalAlpha = lifeRatio;
+            ctx.fillStyle = this.color;
+            if (this.type === 'square') {
+                ctx.fillRect(drawX - this.size/2, drawY - this.size/2, this.size, this.size);
+            } else {
+                ctx.beginPath();
+                ctx.arc(drawX, drawY, this.size/2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return;
+        }
+
         ctx.save();
-        ctx.globalCompositeOperation = this.blendMode;
-        ctx.globalAlpha = lifeRatio; // Simple fade out
+        ctx.globalAlpha = lifeRatio;
         ctx.translate(drawX, drawY);
         ctx.rotate(this.rotation);
         
@@ -108,9 +119,6 @@ class Particle {
             ctx.arc(0, 0, this.size/2, 0, Math.PI * 2);
             ctx.fill();
         } else if (this.type === 'spark') {
-            // Elongated along velocity... but we rotated. 
-            // Actually sparks usually don't rotate with angular velocity, they face travel direction.
-            // But we can just draw a long rect.
             ctx.fillRect(-this.size * 2, -this.size/4, this.size * 4, this.size/2);
         } else if (this.type === 'ring') {
             ctx.lineWidth = 2;
@@ -118,7 +126,7 @@ class Particle {
             ctx.arc(0, 0, this.size, 0, Math.PI * 2);
             ctx.stroke();
         } else if (this.type === 'smoke') {
-            ctx.globalAlpha = lifeRatio * 0.5; // Smoke is transparent
+            ctx.globalAlpha = lifeRatio * 0.5;
             ctx.beginPath();
             ctx.arc(0, 0, this.size, 0, Math.PI * 2);
             ctx.fill();
@@ -127,7 +135,6 @@ class Particle {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(this.text, 0, 0);
-            // Optional outline
             ctx.lineWidth = 1;
             ctx.strokeStyle = '#000';
             ctx.strokeText(this.text, 0, 0);
@@ -384,8 +391,28 @@ export default class ParticleSystem {
     }
 
     render(renderer, alpha = 1.0) {
+        const ctx = renderer.ctx;
+        
+        // Pass 1: Normal Blend Mode
+        ctx.globalCompositeOperation = 'source-over';
         for (let i = 0; i < this.activeCount; i++) {
-            this.pool[i].render(renderer, alpha);
+            const p = this.pool[i];
+            if (p.blendMode === 'source-over') {
+                p.render(ctx, alpha);
+            }
         }
+        
+        // Pass 2: Additive Blend Mode (Lighter)
+        // Batching this avoids state switching per particle
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < this.activeCount; i++) {
+            const p = this.pool[i];
+            if (p.blendMode === 'lighter') {
+                p.render(ctx, alpha);
+            }
+        }
+        
+        // Reset
+        ctx.globalCompositeOperation = 'source-over';
     }
 }

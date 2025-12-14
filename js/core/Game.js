@@ -214,8 +214,8 @@ export default class Game {
 
     update(dt) {
         // Debug input
-        if (this.input.isPressed('SHOOT')) console.log("Game: SHOOT pressed");
-        if (this.input.isPressed('UP')) console.log("Game: UP pressed");
+        // if (this.input.isPressed('SHOOT')) console.log("Game: SHOOT pressed");
+        // if (this.input.isPressed('UP')) console.log("Game: UP pressed");
 
         this.sceneManager.update(dt);
         if (this.floatingTextManager) this.floatingTextManager.update(dt);

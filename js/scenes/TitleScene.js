@@ -32,10 +32,11 @@ export default class TitleScene {
             this.particles.push({
                 x: Math.random() * game.width,
                 y: Math.random() * game.height,
-                vx: (Math.random() - 0.5) * 20,
-                vy: (Math.random() - 0.5) * 20,
-                size: Math.random() * 3,
-                alpha: Math.random() * 0.5
+                vx: (Math.random() - 0.5) * 10,  // Slower, more ambient
+                vy: (Math.random() - 0.5) * 10 - 5, // Slight upward drift
+                size: Math.random() * 3 + 1, // Varied size
+                alpha: Math.random() * 0.5 + 0.1,
+                pulseSpeed: Math.random() * 2 + 1
             });
         }
         
@@ -56,14 +57,16 @@ export default class TitleScene {
         this.blinkTimer += dt;
 
         // Update particles
+        // Update particles with more organic movement
         this.particles.forEach(p => {
              p.x += p.vx * dt;
              p.y += p.vy * dt;
-             
-             if (p.x < 0) p.x = this.game.width;
-             if (p.x > this.game.width) p.x = 0;
-             if (p.y < 0) p.y = this.game.height;
-             if (p.y > this.game.height) p.y = 0;
+             p.alpha += Math.sin(this.blinkTimer * p.pulseSpeed) * 0.01; // Twinkle
+
+             if (p.x < -10) p.x = this.game.width + 10;
+             if (p.x > this.game.width + 10) p.x = -10;
+             if (p.y < -10) p.y = this.game.height + 10;
+             if (p.y > this.game.height + 10) p.y = -10;
         });
 
         // Instant start (or very fast auto-start) logic handled in game loop,
@@ -272,36 +275,48 @@ export default class TitleScene {
         ctx.fillStyle = '#ccc';
         ctx.fillText(enTitle, 40, 115);
 
-        // Menu Options (Right Aligned, below title)
-        const startX = w - 40; // Right aligned
-        const startY = 140;
-        const spacing = 26;
+        this.drawMenu(ctx, w, h);
+    }
 
-        ctx.font = 'bold 22px "Times New Roman", serif';
+    drawMenu(ctx, w, h) {
+        // Menu Options (Right Aligned, below title)
+        const startX = w - 60; // Right aligned with more padding
+        const startY = 160;
+        const spacing = 32; // More spacing
+
         ctx.textAlign = 'right';
 
         this.options.forEach((opt, index) => {
             let color = '#aaa';
             let offset = 0;
+            let fontSize = 22;
 
             if (index === this.selectedIndex) {
                 // Active selection
                 const alpha = Math.abs(Math.sin(this.blinkTimer * 5));
-                color = `rgba(255, 200, 200, ${0.8 + alpha * 0.2})`;
-                // shadow = 10; // REMOVED
-                offset = -10; // Move left slightly
+                color = `rgba(255, 220, 220, ${0.8 + alpha * 0.2})`;
                 
-                // Draw selection indicator (simpler than shadow)
-                ctx.fillStyle = '#f00';
-                ctx.font = '16px Arial';
-                ctx.fillText("▶", startX + offset - 150, startY + index * spacing);
-                ctx.font = 'bold 22px "Times New Roman", serif';
+                // Active Glow
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#f44';
+                
+                offset = -15; // Move left significantly
+                fontSize = 24; // Slightly larger
+                
+                // Draw selection indicator
+                ctx.fillStyle = '#f44';
+                ctx.font = '18px Arial';
+                ctx.fillText("▶", startX + offset - 200, startY + index * spacing); // Far left arrow
+            } else {
+                ctx.shadowBlur = 0;
             }
 
-            // ctx.shadowBlur = shadow; // REMOVED
-            // ctx.shadowColor = '#f00';
+            ctx.font = `bold ${fontSize}px "Times New Roman", serif`;
             ctx.fillStyle = color;
             ctx.fillText(opt, startX + offset, startY + index * spacing);
+            
+            // Reset shadow
+            ctx.shadowBlur = 0;
         });
 
         ctx.textAlign = 'left';

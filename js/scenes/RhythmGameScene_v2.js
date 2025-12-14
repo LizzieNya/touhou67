@@ -37,6 +37,7 @@ export default class RhythmGameSceneV2 {
         
         // Sound
         this.game.soundManager.playBossTheme('boss_theme_12'); // Example
+        this.flashes = [];
     }
 
     update(dt) {
@@ -66,6 +67,14 @@ export default class RhythmGameSceneV2 {
             if (n.y > this.game.height + 50) {
                 this.notes.splice(i, 1);
                 this.combo = 0;
+            }
+        }
+
+        // Update Flashes
+        for (let i = this.flashes.length - 1; i >= 0; i--) {
+            this.flashes[i].alpha -= dt * 5; // Fade out speed
+            if (this.flashes[i].alpha <= 0) {
+                this.flashes.splice(i, 1);
             }
         }
         
@@ -121,7 +130,11 @@ export default class RhythmGameSceneV2 {
     }
     
     createLaneFlash(lane) {
-        // Todo
+        this.flashes.push({
+            lane: lane,
+            alpha: 1.0,
+            color: ['#f00', '#0f0', '#00f', '#ff0'][lane] || '#fff'
+        });
     }
 
     render(renderer) {
@@ -143,6 +156,23 @@ export default class RhythmGameSceneV2 {
 
         ctx.fillStyle = '#222';
         ctx.fillRect(startX, 0, this.lanes * laneWidth, h);
+
+        // Render Flashes (Behind Grid, On Lane)
+        ctx.globalCompositeOperation = 'lighter';
+        this.flashes.forEach(f => {
+            const x = startX + f.lane * laneWidth;
+            ctx.fillStyle = f.color; // Use lane color
+            ctx.globalAlpha = f.alpha * 0.5;
+            ctx.fillRect(x, 0, laneWidth, h); // Full lane flash
+            
+            // Hit line burst
+            ctx.globalAlpha = f.alpha;
+            ctx.beginPath();
+            ctx.arc(x + laneWidth/2, this.hitLineY, 30, 0, Math.PI*2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
 
         // Grid Lines
         ctx.strokeStyle = '#444';

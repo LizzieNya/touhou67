@@ -66,47 +66,7 @@ class Bullet extends Entity {
         }
     }
 
-    render(renderer, alpha = 1.0, manager) {
-        if (!this.active) return;
-        const ctx = renderer.ctx;
-        
-        // Interpolate
-        const drawX = this.prevX ? (this.prevX + (this.x - this.prevX) * alpha) : this.x;
-        const drawY = this.prevY ? (this.prevY + (this.y - this.prevY) * alpha) : this.y;
-        
-        // Fast path: Use provided manager or fallback
-        const bulletManager = manager || (this.game.sceneManager.currentScene ? this.game.sceneManager.currentScene.bulletManager : null);
-
-        if (bulletManager) {
-             const sprite = bulletManager.getBulletSprite(this.color, this.radius);
-             if (sprite) {
-                 const offset = sprite.width / 2;
-                 ctx.drawImage(sprite, Math.floor(drawX - offset), Math.floor(drawY - offset));
-                 return;
-             }
-        }
-
-        // Fallback (Original Slow Render)
-        // Draw outer glow (larger, low alpha circle)
-        ctx.fillStyle = this.color;
-        // ... (rest of render logic remains implicitly here if I don't replace it, but I must replace the whole block)
-        ctx.globalAlpha = 0.5;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius + 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Draw core (solid)
-        ctx.globalAlpha = 1.0;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // White center
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
-        ctx.fill();
-    }
+    // render method removed for optimization (moved to BulletManager)
 }
 
 export default class BulletManager {
@@ -219,8 +179,31 @@ export default class BulletManager {
     }
 
     render(renderer, alpha) {
+        const ctx = renderer.ctx;
+        // Batch rendering can be complex with z-ordering, but usually standard order is fine.
+        // We can optimize by reducing function calls.
+        
         for (let i = 0; i < this.activeCount; i++) {
-            this.pool[i].render(renderer, alpha, this);
+            const b = this.pool[i];
+            if (!b.active) continue;
+
+            // Interpolate
+            const drawX = b.prevX + (b.x - b.prevX) * alpha;
+            const drawY = b.prevY + (b.y - b.prevY) * alpha;
+
+            // Use Cached Sprite directly
+            const sprite = this.getBulletSprite(b.color, b.radius);
+            if (sprite) {
+                const offset = sprite.width / 2;
+                // Round to integer pixels for sharp rendering and speed
+                ctx.drawImage(sprite, (drawX - offset) | 0, (drawY - offset) | 0);
+            } else {
+                // Fallback (rare)
+                ctx.fillStyle = b.color;
+                ctx.beginPath();
+                ctx.arc(drawX, drawY, b.radius, 0, 6.28); // 2*PI
+                ctx.fill();
+            }
         }
     }
 
