@@ -154,7 +154,8 @@ export default class Game {
         // Fit within window with a small margin
         const scale = Math.min(scaleX, scaleY) * 0.95;
 
-        container.style.transform = `scale(${scale})`;
+        // Use translate(-50%, -50%) to keep it centered since we use top:50%/left:50% in CSS
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
     }
 
     start() {

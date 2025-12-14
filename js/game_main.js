@@ -10,10 +10,40 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Canvas not found!");
             return;
         }
-        const game = new Game(canvas);
-        console.log("Game instance created. Starting...");
-        game.start();
-        console.log("Game started.");
+        
+        // Wait for user interaction
+        const startOverlay = document.getElementById('start-overlay');
+        const startBtn = document.getElementById('tap-to-start');
+        
+        const startGame = () => {
+             console.log("User interaction detected. Starting...");
+             startOverlay.style.display = 'none';
+             
+             // Create and start game
+             const game = new Game(canvas);
+             
+             // Unlock Audio Context immediately
+             if (game.soundManager && game.soundManager.ctx) {
+                 game.soundManager.ctx.resume().then(() => {
+                     console.log("AudioContext resumed successfully.");
+                 });
+             }
+             
+             game.start();
+             console.log("Game started.");
+        };
+
+        if (startOverlay && startBtn) {
+            startBtn.addEventListener('click', startGame);
+            startBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent double firing
+                startGame();
+            }, { passive: false });
+        } else {
+            // Fallback for dev mode without overlay
+            const game = new Game(canvas);
+            game.start();
+        }
     } catch (e) {
         console.error("Fatal Error:", e);
         const errDiv = document.createElement('div');
