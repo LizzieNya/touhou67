@@ -14,7 +14,8 @@ export default class SpriteGenerator {
             'pepe', 'letty', 'chen', 'alice',
             'merlin', 'youmu', 'yuyuko', 'ran',
             'sanae', 'reisen', 'eclipse', 'midnight',
-            'prism', 'chronos', 'solstice', 'lizzie'
+            'prism', 'chronos', 'solstice', 'lizzie',
+            'enemy', 'fairy', 'spirit', 'kedama', 'book', 'maid'
         ];
         return characters.includes(name);
     }
@@ -28,7 +29,8 @@ export default class SpriteGenerator {
             'pepe', 'letty', 'chen', 'alice',
             'merlin', 'youmu', 'yuyuko', 'ran',
             'sanae', 'reisen', 'eclipse', 'midnight',
-            'prism', 'chronos', 'solstice', 'lizzie'
+            'prism', 'chronos', 'solstice', 'lizzie',
+            'enemy', 'fairy', 'spirit', 'kedama', 'book', 'maid'
         ];
 
         characters.forEach(char => {
@@ -42,7 +44,8 @@ export default class SpriteGenerator {
         this.ctx.clearRect(0, 0, 32, 32);
 
         // Base body (Default, overridden by specific draws if needed)
-        if (!['pepe', 'sans', 'okuu'].includes(name)) {
+        const nonHumanoids = ['pepe', 'sans', 'okuu', 'spirit', 'kedama', 'book', 'fairy', 'enemy'];
+        if (!nonHumanoids.includes(name)) {
             // Skin
             this.drawPixelRect(12, 10, 8, 8, '#ffe0bd'); // Head
             this.drawPixelRect(11, 18, 10, 10, '#fff'); // Torso base
@@ -82,6 +85,14 @@ export default class SpriteGenerator {
             case 'chronos': this.drawChronos(); break;
             case 'solstice': this.drawSolstice(); break;
             case 'lizzie': this.drawLizzie(); break;
+            
+            // Generic Enemies
+            case 'enemy': 
+            case 'fairy': this.drawFairy(); break;
+            case 'spirit': this.drawSpirit(); break;
+            case 'kedama': this.drawKedama(); break;
+            case 'book': this.drawBook(); break;
+            case 'maid': this.drawMaid(); break;
         }
 
         const img = new Image();
@@ -682,5 +693,91 @@ export default class SpriteGenerator {
 
         // Hood resting on shoulders
         this.drawPixelRect(8, 16, 16, 2, '#9c27b0');
+    }
+
+    // --- Generic Enemies ---
+
+    drawFairy() {
+        // Simple Fairy
+        // Skin
+        this.drawPixelRect(12, 10, 8, 8, '#ffe0bd');
+        // Dress (Blue-ish)
+        this.drawPixelRect(10, 18, 12, 10, '#42a5f5');
+        this.drawPixelRect(8, 22, 16, 6, '#42a5f5');
+        
+        // Hair (Blonde)
+        this.drawPixelRect(10, 8, 12, 6, '#fff176');
+        this.drawPixelRect(8, 10, 4, 6, '#fff176');
+        this.drawPixelRect(20, 10, 4, 6, '#fff176');
+
+        // Wings
+        this.ctx.fillStyle = '#e0f7fa';
+        this.ctx.globalAlpha = 0.7;
+        this.drawPixelRect(4, 12, 6, 8, '#e0f7fa');
+        this.drawPixelRect(22, 12, 6, 8, '#e0f7fa');
+        this.ctx.globalAlpha = 1.0;
+        
+        // Eyes
+        this.drawPixelRect(13, 13, 2, 2, '#000');
+        this.drawPixelRect(17, 13, 2, 2, '#000');
+    }
+
+    drawSpirit() {
+        // Wisp / Spirit
+        this.ctx.globalAlpha = 0.8;
+        // Core
+        this.drawPixelRect(12, 12, 8, 8, '#f44336'); // Red Spirit
+        this.drawPixelRect(10, 10, 12, 12, '#ef5350');
+        
+        // Tail
+        this.drawPixelRect(12, 22, 8, 4, '#ef5350');
+        this.drawPixelRect(14, 26, 4, 4, '#ef5350');
+        
+        // Aura
+        this.ctx.globalAlpha = 0.5;
+        this.drawPixelRect(8, 8, 16, 16, '#e57373');
+        this.ctx.globalAlpha = 1.0;
+    }
+
+    drawKedama() {
+        // Hairball (Kedama)
+        this.drawPixelRect(6, 6, 20, 20, '#fff'); // Fluff
+        this.drawPixelRect(8, 4, 16, 24, '#f5f5f5'); // Shading?
+        this.drawPixelRect(4, 8, 24, 16, '#f5f5f5'); 
+
+        // Eyes
+        this.drawPixelRect(10, 14, 2, 4, '#000');
+        this.drawPixelRect(20, 14, 2, 4, '#000');
+    }
+
+    drawBook() {
+        // Magic Book Enemy
+        this.drawPixelRect(8, 6, 16, 20, '#5d4037'); // Cover
+        this.drawPixelRect(24, 8, 4, 16, '#fff'); // Pages side
+        this.drawPixelRect(10, 8, 12, 16, '#fff'); // Page top (if open?)
+        // Closed look
+        this.drawPixelRect(10, 8, 14, 16, '#8d6e63'); // Front
+        this.drawPixelRect(20, 12, 2, 8, '#ffd700'); // Lock/Symbol
+    }
+
+    drawMaid() {
+        // Fairy Maid
+        // Skin
+        this.drawPixelRect(12, 10, 8, 8, '#ffe0bd');
+        // Maid Outfit
+        this.drawPixelRect(10, 18, 12, 12, '#37474f');
+        this.drawPixelRect(12, 18, 8, 12, '#fff'); // Apron
+        
+        // Hair (Red)
+        this.drawPixelRect(10, 8, 12, 6, '#ef5350');
+        this.drawPixelRect(8, 10, 4, 8, '#ef5350');
+        this.drawPixelRect(20, 10, 4, 8, '#ef5350');
+
+        // Headband
+        this.drawPixelRect(10, 6, 12, 2, '#fff');
+        
+        // Eyes
+        this.drawPixelRect(13, 13, 2, 2, '#000');
+        this.drawPixelRect(17, 13, 2, 2, '#000');
     }
 }

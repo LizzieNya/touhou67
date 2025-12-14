@@ -145,7 +145,7 @@ export default class CharacterSelectScene {
                 this.game.soundManager.playMenuMove();
             }
             if (input.isPressed('SHOOT') || input.isPressed('Confirm')) {
-                console.log("Difficulty selected, starting game...");
+                console.log("Difficulty selected:", this.difficulties[this.selectedDiffIndex]);
                 this.game.soundManager.playMenuSelect();
                 this.startGame();
             }
@@ -157,7 +157,11 @@ export default class CharacterSelectScene {
     }
 
     startGame() {
-        if (this.starting) return;
+        console.log("startGame called");
+        if (this.starting) {
+            console.log("Already starting, ignoring call.");
+            return;
+        }
         this.starting = true;
 
         const char = this.characters[this.selectedCharIndex];

@@ -15,8 +15,8 @@ export default class Renderer {
             this.ctx.drawImage(img, -w / 2, -h / 2, w, h);
             this.ctx.restore();
         } else {
-            // Fallback - Do not draw placeholder background
-            // this.drawRect(x - w / 2, y - h / 2, w, h, '#f0f');
+            // Fallback - Draw placeholder if image is not ready
+             this.drawRect(x - w / 2, y - h / 2, w, h, '#f00');
         }
     }
 

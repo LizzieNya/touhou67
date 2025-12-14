@@ -292,7 +292,7 @@ export const Stage2Events = (character) => [
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224) + Math.sin(t) * 100;
                     enemy.y = 100;
 
-                    if (Math.floor(t * 10) % 6 === 0) { // Slower spawn rate
+                    if (Math.floor(t * 10) % 8 === 0) { // Slower spawn rate (was 6)
                         const angle = Math.PI / 2 + Math.sin(t * 5) * 0.5;
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 200, Math.sin(angle) * 200, '#ff0', 4); // Yellow
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle + 0.2) * 200, Math.sin(angle + 0.2) * 200, '#fff', 4); // White
@@ -304,7 +304,7 @@ export const Stage2Events = (character) => [
                 cirno.addPhase(600, 30, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224);
                     enemy.y = 100;
-                    if (Math.floor(t * 60) % 5 === 0) {
+                    if (Math.floor(t * 60) % 8 === 0) { // Was 5
                         const angle = t * 3;
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 200, Math.sin(angle) * 200, '#fff', 3); // White
                     }
@@ -316,14 +316,14 @@ export const Stage2Events = (character) => [
                     enemy.y = 100;
 
                     if (Math.floor(t * 60) % 90 === 0) {
-                        for (let k = 0; k < 36; k++) {
-                            const angle = (k / 36) * Math.PI * 2 + t;
+                        for (let k = 0; k < 24; k++) { // Was 36
+                            const angle = (k / 24) * Math.PI * 2 + t;
                             const colors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f'];
                             const color = colors[k % colors.length];
                             scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 150, Math.sin(angle) * 150, color, 5); // Rainbow
                         }
                     }
-                    if (Math.floor(t * 60) % 5 === 0) {
+                    if (Math.floor(t * 60) % 10 === 0) { // Was 5
                         const angle = Math.random() * Math.PI * 2;
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 80, Math.sin(angle) * 80, '#0ff', 3); // Cyan
                     }
@@ -334,7 +334,7 @@ export const Stage2Events = (character) => [
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224) + Math.cos(t) * 50;
                     enemy.y = 120 + Math.sin(t) * 20;
 
-                    if (Math.floor(t * 60) % 4 === 0) {
+                    if (Math.floor(t * 60) % 6 === 0) { // Was 4
                         const angle = t * 3;
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 300, Math.sin(angle) * 300, '#fff', 4); // White
                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle + Math.PI) * 300, Math.sin(angle + Math.PI) * 300, '#00f', 4); // Blue
