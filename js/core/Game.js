@@ -32,7 +32,8 @@ export default class Game {
             startWithFullPower: false,
             gameSpeed: 1.0,
             showHitbox: false,
-            autoBomb: false
+            autoBomb: false,
+            mouseMovement: false
         };
 
         this.virtualControls = new VirtualControls(this);

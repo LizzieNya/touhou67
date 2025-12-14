@@ -85,7 +85,7 @@ export const Touhou12Assets = {
     images: [
         // Reimu/Marisa/Sanae
         ...Touhou6Assets.images.filter(img => img.key === 'reimu' || img.key === 'marisa' || img.key === 'boss'),
-        { key: 'sanae', path: 'assets/sprites/player/reimu.png' }, // Placeholder or use correct if exists
+        { key: 'sanae', path: 'assets/sprites/player/sanae.png' },
         { key: 'nazrin', path: 'assets/sprites/bosses/nazrin.png' },
         { key: 'kogasa', path: 'assets/sprites/bosses/kogasa.png' },
         { key: 'ichirin', path: 'assets/sprites/bosses/ichirin.png' },
@@ -152,7 +152,7 @@ export const NocturnalSunlightAssets = {
             img.key === 'youmu' || img.key === 'portrait_youmu'
         ),
         // Add Sanae sprite (using Reimu as placeholder if needed, or specific if available)
-        { key: 'sanae', path: 'assets/sprites/player/reimu.png' }, // Placeholder
+        { key: 'sanae', path: 'assets/sprites/player/sanae.png' },
         { key: 'portrait_sanae', path: 'assets/portrait/sanae.png' }
     ]
 };

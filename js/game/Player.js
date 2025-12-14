@@ -112,7 +112,7 @@ export default class Player extends Entity {
         // Mouse Movement Override
         // Allow mouse movement if not moving via keyboard
         // "Mouse Move" is now default enabled unless config says false
-        if (dx === 0 && dy === 0 && this.game.config.mouseMovement !== false) {
+        if (dx === 0 && dy === 0 && this.game.config.mouseMovement === true) {
             const mx = this.game.input.mouseX; // Use getter
             const my = this.game.input.mouseY;
             

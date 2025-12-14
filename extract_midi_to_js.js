@@ -224,7 +224,7 @@ function processMidi(path, mapping) {
             }
         }
 
-        const slicedSequence = sequenceCode.slice(0, 400);
+        const slicedSequence = sequenceCode.slice(0, 4000);
 
         themesCode += `
             '${bossId}': {
@@ -369,6 +369,14 @@ try {
         this.activeNodes = [];
         this.isPlaying = false;
         if (this.timeoutId) clearTimeout(this.timeoutId);
+    }
+
+    reset() {
+        this.stop();
+    }
+
+    update(dt) {
+        // No-op for compatibility with SoundManager v2
     }
 
     async playTheme(characterName) {

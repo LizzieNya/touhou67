@@ -43,6 +43,7 @@ body {
 
 canvas {
     display: block;
+    touch-action: none; /* Prevent browser handling of gestures */
 }
 
 #ui-layer {
