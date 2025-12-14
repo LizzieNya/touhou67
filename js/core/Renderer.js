@@ -10,7 +10,7 @@ export default class Renderer {
         const img = this.resourceManager ? this.resourceManager.getImage(key) : null;
         if (img && img.complete && img.naturalWidth !== 0) {
             this.ctx.save();
-            this.ctx.translate(x, y);
+            this.ctx.translate(x | 0, y | 0);
             this.ctx.rotate(rotation);
             this.ctx.drawImage(img, -w / 2, -h / 2, w, h);
             this.ctx.restore();

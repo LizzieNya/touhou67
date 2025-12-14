@@ -17,7 +17,7 @@ export default class Game {
 
         this.lastTime = 0;
         this.accumulator = 0;
-        this.deltaTime = 1 / 120; // Fixed timestep for 120FPS physics
+        this.deltaTime = 1 / 60; // Fixed timestep for 60FPS physics (Interpolated for 120Hz/144Hz monitors)
 
         // Global Configuration
         this.config = {
