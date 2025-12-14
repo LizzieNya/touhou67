@@ -48,34 +48,36 @@ export default class ResourceManager {
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Hint for read-back speed
         ctx.drawImage(img, 0, 0);
 
         try {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
+            
+            if (data.length > 0) {
+                // Assume top-left pixel is background color
+                const r = data[0];
+                const g = data[1];
+                const b = data[2];
+                const tolerance = 30;
 
-            // Assume top-left pixel is background color
-            const r = data[0];
-            const g = data[1];
-            const b = data[2];
-            const tolerance = 30; // Tolerance for compression artifacts
-
-            for (let i = 0; i < data.length; i += 4) {
-                const dr = Math.abs(data[i] - r);
-                const dg = Math.abs(data[i + 1] - g);
-                const db = Math.abs(data[i + 2] - b);
-
-                if (dr < tolerance && dg < tolerance && db < tolerance) {
-                    data[i + 3] = 0; // Set alpha to 0
+                for (let i = 0; i < data.length; i += 4) {
+                    // Quick check for exact match first (optimization)
+                    if (data[i] === r && data[i+1] === g && data[i+2] === b) {
+                         data[i+3] = 0;
+                         continue;
+                    }
+                    
+                    if (Math.abs(data[i] - r) < tolerance && 
+                        Math.abs(data[i + 1] - g) < tolerance && 
+                        Math.abs(data[i + 2] - b) < tolerance) {
+                        data[i + 3] = 0; // Set alpha to 0
+                    }
                 }
+                ctx.putImageData(imageData, 0, 0);
             }
-
-            ctx.putImageData(imageData, 0, 0);
-
-            const newImg = new Image();
-            newImg.src = canvas.toDataURL();
-            return newImg;
+            return canvas;
         } catch (e) {
             console.warn("Cannot process image transparency (CORS?):", e);
             return img;

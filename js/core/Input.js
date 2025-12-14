@@ -143,8 +143,9 @@ export default class Input {
 
     isPressed(action) {
         // Returns true only on the frame the key was pressed
-        const keyCodes = this.actions[action];
+        const keyCodes = this.actions['' + action]; // Ensure string
 
+        // 1. Keyboard Checks
         if (keyCodes) {
             for (const code of keyCodes) {
                 if (this.keys[code] && !this.prevKeys[code]) {
@@ -152,11 +153,45 @@ export default class Input {
                 }
             }
         }
-        // Check Mouse Press
+
+        // 2. Mouse Checks
         if (action === 'SHOOT' && this.mouse.down && !this.prevMouse.down) return true;
         if (action === 'Confirm' && this.mouse.down && !this.prevMouse.down) return true;
         if (action === 'BOMB' && this.mouse.rightDown && !this.prevMouse.rightDown) return true;
 
+        // 3. Virtual Controls Checks
+        if (this.virtualControls && this.virtualControls.active) {
+            // Find valid button names for this action
+            // e.g. 'Confirm' might map to 'SHOOT' button
+            let targetBtns = [];
+            if (action === 'Confirm' || action === 'SHOOT') targetBtns.push('SHOOT');
+            if (action === 'BOMB') targetBtns.push('BOMB');
+            if (action === 'FOCUS') targetBtns.push('FOCUS');
+            if (action === 'PAUSE') targetBtns.push('PAUSE');
+            if (action === 'UP') return this.checkStickPressed('UP');
+            if (action === 'DOWN') return this.checkStickPressed('DOWN');
+            if (action === 'LEFT') return this.checkStickPressed('LEFT');
+            if (action === 'RIGHT') return this.checkStickPressed('RIGHT');
+
+            for (const btnName of targetBtns) {
+                 const btn = this.virtualControls.buttons.find(b => b.name === btnName);
+                 if (btn && btn.active && !btn.prevActive) return true;
+            }
+        }
+
+        return false;
+    }
+
+    checkStickPressed(dir) {
+        // Helper for "tapping" a direction on stick (menus)
+        const stick = this.virtualControls.getStickInput();
+        const prevStick = this.virtualControls.getPrevStickInput ? this.virtualControls.getPrevStickInput() : {x:0, y:0};
+        const threshold = 0.5;
+        
+        if (dir === 'UP') return (stick.y < -threshold && prevStick.y >= -threshold);
+        if (dir === 'DOWN') return (stick.y > threshold && prevStick.y <= threshold);
+        if (dir === 'LEFT') return (stick.x < -threshold && prevStick.x >= -threshold);
+        if (dir === 'RIGHT') return (stick.x > threshold && prevStick.x <= threshold);
         return false;
     }
 
@@ -165,6 +200,11 @@ export default class Input {
             if (this.keys[k]) return true;
         }
         if (this.mouse.down) return true;
+        if (this.virtualControls && this.virtualControls.active) {
+            if (this.virtualControls.buttons.some(b => b.active)) return true;
+             const stick = this.virtualControls.getStickInput();
+             if (Math.abs(stick.x) > 0.3 || Math.abs(stick.y) > 0.3) return true;
+        }
         return false;
     }
 
@@ -172,6 +212,7 @@ export default class Input {
         // Store current key state as previous state for next frame
         this.prevKeys = { ...this.keys };
         this.prevMouse = { ...this.mouse };
+        if (this.virtualControls) this.virtualControls.update();
     }
 
     // Getters for cleaner access appropriately

@@ -10,7 +10,7 @@ export default class RhythmGameScene {
         this.noteTimeline = []; // Pre-calculated spawn times
         this.isPlaying = false;
         this.startTime = 0;
-        this.travelTime = 1.2; // Time from spawn to hit
+        this.travelTime = 1.5; // Slightly slower for better readability? Or faster? Let's keep 1.5
         this.spawnIndex = 0;
         this.selectedTheme = selectedTheme;
         
@@ -50,6 +50,8 @@ export default class RhythmGameScene {
             // Fallback
             return;
         }
+        
+        this.bpm = themeData.tempo || 120; // Save BPM for pulsing
 
         // Pre-calculate timeline
         this.noteTimeline = [];
@@ -61,7 +63,6 @@ export default class RhythmGameScene {
             const hasNotes = Array.isArray(step.notes) ? step.notes.length > 0 : !!step.notes;
 
             if (hasNotes) {
-                // Enforce minimum gap to reduce spam (optional, can adjust)
                 if (currentTime - lastNoteTime >= 0.10) {
                     const noteName = Array.isArray(step.notes) ? step.notes[0] : step.notes;
                     this.noteTimeline.push({
@@ -95,17 +96,11 @@ export default class RhythmGameScene {
 
         const currentTime = (performance.now() / 1000) - this.startTime;
 
-        // Spawn notes
-        // Apply Audio Offset to spawn time:
-        // If user hits late (positive offset), visual needs to be earlier relative to audio? 
-        // Typically: Visual Time = Audio Time - Offset
-        // So we check against (currentTime - offset)
+        // Spawn notes logic...
         const visualProgamTime = currentTime - this.audioOffset;
 
         while (this.spawnIndex < this.noteTimeline.length) {
             const noteEvent = this.noteTimeline[this.spawnIndex];
-            // We want the note to Arrive when visualProgramTime == noteEvent.time
-            // So we spawn when visualProgramTime >= noteEvent.time - travelTime
             const spawnThreshold = noteEvent.time - this.travelTime;
 
             if (visualProgamTime >= spawnThreshold) {
@@ -121,8 +116,6 @@ export default class RhythmGameScene {
             const note = this.notes[i];
             const timeUntilHit = note.arrivalTime - visualProgamTime;
             
-            // Progress: 0 at spawn, 1 at target
-            // timeUntilHit goes from travelTime -> 0
             note.progress = 1.0 - (timeUntilHit / this.travelTime);
 
             if (note.progress >= 1.2) {
@@ -144,42 +137,28 @@ export default class RhythmGameScene {
         }
 
         // Input
-        // Any key in range (Z,X,C,V etc) triggers hit check
-        // Simplified: Any key down event checks for hit
-        const keys = ['KeyZ', 'KeyX', 'KeyV', 'KeyD', 'KeyF', 'KeyJ', 'KeyK', 'Space', 'Enter'];
+        // Hit Keys: Z, X, D, F, J, K, Space, Enter, Click
+        // Exit Key: C
+        
+         // Simplified Input Check
+        const hitKeys = ['KeyZ', 'KeyX', 'KeyD', 'KeyF', 'KeyJ', 'KeyK', 'Space', 'Enter'];
         let hitPressed = false;
         
-        // Check standard inputs
+        for(const k of hitKeys) {
+            if (this.game.input.keys[k] && !this.game.input.prevKeys[k]) {
+                hitPressed = true;
+                break;
+            }
+        }
         if (this.game.input.isPressed('SHOOT') || this.game.input.isPressed('Confirm')) hitPressed = true;
         
-        // Also check raw keys if input manager exposes them or if we mapped them
-        if (this.game.input.keys['KeyZ'] && !this.game.input.prevKeys['KeyZ']) hitPressed = true;
-        if (this.game.input.keys['KeyX'] && !this.game.input.prevKeys['KeyX']) hitPressed = true;
-        // C is back
-        // V is optional extra
-        if (this.game.input.keys['KeyD'] && !this.game.input.prevKeys['KeyD']) hitPressed = true;
-        if (this.game.input.keys['KeyF'] && !this.game.input.prevKeys['KeyF']) hitPressed = true;
-        if (this.game.input.keys['KeyJ'] && !this.game.input.prevKeys['KeyJ']) hitPressed = true;
-        if (this.game.input.keys['KeyK'] && !this.game.input.prevKeys['KeyK']) hitPressed = true;
-        
+        // Exclude 'KeyC' from hit keys explicitly
+        if (this.game.input.keys['KeyC']) hitPressed = false;
+
         if (hitPressed) {
             this.checkHit(visualProgamTime);
         }
 
-        if (this.game.input.keys['KeyC']) {
-             // C is Back
-             const cPrev = this.game.input.prevKeys['KeyC'];
-             // Wait, C is also a hit key above?
-             // User said: "only c should bring back not x"
-             // But usually rhythm games use dedicated keys like ESC or Hold specific key.
-             // If C is hit key, it can't be back.
-             // User Request: "z x and d f and jk should all work and only c should bring back not x".
-             // Interpretation: C is NOT a hit key, it IS the back key.
-             // So I must remove C from hit keys above.
-         }
-         
-         // Let's fix loop above first.
-         
         // Exit
         if (this.game.input.keys['KeyC'] && !this.game.input.prevKeys['KeyC'] || this.game.input.isPressed('ESC')) {
             this.game.soundManager.stopBossTheme();
@@ -190,6 +169,7 @@ export default class RhythmGameScene {
     }
 
     spawnNote(arrivalTime, noteName) {
+        // Quantize angles to 8 directions for cleaner "lanes"
         const angle = Math.floor(Math.random() * 8) * (Math.PI / 4);
         this.notes.push({
             angle: angle,
@@ -208,6 +188,7 @@ export default class RhythmGameScene {
         let bestNoteIndex = -1;
         let minDiff = Infinity;
 
+        // Find closest note
         for (let i = 0; i < this.notes.length; i++) {
             const note = this.notes[i];
             const diff = Math.abs(visualTime - note.arrivalTime);
@@ -219,38 +200,30 @@ export default class RhythmGameScene {
 
         if (bestNoteIndex !== -1) {
             const diff = minDiff;
-            // Hit Windows
-            if (diff < 0.05) {
+            // Lenient Hit Windows
+            if (diff < 0.08) {
                 this.registerHit(bestNoteIndex, 300, "PERFECT!", '#0ff');
-            } else if (diff < 0.10) {
+            } else if (diff < 0.15) {
                 this.registerHit(bestNoteIndex, 100, "GOOD", '#0f0');
-            } else if (diff < 0.20) {
+            } else if (diff < 0.25) {
                 this.registerHit(bestNoteIndex, 50, "BAD", '#ff0');
-                this.combo = 0; // Break combo on bad? Usually keeps but low score. Let's break for strictness or keep? Touhou is strict.
-            } else {
-                // Too early/late - ignore or miss?
-                // If extremely early, maybe ignore (spam protection)
+                this.combo = 0; 
             }
         }
     }
 
     registerHit(index, points, text, color) {
         const note = this.notes[index];
-        
-        // Visuals
-        // Calculate hit position
-        const radius = 200;
+        const radius = 200; // Hit Ring Radius
         const hx = this.game.width/2 + Math.cos(note.angle) * radius;
         const hy = this.game.height/2 + Math.sin(note.angle) * radius;
 
         this.createExplosion(hx, hy, color); 
-        
         this.notes.splice(index, 1);
         this.score += points + this.combo * 10;
         this.combo++;
-        this.comboScale = 1.5; // Pulse combo
+        this.comboScale = 1.3;
         this.cameraShake = 5; 
-        
         this.showFeedback(text, color);
     }
 
@@ -261,15 +234,15 @@ export default class RhythmGameScene {
     }
 
     createExplosion(x, y, color) {
-        for(let i=0; i<15; i++) {
+        for(let i=0; i<10; i++) {
             const ang = Math.random()*Math.PI*2;
-            const speed = 50 + Math.random()*200;
+            const speed = 50 + Math.random()*150;
             this.particles.push({
                 x: x, y: y,
                 vx: Math.cos(ang)*speed, vy: Math.sin(ang)*speed,
-                life: 0.5, maxLife: 0.5,
+                life: 0.4, maxLife: 0.4,
                 color: color,
-                size: 3 + Math.random()*8
+                size: 3 + Math.random()*6
             });
         }
     }
@@ -278,69 +251,85 @@ export default class RhythmGameScene {
         const ctx = renderer.ctx;
         const w = this.game.width;
         const h = this.game.height;
+        const cx = w / 2;
+        const cy = h / 2;
         
         // Shake
         const sx = (Math.random()-0.5) * this.cameraShake;
         const sy = (Math.random()-0.5) * this.cameraShake;
         
         ctx.save();
-        ctx.translate(sx, sy);
+        ctx.translate(sx | 0, sy | 0); // Snap shake too
 
-        // Background
+        // 1. Background (Darkened/Tinted)
         this.background.render(renderer);
-        
-        // Darken background significantly for contrast
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)'; // Heavy darken for contrast
         ctx.fillRect(0, 0, w, h);
         
-        // Beat Pulse (Visual)
-        const beatTime = (performance.now()/1000) % 0.5; // Approx pulse
-        const pulse = 1.0 + (beatTime < 0.1 ? 0.02 : 0);
+        // 2. Beat Pulse
+        const beatDuration = 60 / this.bpm;
+        const beatTime = (performance.now() / 1000) % beatDuration;
+        const pulse = 1.0 + (beatTime < 0.1 ? 0.05 : 0); // Subtle pop on beat
+        const hitRadius = 200 * pulse; 
 
-        const cx = w / 2;
-        const cy = h / 2;
-        const radius = 220 * pulse; // Slightly larger
+        // 3. Draw Lane Guides
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 8; i++) {
+             const ang = i * (Math.PI / 4);
+             ctx.beginPath();
+             ctx.moveTo(cx + Math.cos(ang) * hitRadius, cy + Math.sin(ang) * hitRadius);
+             ctx.lineTo(cx + Math.cos(ang) * 1000, cy + Math.sin(ang) * 1000); // Offscreen
+             ctx.stroke();
+        }
+        ctx.restore();
 
-        // Draw Ring (Hit Line)
-        ctx.strokeStyle = '#fff'; // White for max visibility
-        ctx.lineWidth = 4;
+        // 4. Hit Ring (The Critical Zone)
+        ctx.beginPath();
+        ctx.arc(cx, cy, hitRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 5;
         ctx.shadowBlur = 10;
         ctx.shadowColor = '#0ff';
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur = 0; // Reset expensive property
 
-        // Draw Notes
+        // 5. Draw Notes
         this.notes.forEach(note => {
-            const startDist = radius + 500; // Spawn further out
-            const endDist = radius; // Target radius
-            const r = startDist - (startDist - endDist) * note.progress;
+            const startDist = hitRadius + 500; 
+            const endDist = hitRadius; 
+            const r = startDist - (startDist - endDist) * note.progress; // Linear approach
 
             const x = cx + Math.cos(note.angle) * r;
             const y = cy + Math.sin(note.angle) * r;
 
-            // Note Body
-            ctx.fillStyle = note.color;
-            ctx.shadowBlur = 15; // Glow
-            ctx.shadowColor = note.color;
-            ctx.beginPath();
-            ctx.arc(x, y, 20, 0, Math.PI * 2); // Larger notes
-            ctx.fill();
+            // Glow logic optimization: use Radial Gradient instead of shadowBlur if possible
+            const grad = ctx.createRadialGradient(x, y, 10, x, y, 30);
+            grad.addColorStop(0, note.color);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
             
-            // Note Center (Readability)
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, 35, 0, Math.PI * 2); 
+            ctx.fill();
+
+            // Core
             ctx.fillStyle = '#fff';
-            ctx.shadowBlur = 0;
             ctx.beginPath();
-            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
             ctx.fill();
             
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
+            // Ring
+            ctx.strokeStyle = note.color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
             ctx.stroke();
         });
         
-        // Particles
+        // 6. Particles
+        ctx.globalCompositeOperation = 'lighter';
         this.particles.forEach(p => {
              ctx.globalAlpha = p.alpha;
              ctx.fillStyle = p.color;
@@ -349,46 +338,53 @@ export default class RhythmGameScene {
              ctx.fill();
         });
         ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
 
-        // UI
+        // 7. UI / Feedback
+        // Score
         ctx.fillStyle = '#fff';
         ctx.font = '24px Arial';
         ctx.textAlign = 'left';
         ctx.fillText(`Score: ${this.score}`, 20, 40);
         
-        // Centered Combo
+        // Combo
         if (this.combo > 0) {
             ctx.save();
             ctx.translate(cx, cy);
             ctx.scale(this.comboScale, this.comboScale);
             ctx.font = 'bold 60px Arial';
-            ctx.fillStyle = `hsl(${Date.now()/5 % 360}, 100%, 50%)`;
             ctx.textAlign = 'center';
+            // Rainbow text
+            ctx.fillStyle = `hsl(${Date.now()/5 % 360}, 100%, 70%)`; 
             ctx.fillText(`${this.combo}`, 0, 0);
+            
             ctx.fillStyle = '#fff';
             ctx.font = '20px Arial';
             ctx.fillText("COMBO", 0, 40);
             ctx.restore();
         }
 
-        // Feedback
+        // Feedback Text (Good/Perfect/Miss)
         if (this.feedbackTimer > 0) {
             ctx.save();
-            ctx.translate(cx, cy - 100);
+            ctx.translate(cx, cy - 80);
             const scale = 1.0 + Math.sin(this.feedbackTimer * 10) * 0.1;
             ctx.scale(scale, scale);
             ctx.fillStyle = this.feedbackColor;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
             ctx.textAlign = 'center';
             ctx.font = 'bold 40px Arial';
+            ctx.strokeText(this.feedbackText, 0, 0);
             ctx.fillText(this.feedbackText, 0, 0);
             ctx.restore();
         }
         
-        // Controls
+        // Footer Instructions
         ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
         ctx.font = '16px Arial';
-        ctx.fillText(`Z / X / SPACE to Hit!  |  Offset: ${Math.round(this.audioOffset*1000)}ms`, w / 2, h - 30);
+        ctx.fillText(`Controls: Z / X / Space  |  Exit: C`, w / 2, h - 30);
 
         ctx.restore(); // Undo Shake
     }

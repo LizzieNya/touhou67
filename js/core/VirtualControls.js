@@ -44,6 +44,10 @@ export default class VirtualControls {
         e.preventDefault();
         this.touches = e.touches;
 
+        if (this.touches.length > 0 && this.game.soundManager) {
+            this.game.soundManager.resume();
+        }
+
         // Reset states
         this.dpad.active = false;
         this.dpad.stickX = this.dpad.x;
@@ -83,6 +87,29 @@ export default class VirtualControls {
         if (!this.dpad.active) return { x: 0, y: 0 };
         const dx = (this.dpad.stickX - this.dpad.x) / this.dpad.radius;
         const dy = (this.dpad.stickY - this.dpad.y) / this.dpad.radius;
+        return { x: dx, y: dy };
+    }
+
+    update() {
+        // Store previous state for edge detection (isPressed)
+        this.buttons.forEach(btn => {
+            btn.prevActive = btn.active;
+        });
+        
+        this.dpad.prevStickX = this.dpad.stickX;
+        this.dpad.prevStickY = this.dpad.stickY;
+    }
+
+    getPrevStickInput() {
+        if (!this.dpad.active && this.dpad.prevStickX === undefined) return {x:0, y:0};
+        
+        // Return normalized prev input
+        // Note: If dpad was inactive last frame, stick was at center.
+        const prevX = this.dpad.prevStickX !== undefined ? this.dpad.prevStickX : this.dpad.x;
+        const prevY = this.dpad.prevStickY !== undefined ? this.dpad.prevStickY : this.dpad.y;
+        
+        const dx = (prevX - this.dpad.x) / this.dpad.radius;
+        const dy = (prevY - this.dpad.y) / this.dpad.radius;
         return { x: dx, y: dy };
     }
 

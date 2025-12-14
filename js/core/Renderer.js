@@ -8,9 +8,15 @@ export default class Renderer {
 
     drawSprite(key, x, y, w, h, rotation = 0) {
         const img = this.resourceManager ? this.resourceManager.getImage(key) : null;
-        if (img && img.complete && img.naturalWidth !== 0) {
+        // Check if it's an Image with data, or a Canvas (which is always ready)
+        const isReady = img && (
+            (img instanceof HTMLCanvasElement && img.width > 0) || 
+            (img.complete && img.naturalWidth !== 0)
+        );
+
+        if (isReady) {
             this.ctx.save();
-            this.ctx.translate(x | 0, y | 0);
+            this.ctx.translate(x, y);
             this.ctx.rotate(rotation);
             this.ctx.drawImage(img, -w / 2, -h / 2, w, h);
             this.ctx.restore();

@@ -759,20 +759,21 @@ export const BossFlandreEvents = createBossStage("Flandre Scarlet", null, [
             const w = scene.game.playAreaWidth || scene.game.width;
             enemy.x = w/2; enemy.y = 150;
             
-            // The sword sweep
-            if (Math.floor(t * 60) % 4 === 0) { // Slower frequency (was 2)
-                const sweepSpeed = 0.5;
-                const angle = Math.sin(t * sweepSpeed) * Math.PI; 
+            // The sword sweep - Controlled downward arc
+            if (Math.floor(t * 60) % 3 === 0) { // Slightly faster fire rate for smoother beam
+                const sweepSpeed = 0.6;
+                // Swing 120 degrees total (PI/1.5) centered on Down (PI/2)
+                const angle = Math.PI/2 + Math.sin(t * sweepSpeed) * (Math.PI / 1.5); 
                 
-                // Beam-like line - Reduced density, larger bullets
-                for(let i=0; i<6; i++) { // Fewer bullets (was 10)
-                     const speed = 200 + i*60;
-                     // Larger radius (12) to maintain beam look
-                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*speed, Math.sin(angle)*speed, '#f00', 12);
+                // Beam-like line
+                for(let i=0; i<8; i++) { 
+                     const speed = 200 + i*50;
+                     // Constant sword stream
+                     scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle)*speed, Math.sin(angle)*speed, '#f00', 10);
                 }
             }
             // Falling embers
-            if (Math.floor(t * 60) % 5 === 0) {
+            if (Math.floor(t * 60) % 6 === 0) {
                 scene.bulletManager.spawn(Math.random()*w, -20, 0, 150, '#f80', 3);
             }
         }

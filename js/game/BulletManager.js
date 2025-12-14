@@ -196,7 +196,7 @@ export default class BulletManager {
             if (sprite) {
                 const offset = sprite.width / 2;
                 // Round to integer pixels for sharp rendering and speed
-                ctx.drawImage(sprite, (drawX - offset) | 0, (drawY - offset) | 0);
+                ctx.drawImage(sprite, drawX - offset, drawY - offset);
             } else {
                 // Fallback (rare)
                 ctx.fillStyle = b.color;
