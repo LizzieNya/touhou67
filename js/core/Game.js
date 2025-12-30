@@ -10,7 +10,10 @@ import FloatingTextManager from '../game/FloatingTextManager.js';
 export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d', { 
+            alpha: false, // No transparency needed for main canvas
+            desynchronized: true // Allow desynchronized rendering for better performance
+        });
         this.width = canvas.width;
         this.height = canvas.height;
         this.playAreaWidth = 448; // Standard Touhou width, leaving space for sidebar

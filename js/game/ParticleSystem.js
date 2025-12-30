@@ -217,8 +217,8 @@ export default class ParticleSystem {
             blendMode: 'lighter'
         });
         
-        // Sparks
-        for(let i=0; i<8; i++) {
+        // Sparks - reduced from 8 to 4 for performance
+        for(let i=0; i<4; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = 100 + Math.random() * 200;
             this.emit(x, y, {
@@ -234,23 +234,21 @@ export default class ParticleSystem {
             });
         }
         
-        // Debris / Flares
-        for(let i=0; i<2; i++) {
-            this.emit(x, y, {
-                vx: (Math.random()-0.5)*50,
-                vy: (Math.random()-0.5)*50,
-                life: 0.3,
-                color: '#fff',
-                size: 20,
-                type: 'flare',
-                rotation: Math.random() * Math.PI,
-                scaleSpeed: -20,
-                blendMode: 'lighter'
-            });
-        }
+        // Debris / Flares - reduced from 2 to 1 for performance
+        this.emit(x, y, {
+            vx: (Math.random()-0.5)*50,
+            vy: (Math.random()-0.5)*50,
+            life: 0.3,
+            color: '#fff',
+            size: 20,
+            type: 'flare',
+            rotation: Math.random() * Math.PI,
+            scaleSpeed: -20,
+            blendMode: 'lighter'
+        });
         
-        // Smoke
-        for(let i=0; i<3; i++) {
+        // Smoke - reduced from 3 to 2 for performance
+        for(let i=0; i<2; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = 20 + Math.random() * 30;
             this.emit(x, y, {
@@ -267,7 +265,7 @@ export default class ParticleSystem {
     }
     
     createGraze(x, y) {
-        // High energy spark
+        // High energy spark - simplified for performance
         this.emit(x, y, {
             vx: (Math.random() - 0.5) * 50,
             vy: -50 - Math.random() * 50,
@@ -278,45 +276,20 @@ export default class ParticleSystem {
             blendMode: 'lighter'
         });
         
-        // Lens Flare flash
+        // Lens Flare flash - single effect instead of two
         this.emit(x, y, {
             vx: 0, vy: 0,
-            life: 0.1, // Very quick
+            life: 0.15,
             color: '#fff',
-            size: 15,
-            type: 'flare',
-            rotation: Math.random() * Math.PI, // Random angle
-            scaleSpeed: -50,
-            blendMode: 'lighter'
-        });
-
-         this.emit(x, y, {
-            vx: 0, vy: 0,
-            life: 0.2,
-            color: '#fff',
-            size: 5,
+            size: 10,
             type: 'ring',
-            scaleSpeed: 100,
+            scaleSpeed: 80,
             blendMode: 'lighter'
         });
     }
 
     createSpawnEffect(x, y, color = '#fff') {
-        // Vertical Light Pillar (Warp In)
-        this.emit(x, y, {
-            vx: 0, vy: 0,
-            life: 0.5,
-            color: color,
-            size: 10, // Width
-            type: 'flare',
-            rotation: Math.PI / 2, // Vertical
-            scaleSpeed: 100, // Stretch out? Actually flare logic uses size for length? 
-            // My flare logic uses size*4 for width, size*2 for height of cross.
-            // Let's rely on standard flare for a "flash"
-            blendMode: 'lighter'
-        });
-
-        // Expanding Ring
+        // Expanding Ring - simplified
         this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.4,
@@ -327,8 +300,8 @@ export default class ParticleSystem {
             blendMode: 'lighter'
         });
         
-        // Swirl
-        for(let i=0; i<5; i++) {
+        // Swirl - reduced from 5 to 3 particles
+        for(let i=0; i<3; i++) {
              const angle = Math.random() * Math.PI * 2;
              this.emit(x, y, {
                 vx: Math.cos(angle) * 50,
@@ -369,8 +342,8 @@ export default class ParticleSystem {
     }
 
     createBulletClear(x, y, color = '#fff') {
-        // Disperse into tiny sparks
-        for (let i = 0; i < 4; i++) {
+        // Disperse into tiny sparks - reduced from 4 to 2 for performance
+        for (let i = 0; i < 2; i++) {
              const angle = Math.random() * Math.PI * 2;
              const speed = 20 + Math.random() * 50;
              this.emit(x, y, {
