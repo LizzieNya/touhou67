@@ -99,7 +99,7 @@ class Particle {
                 ctx.fillRect(Math.round(drawX - this.size/2), Math.round(drawY - this.size/2), Math.round(this.size), Math.round(this.size));
             } else {
                 ctx.beginPath();
-                ctx.arc(Math.round(drawX), Math.round(drawY), this.size/2, 0, 6.283185307179586);
+                ctx.arc(Math.round(drawX), Math.round(drawY), this.size/2, 0, Math.PI * 2);
                 ctx.fill();
             }
             return;

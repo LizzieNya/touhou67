@@ -103,14 +103,14 @@ export default class BulletManager {
             ctx.fillStyle = grad;
             ctx.globalAlpha = 0.6; // Reduced opacity for performance
             ctx.beginPath();
-            ctx.arc(cx, cy, radius + glowSize, 0, 6.283185307179586);
+            ctx.arc(cx, cy, radius + glowSize, 0, Math.PI * 2);
             ctx.fill();
 
             // Core bullet - no white center for performance
             ctx.globalAlpha = 1.0;
             ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, 6.283185307179586);
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
             ctx.fill();
 
             this.spriteCache[key] = canvas;
@@ -179,7 +179,7 @@ export default class BulletManager {
                 // Fallback (rare)
                 ctx.fillStyle = b.color;
                 ctx.beginPath();
-                ctx.arc(Math.round(drawX), Math.round(drawY), b.radius, 0, 6.283185307179586);
+                ctx.arc(Math.round(drawX), Math.round(drawY), b.radius, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
