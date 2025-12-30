@@ -10,7 +10,10 @@ import FloatingTextManager from '../game/FloatingTextManager.js';
 export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d', { 
+            alpha: false, // No transparency needed for main canvas
+            desynchronized: true // Allow desynchronized rendering for better performance
+        });
         this.width = canvas.width;
         this.height = canvas.height;
         this.playAreaWidth = 448; // Standard Touhou width, leaving space for sidebar
@@ -33,7 +36,8 @@ export default class Game {
             gameSpeed: 1.0,
             showHitbox: false,
             autoBomb: false,
-            mouseMovement: false
+            mouseMovement: false,
+            showFPS: false // FPS counter for performance monitoring
         };
 
         this.virtualControls = new VirtualControls(this);
@@ -236,6 +240,13 @@ export default class Game {
 
         if (this.soundManager) {
             this.soundManager.renderNotification(this.ctx, this.width, this.height);
+        }
+
+        // Display FPS counter in debug mode
+        if (this.config.showFPS) {
+            this.ctx.fillStyle = '#0f0';
+            this.ctx.font = '12px monospace';
+            this.ctx.fillText(`FPS: ${Math.round(this.fps || 60)}`, 10, 20);
         }
     }
 }
