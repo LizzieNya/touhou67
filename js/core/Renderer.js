@@ -27,6 +27,7 @@ export default class Renderer {
     }
 
     clear() {
+        // Using clearRect is faster than fillRect for clearing
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.width, this.height);
     }

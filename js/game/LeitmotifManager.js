@@ -81,11 +81,18 @@ export default class LeitmotifManager {
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(now + duration + 0.1);
-        this.activeNodes.push(osc);
-        setTimeout(() => {
+        
+        // Clean up after playback to prevent memory leaks
+        osc.onended = () => {
+            try {
+                osc.disconnect();
+                gain.disconnect();
+            } catch (e) { }
             const idx = this.activeNodes.indexOf(osc);
             if (idx > -1) this.activeNodes.splice(idx, 1);
-        }, (duration + 0.1) * 1000);
+        };
+        
+        this.activeNodes.push(osc);
     }
 
     noteToFreq(note) {

@@ -16,6 +16,34 @@ export default class SoundManager {
         this.compressor.connect(this.ctx.destination);
     }
 
+    // Helper method to create and auto-cleanup oscillators
+    _playSound(type, startFreq, endFreq, duration, volume = 0.1) {
+        if (!this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
+
+        gain.gain.setValueAtTime(volume * this.masterVolume, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.compressor);
+
+        // Auto-disconnect on end to prevent memory leaks
+        osc.onended = () => {
+            try {
+                osc.disconnect();
+                gain.disconnect();
+            } catch (e) { }
+        };
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    }
+
     resume() {
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
@@ -23,41 +51,11 @@ export default class SoundManager {
     }
 
     playSelect() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.05);
-
-        gain.gain.setValueAtTime(0.1 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
+        this._playSound('triangle', 440, 880, 0.05, 0.1);
     }
 
     playMenuMove() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(660, this.ctx.currentTime + 0.05);
-
-        gain.gain.setValueAtTime(0.05 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
+        this._playSound('sine', 440, 660, 0.05, 0.05);
     }
 
     playMenuSelect() {
@@ -65,98 +63,23 @@ export default class SoundManager {
     }
 
     playMenuBack() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(220, this.ctx.currentTime + 0.1);
-
-        gain.gain.setValueAtTime(0.1 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
+        this._playSound('triangle', 440, 220, 0.1, 0.1);
     }
 
     playShoot() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-
-        gain.gain.setValueAtTime(0.1 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
+        this._playSound('square', 800, 100, 0.1, 0.1);
     }
 
     playEnemyHit() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.1);
-
-        gain.gain.setValueAtTime(0.1 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
+        this._playSound('sawtooth', 200, 50, 0.1, 0.1);
     }
 
     playEnemyDie() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.3);
-
-        gain.gain.setValueAtTime(0.2 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.3);
+        this._playSound('sawtooth', 400, 10, 0.3, 0.2);
     }
 
     playPlayerDie() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
-
-        gain.gain.setValueAtTime(0.3 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.5);
+        this._playSound('square', 800, 100, 0.5, 0.3);
     }
 
     playPowerUp() {
@@ -173,6 +96,10 @@ export default class SoundManager {
 
         osc.connect(gain);
         gain.connect(this.compressor);
+
+        osc.onended = () => {
+            try { osc.disconnect(); gain.disconnect(); } catch (e) { }
+        };
 
         osc.start();
         osc.stop(this.ctx.currentTime + 0.2);
@@ -194,48 +121,20 @@ export default class SoundManager {
         osc.connect(gain);
         gain.connect(this.compressor);
 
+        osc.onended = () => {
+            try { osc.disconnect(); gain.disconnect(); } catch (e) { }
+        };
+
         osc.start();
         osc.stop(this.ctx.currentTime + 0.3);
     }
 
     playBomb() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        // White noise approximation using many oscillators or just a low rumble
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 1.0);
-
-        gain.gain.setValueAtTime(0.5 * this.masterVolume, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.0);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 1.0);
+        this._playSound('sawtooth', 100, 10, 1.0, 0.5);
     }
 
     playGraze() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        // High pitched "Ting"
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(2000, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1000, this.ctx.currentTime + 0.1);
-
-        gain.gain.setValueAtTime(0.05 * this.masterVolume, this.ctx.currentTime); // Quiet
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
-
-        osc.connect(gain);
-        gain.connect(this.compressor);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
+        this._playSound('sine', 2000, 1000, 0.1, 0.05);
     }
 
     playBossTheme(bossName) {

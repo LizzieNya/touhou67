@@ -33,7 +33,8 @@ export default class Game {
             gameSpeed: 1.0,
             showHitbox: false,
             autoBomb: false,
-            mouseMovement: false
+            mouseMovement: false,
+            showFPS: false // FPS counter for performance monitoring
         };
 
         this.virtualControls = new VirtualControls(this);
@@ -236,6 +237,13 @@ export default class Game {
 
         if (this.soundManager) {
             this.soundManager.renderNotification(this.ctx, this.width, this.height);
+        }
+
+        // Display FPS counter in debug mode
+        if (this.config.showFPS) {
+            this.ctx.fillStyle = '#0f0';
+            this.ctx.font = '12px monospace';
+            this.ctx.fillText(`FPS: ${Math.round(this.fps || 60)}`, 10, 20);
         }
     }
 }

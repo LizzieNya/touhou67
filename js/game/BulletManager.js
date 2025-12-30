@@ -85,42 +85,32 @@ export default class BulletManager {
     getBulletSprite(color, radius) {
         const key = `${color}-${radius}`;
         if (!this.spriteCache[key]) {
-            const glowSize = Math.max(6, radius * 1.5);
+            const glowSize = Math.max(4, radius * 1.2); // Reduced glow for performance
             const size = Math.ceil((radius + glowSize) * 2);
             const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: false });
             const cx = size / 2;
             const cy = size / 2;
 
-            // Soft Glow
-            const grad = ctx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius + glowSize);
+            // Simplified glow - single gradient instead of multiple layers
+            const grad = ctx.createRadialGradient(cx, cy, radius * 0.5, cx, cy, radius + glowSize);
             grad.addColorStop(0, color);
+            grad.addColorStop(0.5, color);
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             
             ctx.fillStyle = grad;
-            ctx.globalAlpha = 0.8;
+            ctx.globalAlpha = 0.6; // Reduced opacity for performance
             ctx.beginPath();
-            ctx.arc(cx, cy, radius + glowSize, 0, Math.PI * 2);
+            ctx.arc(cx, cy, radius + glowSize, 0, 6.283185307179586);
             ctx.fill();
 
-            // Core
+            // Core bullet - no white center for performance
             ctx.globalAlpha = 1.0;
             ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // White center
-            const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.7);
-            centerGrad.addColorStop(0, '#fff');
-            centerGrad.addColorStop(0.8, '#fff');
-            centerGrad.addColorStop(1, color);
-            
-            ctx.fillStyle = centerGrad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius * 0.7, 0, Math.PI * 2);
+            ctx.arc(cx, cy, radius, 0, 6.283185307179586);
             ctx.fill();
 
             this.spriteCache[key] = canvas;
@@ -144,19 +134,8 @@ export default class BulletManager {
         const b = this.getBullet();
         b.spawn(x, y, vx, vy, color, radius, accel, angularVelocity);
         
-        // Muzzle Flash
-        const scene = this.game.sceneManager.currentScene;
-        if (scene && scene.particleSystem) {
-             scene.particleSystem.emit(x, y, {
-                vx: 0, vy: 0,
-                life: 0.1,
-                color: color,
-                size: radius + 5,
-                type: 'circle',
-                blendMode: 'lighter',
-                scaleSpeed: -50
-            });
-        }
+        // Reduced particle effects for better performance
+        // Skip muzzle flash for performance
     }
 
     update(dt) {
@@ -180,9 +159,8 @@ export default class BulletManager {
 
     render(renderer, alpha) {
         const ctx = renderer.ctx;
-        // Batch rendering can be complex with z-ordering, but usually standard order is fine.
-        // We can optimize by reducing function calls.
         
+        // Optimize by rendering bullets in a single pass
         for (let i = 0; i < this.activeCount; i++) {
             const b = this.pool[i];
             if (!b.active) continue;
@@ -195,13 +173,13 @@ export default class BulletManager {
             const sprite = this.getBulletSprite(b.color, b.radius);
             if (sprite) {
                 const offset = sprite.width / 2;
-                // Round to integer pixels for sharp rendering and speed
-                ctx.drawImage(sprite, drawX - offset, drawY - offset);
+                // Round to integer pixels for sharp rendering and better performance
+                ctx.drawImage(sprite, Math.round(drawX - offset), Math.round(drawY - offset));
             } else {
                 // Fallback (rare)
                 ctx.fillStyle = b.color;
                 ctx.beginPath();
-                ctx.arc(drawX, drawY, b.radius, 0, 6.28); // 2*PI
+                ctx.arc(Math.round(drawX), Math.round(drawY), b.radius, 0, 6.283185307179586);
                 ctx.fill();
             }
         }

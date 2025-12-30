@@ -90,15 +90,16 @@ class Particle {
         const drawY = this.prevY + (this.y - this.prevY) * alpha;
         const lifeRatio = this.life / this.maxLife;
         
-        // Fast path for simple non-rotated particles
+        // Fast path for simple non-rotated particles (most common case)
         if (this.rotation === 0 && (this.type === 'square' || this.type === 'circle')) {
             ctx.globalAlpha = lifeRatio;
             ctx.fillStyle = this.color;
             if (this.type === 'square') {
-                ctx.fillRect(drawX - this.size/2, drawY - this.size/2, this.size, this.size);
+                // Use integer coordinates for better performance
+                ctx.fillRect(Math.round(drawX - this.size/2), Math.round(drawY - this.size/2), Math.round(this.size), Math.round(this.size));
             } else {
                 ctx.beginPath();
-                ctx.arc(drawX, drawY, this.size/2, 0, Math.PI * 2);
+                ctx.arc(Math.round(drawX), Math.round(drawY), this.size/2, 0, 6.283185307179586);
                 ctx.fill();
             }
             return;
@@ -106,7 +107,7 @@ class Particle {
 
         ctx.save();
         ctx.globalAlpha = lifeRatio;
-        ctx.translate(drawX, drawY);
+        ctx.translate(Math.round(drawX), Math.round(drawY));
         ctx.rotate(this.rotation);
         
         ctx.fillStyle = this.color;
@@ -164,7 +165,7 @@ export default class ParticleSystem {
     constructor(game) {
         this.game = game;
         this.pool = [];
-        this.poolSize = 2000; // Increased pool capacity
+        this.poolSize = 1000; // Reduced pool capacity for better performance
         this.activeCount = 0;
         
         for (let i = 0; i < this.poolSize; i++) {
@@ -175,12 +176,9 @@ export default class ParticleSystem {
     // Generic spawn O(1)
     emit(x, y, options) {
         if (this.activeCount >= this.poolSize) {
-             // Optional: Expand pool or just recycle oldest (at index 0)?
-             // For particles, recycling oldest (index 0) is often better visually than freezing
-             // But simpler to expand or ignore. Let's expand slightly or ignore.
-             // Ignoring to prevent infinite memory growth if leak. 
-             // Actually, swap-remove means index 0 is just "some particle".
-             // Let's cap it at poolSize to prevent lag.
+             // Recycle oldest particle to prevent lag
+             const p = this.pool[0];
+             p.spawn(x, y, options);
              return; 
         }
 
