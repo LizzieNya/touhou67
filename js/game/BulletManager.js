@@ -83,7 +83,7 @@ export default class BulletManager {
     }
 
     getBulletSprite(color, radius) {
-        const key = `${color}-${radius}`;
+        const key = `${color}-${Math.round(radius)}`;
         if (!this.spriteCache[key]) {
             const glowSize = Math.max(4, radius * 1.2); // Reduced glow for performance
             const size = Math.ceil((radius + glowSize) * 2);
@@ -118,7 +118,7 @@ export default class BulletManager {
             centerGrad.addColorStop(0, '#fff');
             centerGrad.addColorStop(0.8, '#fff');
             centerGrad.addColorStop(1, color);
-            
+
             ctx.fillStyle = centerGrad;
             ctx.beginPath();
             ctx.arc(cx, cy, radius * 0.7, 0, Math.PI * 2);
@@ -144,11 +144,11 @@ export default class BulletManager {
     spawn(x, y, vx, vy, color, radius, accel = 0, angularVelocity = 0) {
         const b = this.getBullet();
         b.spawn(x, y, vx, vy, color, radius, accel, angularVelocity);
-        
+
         // Muzzle Flash
         const scene = this.game.sceneManager.currentScene;
         if (scene && scene.particleSystem) {
-             scene.particleSystem.emit(x, y, {
+            scene.particleSystem.emit(x, y, {
                 vx: 0, vy: 0,
                 life: 0.1,
                 color: color,
@@ -183,7 +183,7 @@ export default class BulletManager {
         const ctx = renderer.ctx;
         // Batch rendering can be complex with z-ordering, but usually standard order is fine.
         // We can optimize by reducing function calls.
-        
+
         for (let i = 0; i < this.activeCount; i++) {
             const b = this.pool[i];
             if (!b.active) continue;

@@ -40,10 +40,10 @@ export default class Boss extends Enemy {
 
     die() {
         super.die();
-        if (this.game.soundManager && this.game.soundManager.stopBossTheme) {
-            // Prevent silence gap by NOT stopping theme immediately. 
-            // The next stage/event will handle music transition.
-            // this.game.soundManager.stopBossTheme();
+        // Prevent silence gap by NOT stopping theme immediately if next stage handles it.
+        // But for boss death (result screen), we usually want to stop or fade out.
+        if (this.game.soundManager && typeof this.game.soundManager.stopBossTheme === 'function') {
+            this.game.soundManager.stopBossTheme();
         }
         // Boss death explosion
         const scene = this.game.sceneManager.currentScene;
