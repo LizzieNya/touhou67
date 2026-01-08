@@ -111,7 +111,7 @@ export default class LeitmotifManager {
         const bell = (note) => n(note, 'sine', 0.2);
 
         const themes = {
-            
+
             'menu': {
                 tempo: 144,
                 sequence: [
@@ -311,13 +311,31 @@ export default class LeitmotifManager {
                 ]
             },
             'pepe': {
-                 tempo: 100,
-                 sequence: [ s([piano('E5'), bass('C3')], 1.0), s(piano('D5'), 0.5), s(piano('C5'), 0.5), s([piano('B4'), bass('G2')], 1.0), s(piano('C5'), 0.5), s(piano('D5'), 0.5), s([piano('C5'), bass('C3')], 2.0) ]
+                tempo: 100,
+                sequence: [s([piano('E5'), bass('C3')], 1.0), s(piano('D5'), 0.5), s(piano('C5'), 0.5), s([piano('B4'), bass('G2')], 1.0), s(piano('C5'), 0.5), s(piano('D5'), 0.5), s([piano('C5'), bass('C3')], 2.0)]
             }
-    
+
         };
 
         themes['hong'] = themes['meiling'];
+        themes['parsee'] = { tempo: 150, sequence: [s(piano('A4'), 0.5), s(piano('C5'), 0.5), s(piano('E5'), 0.5)] };
+        themes['nue'] = { tempo: 160, sequence: [s(bass('E2'), 0.25), s(bass('E2'), 0.25), s(guitar('E3'), 0.5)] };
+        themes['okuu'] = { tempo: 180, sequence: [s(bass('C2'), 1.0), s(bass('C2'), 1.0), s(zunpet('C5'), 0.5)] };
+        themes['remilia'] = { tempo: 140, sequence: [s(violin('A4'), 0.5), s(violin('C5'), 0.5), s(violin('E5'), 0.5)] };
+        themes['flandre'] = { tempo: 200, sequence: [s(piano('G5'), 0.25), s(piano('A5'), 0.25), s(piano('B5'), 0.25)] };
+        themes['meiling'] = { tempo: 130, sequence: [s(guitar('C3'), 0.5), s(guitar('E3'), 0.5), s(guitar('G3'), 0.5)] };
+        themes['patchouli'] = { tempo: 120, sequence: [s(piano('E4'), 0.5), s(piano('G4'), 0.5), s(piano('B4'), 0.5)] };
+        themes['sakuya'] = { tempo: 160, sequence: [s(violin('D5'), 0.25), s(violin('F#5'), 0.25), s(violin('A5'), 0.5)] };
+        themes['cirno'] = { tempo: 175, sequence: [s(piano('G4'), 0.25), s(piano('F#4'), 0.25), s(piano('E4'), 0.5)] };
+        themes['koishi'] = { tempo: 150, sequence: [s(piano('C5'), 0.5), s(piano('B4'), 0.5)] };
+        themes['aya'] = { tempo: 180, sequence: [s(zunpet('A4'), 0.25), s(zunpet('A4'), 0.25)] };
+        themes['junko'] = { tempo: 160, sequence: [s(bass('D2'), 1.0)] };
+        themes['yuyuko'] = { tempo: 140, sequence: [s(violin('F4'), 0.5), s(violin('A4'), 0.5)] };
+        themes['tewi'] = { tempo: 140, sequence: [s(piano('E5'), 0.25)] };
+        themes['reisen'] = { tempo: 150, sequence: [s(violin('G4'), 0.5)] };
+        themes['eirin'] = { tempo: 140, sequence: [s(piano('B4'), 0.5)] };
+        themes['kaguya'] = { tempo: 130, sequence: [s(piano('C5'), 0.5)] };
+        themes['mokou'] = { tempo: 170, sequence: [s(guitar('E3'), 0.5)] };
         themes['utsuho'] = themes['okuu'];
         return themes[name.toLowerCase()] || null;
     }

@@ -29,14 +29,14 @@ class Bullet extends Entity {
 
         this.accel = accel;
         this.angularVelocity = angularVelocity;
-        
+
         this.prevX = x;
         this.prevY = y;
     }
 
     update(dt) {
         if (!this.active) return;
-        
+
         this.prevX = this.x;
         this.prevY = this.y;
 
@@ -98,7 +98,7 @@ export default class BulletManager {
             const grad = ctx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius + glowSize);
             grad.addColorStop(0, color);
             grad.addColorStop(1, 'rgba(0,0,0,0)');
-            
+
             ctx.fillStyle = grad;
             ctx.globalAlpha = 0.8;
             ctx.beginPath();
@@ -117,7 +117,7 @@ export default class BulletManager {
             centerGrad.addColorStop(0, '#fff');
             centerGrad.addColorStop(0.8, '#fff');
             centerGrad.addColorStop(1, color);
-            
+
             ctx.fillStyle = centerGrad;
             ctx.beginPath();
             ctx.arc(cx, cy, radius * 0.7, 0, Math.PI * 2);
@@ -143,11 +143,11 @@ export default class BulletManager {
     spawn(x, y, vx, vy, color, radius, accel = 0, angularVelocity = 0) {
         const b = this.getBullet();
         b.spawn(x, y, vx, vy, color, radius, accel, angularVelocity);
-        
+
         // Muzzle Flash
         const scene = this.game.sceneManager.currentScene;
         if (scene && scene.particleSystem) {
-             scene.particleSystem.emit(x, y, {
+            scene.particleSystem.emit(x, y, {
                 vx: 0, vy: 0,
                 life: 0.1,
                 color: color,
@@ -171,7 +171,7 @@ export default class BulletManager {
                 const lastActive = this.pool[this.activeCount];
                 this.pool[i] = lastActive;
                 this.pool[this.activeCount] = b; // Move dead one to end (not strictly necessary but keeps array cleanish)
-                
+
                 // Decrement i to re-process the bullet we just swapped in
                 i--;
             }
@@ -182,7 +182,7 @@ export default class BulletManager {
         const ctx = renderer.ctx;
         // Batch rendering can be complex with z-ordering, but usually standard order is fine.
         // We can optimize by reducing function calls.
-        
+
         for (let i = 0; i < this.activeCount; i++) {
             const b = this.pool[i];
             if (!b.active) continue;
@@ -196,7 +196,7 @@ export default class BulletManager {
             if (sprite) {
                 const offset = sprite.width / 2;
                 // Round to integer pixels for sharp rendering and speed
-                ctx.drawImage(sprite, drawX - offset, drawY - offset);
+                ctx.drawImage(sprite, (drawX - offset) | 0, (drawY - offset) | 0);
             } else {
                 // Fallback (rare)
                 ctx.fillStyle = b.color;
@@ -215,21 +215,21 @@ export default class BulletManager {
         if (ps) {
             // Cap particles to avoid massive lag spike
             let particlesSpawned = 0;
-            const maxParticles = 50; 
-            
+            const maxParticles = 50;
+
             for (let i = 0; i < this.activeCount; i++) {
-               if (particlesSpawned < maxParticles && Math.random() < 0.1) {
-                   ps.createBulletClear(this.pool[i].x, this.pool[i].y, this.pool[i].color);
-                   particlesSpawned++;
-               }
-               this.pool[i].active = false;
+                if (particlesSpawned < maxParticles && Math.random() < 0.1) {
+                    ps.createBulletClear(this.pool[i].x, this.pool[i].y, this.pool[i].color);
+                    particlesSpawned++;
+                }
+                this.pool[i].active = false;
             }
         } else {
-             for (let i = 0; i < this.activeCount; i++) {
-                 this.pool[i].active = false;
-             }
+            for (let i = 0; i < this.activeCount; i++) {
+                this.pool[i].active = false;
+            }
         }
-        
+
         this.activeCount = 0;
     }
 }

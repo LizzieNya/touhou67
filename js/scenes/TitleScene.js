@@ -112,9 +112,9 @@ export default class TitleScene {
         const mClicked = this.game.input.mouseDown && !this.lastMouseDown;
         this.lastMouseDown = this.game.input.mouseDown;
 
-        const startX = this.game.width - 40; // Right edge alignment
-        const startY = 140; // Matching render startY
-        const spacing = 26; // Matching render spacing
+        const startX = this.game.width - 60; // Right edge alignment
+        const startY = 160; // Matching render startY
+        const spacing = 32; // Matching render spacing
 
         this.options.forEach((opt, index) => {
             // Hitbox for right-aligned text

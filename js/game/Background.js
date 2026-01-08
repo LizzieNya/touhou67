@@ -5,10 +5,10 @@ export default class Background {
         this.speed = 15; // Slowed down from 50
         this.image = null;
         this.currentStage = null;
-        
+
         // Atmosphere
         this.clouds = [];
-        for(let i=0; i<20; i++) {
+        for (let i = 0; i < 20; i++) {
             this.clouds.push({
                 x: Math.random() * 800,
                 y: Math.random() * 600,
@@ -44,11 +44,11 @@ export default class Background {
                 cloud.x = Math.random() * (this.game.playAreaWidth || this.game.width);
             }
         });
-        
+
         // Update Stars/Dust
         if (!this.stars) {
             this.stars = [];
-            for(let i=0; i<50; i++) {
+            for (let i = 0; i < 50; i++) {
                 this.stars.push({
                     x: Math.random() * (this.game.playAreaWidth || this.game.width),
                     y: Math.random() * this.game.height,
@@ -58,7 +58,7 @@ export default class Background {
                 });
             }
         }
-        
+
         this.stars.forEach(star => {
             star.y += star.speed * dt;
             if (star.y > this.game.height) {
@@ -70,7 +70,7 @@ export default class Background {
         // Update Petals (Foreground)
         if (!this.petals) {
             this.petals = [];
-            for(let i=0; i<15; i++) {
+            for (let i = 0; i < 15; i++) {
                 this.petals.push({
                     x: Math.random() * (this.game.playAreaWidth || this.game.width),
                     y: Math.random() * this.game.height,
@@ -192,28 +192,26 @@ export default class Background {
             }
         }
 
-        // Render Clouds/Fog
+        // Render Clouds/Fog (Optimized)
         if (this.currentStage !== 'Menu' && this.currentStage !== 'Menu7') {
             ctx.save();
+            ctx.fillStyle = '#fff';
             this.clouds.forEach(cloud => {
-                ctx.globalAlpha = cloud.alpha;
-                const grad = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, cloud.size);
-                grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                ctx.fillStyle = grad;
+                ctx.globalAlpha = cloud.alpha * 0.5; // Simpler alpha
+                // No gradient for performance
                 ctx.beginPath();
-                ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
+                ctx.arc(cloud.x | 0, cloud.y | 0, cloud.size, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.restore();
-            
+
             // Render Stars/Dust
             ctx.save();
             ctx.fillStyle = '#fff';
             if (this.stars) {
                 this.stars.forEach(star => {
-                   ctx.globalAlpha = star.alpha;
-                   ctx.fillRect(star.x, star.y, star.size, star.size);
+                    ctx.globalAlpha = star.alpha;
+                    ctx.fillRect(star.x, star.y, star.size, star.size);
                 });
             }
             ctx.restore();
@@ -236,7 +234,7 @@ export default class Background {
         const scene = this.game.sceneManager.currentScene;
         let spellActive = false;
         let bossColor = '#fff';
-        
+
         if (scene && scene.enemies) {
             for (const enemy of scene.enemies) {
                 if (enemy.isBoss && enemy.active && enemy.isSpellCard) {
@@ -250,15 +248,15 @@ export default class Background {
         if (spellActive) {
             ctx.save();
             // Negative/Magical Tint
-            ctx.globalCompositeOperation = 'overlay'; 
+            ctx.globalCompositeOperation = 'overlay';
             ctx.fillStyle = bossColor;
             ctx.globalAlpha = 0.3;
             ctx.fillRect(0, 0, w, this.game.height);
-            
+
             // Rotating Magic Square Background + Scrolling Lines
             ctx.globalCompositeOperation = 'lighter';
             const time = Date.now() / 2000; // Slow rotation
-            
+
             // Scrolling Lines Effect
             ctx.save();
             ctx.rotate(Math.PI / 4); // 45 degrees
@@ -266,42 +264,42 @@ export default class Background {
             ctx.strokeStyle = bossColor;
             ctx.lineWidth = 2;
             ctx.globalAlpha = 0.2;
-            
-            // Draw lines across a large area to cover rotation
-            const diag = Math.sqrt(w*w + h*h);
-            for(let i = -diag; i < diag; i+=50) {
-                 ctx.beginPath();
-                 ctx.moveTo(i + offset, -diag);
-                 ctx.lineTo(i + offset, diag);
-                 ctx.stroke();
+
+            // Draw lines across a large area to cover rotation (Batched)
+            const diag = Math.sqrt(w * w + h * h);
+            ctx.beginPath();
+            for (let i = -diag; i < diag; i += 50) {
+                ctx.moveTo(i + offset, -diag);
+                ctx.lineTo(i + offset, diag);
             }
+            ctx.stroke();
             ctx.restore();
 
             // Rotating Squares
-            ctx.translate(w/2, this.game.height/2);
+            ctx.translate(w / 2, this.game.height / 2);
             ctx.rotate(time);
-            
+
             ctx.strokeStyle = bossColor;
             ctx.globalAlpha = 0.2; // Softer
             ctx.lineWidth = 20; // Thick lines
-            
+
             const maxDim = Math.max(w, this.game.height) * 1.5;
-            ctx.strokeRect(-maxDim/2, -maxDim/2, maxDim, maxDim);
-            
+            ctx.strokeRect(-maxDim / 2, -maxDim / 2, maxDim, maxDim);
+
             ctx.rotate(time); // Rotate faster inner
-            ctx.strokeRect(-maxDim/3, -maxDim/3, maxDim*0.66, maxDim*0.66);
-            
+            ctx.strokeRect(-maxDim / 3, -maxDim / 3, maxDim * 0.66, maxDim * 0.66);
+
             ctx.restore();
         }
     }
 
     renderForeground(renderer) {
         if (!this.petals) return;
-        
+
         const ctx = renderer.ctx;
         ctx.save();
         ctx.fillStyle = '#ffccee'; // Soft pink
-        
+
         this.petals.forEach(p => {
             ctx.save();
             ctx.translate(p.x, p.y);
@@ -312,7 +310,7 @@ export default class Background {
             ctx.fill();
             ctx.restore();
         });
-        
+
         ctx.restore();
     }
 }

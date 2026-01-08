@@ -11,7 +11,7 @@ export default class CollisionSystem {
         // Pre-calculate squared radii for player
         const grazeDistSq = (player.grazeRadius + 5) * (player.grazeRadius + 5); // Approx bullet radius 5
         const hitDistSq = (player.radius + 3) * (player.radius + 3); // Approx bullet radius 3 (smaller hitbox)
-        
+
         // 1. Player vs Enemy Bullets
         for (let i = 0; i < scene.bulletManager.activeCount; i++) {
             const b = bullets[i];
@@ -20,7 +20,7 @@ export default class CollisionSystem {
             const dx = player.x - b.x;
             const dy = player.y - b.y;
             const distSq = dx * dx + dy * dy;
-            
+
             // Graze
             if (!b.grazed) {
                 const gDist = player.grazeRadius + b.radius;
@@ -33,7 +33,7 @@ export default class CollisionSystem {
                         scene.particleSystem.createGraze(player.x + dx / 2, player.y + dy / 2);
                     }
                     if (this.game.soundManager && this.game.soundManager.playGraze) {
-                         this.game.soundManager.playGraze();
+                        this.game.soundManager.playGraze();
                     }
                 }
             }
@@ -50,11 +50,12 @@ export default class CollisionSystem {
 
         // 2. Player Bullets vs Enemies
         const playerBullets = scene.playerBulletManager.pool;
-        
+        const activePbCount = scene.playerBulletManager.activeCount;
+
         // Loop enemies first if fewer? No, usually fewer enemies, but many P-bullets.
         // O(Pb * E) is fine.
-        
-        for (let i = 0; i < playerBullets.length; i++) {
+
+        for (let i = 0; i < activePbCount; i++) {
             const pb = playerBullets[i];
             if (!pb.active) continue;
 
@@ -66,20 +67,20 @@ export default class CollisionSystem {
                 const dx = pb.x - enemy.x;
                 const dy = pb.y - enemy.y;
                 const distSq = dx * dx + dy * dy;
-                const hitDist = enemy.radius + pb.width/2; // Approx
+                const hitDist = enemy.radius + pb.width / 2; // Approx
 
                 if (distSq < hitDist * hitDist) {
                     enemy.takeDamage(pb.damage);
 
                     // Impact Effect (Throttle?)
                     if (scene.particleSystem && Math.random() < 0.3) {
-                        scene.particleSystem.spawnParticle(pb.x, pb.y, (Math.random()-0.5)*200, (Math.random()-0.5)*200, pb.color || '#fff', 0.2, 3);
+                        scene.particleSystem.spawnParticle(pb.x, pb.y, (Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200, pb.color || '#fff', 0.2, 3);
                     }
 
                     if (!pb.piercing) {
                         pb.active = false;
                         scene.hud.score += 10;
-                        break; 
+                        break;
                     } else {
                         scene.hud.score += 1;
                     }
