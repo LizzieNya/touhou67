@@ -3,7 +3,10 @@ export default class SpriteGenerator {
         this.canvas = document.createElement('canvas');
         this.canvas.width = 32;
         this.canvas.height = 32;
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d', { 
+            alpha: true, 
+            willReadFrequently: false // Don't need to read back from this canvas
+        });
     }
 
     isSupported(name) {
