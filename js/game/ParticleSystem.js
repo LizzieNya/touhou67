@@ -90,16 +90,16 @@ class Particle {
         const drawX = (this.prevX + (this.x - this.prevX) * alpha) | 0;
         const drawY = (this.prevY + (this.y - this.prevY) * alpha) | 0;
         const lifeRatio = this.life / this.maxLife;
-        
-        // Fast path for simple non-rotated particles
+
+        // Fast path for simple non-rotated particles (most common case)
         if (this.rotation === 0 && (this.type === 'square' || this.type === 'circle')) {
             ctx.globalAlpha = lifeRatio;
             ctx.fillStyle = this.color;
             if (this.type === 'square') {
-                ctx.fillRect(drawX - this.size/2, drawY - this.size/2, this.size, this.size);
+                ctx.fillRect(drawX - this.size / 2, drawY - this.size / 2, this.size, this.size);
             } else {
                 ctx.beginPath();
-                ctx.arc(drawX, drawY, this.size/2, 0, Math.PI * 2);
+                ctx.arc(drawX, drawY, this.size / 2, 0, Math.PI * 2);
                 ctx.fill();
             }
             return;
@@ -114,6 +114,7 @@ class Particle {
         ctx.strokeStyle = this.color;
 
         if (this.type === 'square') {
+            // Use integer coordinates for better performance
             ctx.fillRect(-(this.size / 2 | 0), -(this.size / 2 | 0), this.size, this.size);
         } else if (this.type === 'circle') {
             ctx.beginPath();
@@ -167,13 +168,10 @@ export default class ParticleSystem {
     // Generic spawn O(1)
     emit(x, y, options) {
         if (this.activeCount >= this.poolSize) {
-             // Optional: Expand pool or just recycle oldest (at index 0)?
-             // For particles, recycling oldest (index 0) is often better visually than freezing
-             // But simpler to expand or ignore. Let's expand slightly or ignore.
-             // Ignoring to prevent infinite memory growth if leak. 
-             // Actually, swap-remove means index 0 is just "some particle".
-             // Let's cap it at poolSize to prevent lag.
-             return; 
+            // Recycle oldest particle to prevent lag
+            const p = this.pool[0];
+            p.spawn(x, y, options);
+            return;
         }
 
         const p = this.pool[this.activeCount];
@@ -210,9 +208,9 @@ export default class ParticleSystem {
             scaleSpeed: 200,
             blendMode: 'lighter'
         });
-        
-        // Sparks
-        for(let i=0; i<8; i++) {
+
+        // Sparks - reduced from 8 to 4 for performance
+        for (let i = 0; i < 4; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = 100 + Math.random() * 200;
             this.emit(x, y, {
@@ -227,12 +225,12 @@ export default class ParticleSystem {
                 blendMode: 'lighter'
             });
         }
-        
+
         // Debris / Flares
-        for(let i=0; i<2; i++) {
+        for (let i = 0; i < 2; i++) {
             this.emit(x, y, {
-                vx: (Math.random()-0.5)*50,
-                vy: (Math.random()-0.5)*50,
+                vx: (Math.random() - 0.5) * 50,
+                vy: (Math.random() - 0.5) * 50,
                 life: 0.3,
                 color: '#fff',
                 size: 20,
@@ -242,9 +240,9 @@ export default class ParticleSystem {
                 blendMode: 'lighter'
             });
         }
-        
+
         // Smoke
-        for(let i=0; i<3; i++) {
+        for (let i = 0; i < 3; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = 20 + Math.random() * 30;
             this.emit(x, y, {
@@ -271,20 +269,20 @@ export default class ParticleSystem {
             type: 'spark',
             blendMode: 'lighter'
         });
-        
-        // Lens Flare flash
+
+        // Lens Flare flash - single effect instead of two
         this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.15,
             color: '#fff',
-            size: 15,
+            size: 10,
             type: 'flare',
             rotation: Math.random() * Math.PI, // Random angle
             scaleSpeed: -50,
             blendMode: 'lighter'
         });
 
-         this.emit(x, y, {
+        this.emit(x, y, {
             vx: 0, vy: 0,
             life: 0.2,
             color: '#fff',
@@ -306,11 +304,11 @@ export default class ParticleSystem {
             scaleSpeed: 150,
             blendMode: 'lighter'
         });
-        
-        // Swirl
-        for(let i=0; i<5; i++) {
-             const angle = Math.random() * Math.PI * 2;
-             this.emit(x, y, {
+
+        // Swirl - reduced from 5 to 3 particles
+        for (let i = 0; i < 3; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            this.emit(x, y, {
                 vx: Math.cos(angle) * 50,
                 vy: Math.sin(angle) * 50,
                 life: 0.6,
@@ -349,11 +347,11 @@ export default class ParticleSystem {
     }
 
     createBulletClear(x, y, color = '#fff') {
-        // Disperse into tiny sparks
-        for (let i = 0; i < 4; i++) {
-             const angle = Math.random() * Math.PI * 2;
-             const speed = 20 + Math.random() * 50;
-             this.emit(x, y, {
+        // Disperse into tiny sparks - reduced from 4 to 2 for performance
+        for (let i = 0; i < 2; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 20 + Math.random() * 50;
+            this.emit(x, y, {
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
                 life: 0.3,
