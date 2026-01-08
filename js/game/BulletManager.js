@@ -85,43 +85,44 @@ export default class BulletManager {
     getBulletSprite(color, radius) {
         const key = `${color}-${Math.round(radius)}`;
         if (!this.spriteCache[key]) {
-            const glowSize = Math.max(4, radius * 1.2); // Reduced glow for performance
+            // Enhanced visual style: Larger, softer glow with a crisp white core
+            const glowSize = Math.max(6, radius * 2.5);
             const size = Math.ceil((radius + glowSize) * 2);
             const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
-            const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: false });
+            const ctx = canvas.getContext('2d', { alpha: true });
             const cx = size / 2;
             const cy = size / 2;
 
-            // Simplified glow - single gradient instead of multiple layers
-            const grad = ctx.createRadialGradient(cx, cy, radius * 0.5, cx, cy, radius + glowSize);
-            grad.addColorStop(0, color);
-            grad.addColorStop(0.5, color);
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            // 1. Soft Outer Aura (Glow)
+            const glow = ctx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius + glowSize);
+            glow.addColorStop(0, color);
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
 
-            ctx.fillStyle = grad;
-            ctx.globalAlpha = 0.6; // Reduced opacity for performance
+            ctx.globalAlpha = 0.4; // Soft glow opacity
+            ctx.fillStyle = glow;
             ctx.beginPath();
             ctx.arc(cx, cy, radius + glowSize, 0, Math.PI * 2);
             ctx.fill();
 
-            // Core bullet - no white center for performance
-            ctx.globalAlpha = 1.0;
+            // 2. Main Bullet Body (Color)
+            ctx.globalAlpha = 0.8;
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(cx, cy, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // White center
-            const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.7);
-            centerGrad.addColorStop(0, '#fff');
-            centerGrad.addColorStop(0.8, '#fff');
-            centerGrad.addColorStop(1, color);
+            // 3. White Hot Core (Intense center)
+            const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.8);
+            core.addColorStop(0, '#fff');
+            core.addColorStop(0.5, 'rgba(255,255,255,0.8)');
+            core.addColorStop(1, 'rgba(255,255,255,0)');
 
-            ctx.fillStyle = centerGrad;
+            ctx.globalAlpha = 1.0;
+            ctx.fillStyle = core;
             ctx.beginPath();
-            ctx.arc(cx, cy, radius * 0.7, 0, Math.PI * 2);
+            ctx.arc(cx, cy, radius * 0.8, 0, Math.PI * 2);
             ctx.fill();
 
             this.spriteCache[key] = canvas;
@@ -181,8 +182,10 @@ export default class BulletManager {
 
     render(renderer, alpha) {
         const ctx = renderer.ctx;
-        // Batch rendering can be complex with z-ordering, but usually standard order is fine.
-        // We can optimize by reducing function calls.
+
+        ctx.save();
+        // Additive blending makes overlapping bullets glow intensely WHITE
+        ctx.globalCompositeOperation = 'lighter';
 
         for (let i = 0; i < this.activeCount; i++) {
             const b = this.pool[i];
@@ -196,16 +199,17 @@ export default class BulletManager {
             const sprite = this.getBulletSprite(b.color, b.radius);
             if (sprite) {
                 const offset = sprite.width / 2;
-                // Round to integer pixels for sharp rendering and speed
-                ctx.drawImage(sprite, drawX - offset, drawY - offset);
+                // Round to integer pixels
+                ctx.drawImage(sprite, (drawX - offset) | 0, (drawY - offset) | 0);
             } else {
-                // Fallback (rare)
+                // Fallback
                 ctx.fillStyle = b.color;
                 ctx.beginPath();
-                ctx.arc(Math.round(drawX), Math.round(drawY), b.radius, 0, Math.PI * 2);
+                ctx.arc(drawX | 0, drawY | 0, b.radius, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
+        ctx.restore();
     }
 
     clear() {

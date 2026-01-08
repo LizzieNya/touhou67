@@ -157,7 +157,7 @@ export default class ParticleSystem {
     constructor(game) {
         this.game = game;
         this.pool = [];
-        this.poolSize = 1000; // Reduced pool capacity for better performance
+        this.poolSize = 600; // Optimized pool size for performance
         this.activeCount = 0;
 
         for (let i = 0; i < this.poolSize; i++) {

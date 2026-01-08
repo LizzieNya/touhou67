@@ -36,6 +36,48 @@ export default class Background {
             this.y = 0;
         }
 
+        this.petals.forEach(p => {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.rotation += p.rotSpeed * dt;
+            // Oscillate sway
+            p.x += Math.sin(this.game.accumulator + p.y * 0.01) * 0.5;
+
+            if (p.y > this.game.height + 10) {
+                p.y = -10;
+                p.x = Math.random() * (this.game.playAreaWidth || this.game.width) - 50;
+            }
+            if (p.x > (this.game.playAreaWidth || this.game.width) + 10) {
+                p.x = -10;
+            }
+        });
+    }
+
+    _shouldShowPetals() {
+        // Show petals only in Stage 1 (Rumia) or Extra or explicit 'Stage 1'
+        const s = this.currentStage;
+        if (s === 1 || s === 'Stage 1' || s === 'Extra') return true;
+        if (typeof s === 'string' && s.includes('Rumia')) return true;
+        return false;
+    }
+
+    update(dt) {
+        // Check if stage changed
+        const scene = this.game.sceneManager.currentScene;
+        if (scene && scene.stage !== this.currentStage) {
+            this.currentStage = scene.stage;
+            this.loadBackgroundImage(this.currentStage);
+        }
+
+        if (this.currentStage !== 'Menu' && this.currentStage !== 'Menu7') {
+            this.y += this.speed * dt;
+        }
+
+        // Reset y is handled in render for images, but for grid fallback:
+        if (!this.image && this.y >= this.game.height) {
+            this.y = 0;
+        }
+
         // Update Clouds
         this.clouds.forEach(cloud => {
             cloud.y += cloud.speed * dt;
@@ -67,22 +109,31 @@ export default class Background {
             }
         });
 
-        // Update Petals (Foreground)
-        if (!this.petals) {
-            this.petals = [];
-            for (let i = 0; i < 15; i++) {
-                this.petals.push({
-                    x: Math.random() * (this.game.playAreaWidth || this.game.width),
-                    y: Math.random() * this.game.height,
-                    vx: 10 + Math.random() * 10, // Drift right
-                    vy: 30 + Math.random() * 20, // Fall down
-                    rotation: Math.random() * Math.PI * 2,
-                    rotSpeed: (Math.random() - 0.5) * 2,
-                    size: 4 + Math.random() * 3,
-                    color: '#fce' // Pink
-                });
+        // Update Petals (Foreground) - ONLY if correct stage
+        if (this._shouldShowPetals()) {
+            if (!this.petals) {
+                this.petals = [];
+                for (let i = 0; i < 20; i++) { // Slightly increased count for ambience
+                    this.petals.push({
+                        x: Math.random() * (this.game.playAreaWidth || this.game.width),
+                        y: Math.random() * this.game.height,
+                        vx: 10 + Math.random() * 10,
+                        vy: 40 + Math.random() * 20, // Faster fall
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 2,
+                        size: 3 + Math.random() * 3, // Slightly smaller
+                        color: '#ffddee' // Paler pink
+                    });
+                }
             }
+            this.updatePetals(dt);
+        } else {
+            this.petals = null; // Clear memory/processing
         }
+    }
+
+    updatePetals(dt) {
+        if (!this.petals) return;
 
         this.petals.forEach(p => {
             p.x += p.vx * dt;
@@ -93,7 +144,7 @@ export default class Background {
 
             if (p.y > this.game.height + 10) {
                 p.y = -10;
-                p.x = Math.random() * (this.game.playAreaWidth || this.game.width) - 50; // Allow drift in from left
+                p.x = Math.random() * (this.game.playAreaWidth || this.game.width) - 50;
             }
             if (p.x > (this.game.playAreaWidth || this.game.width) + 10) {
                 p.x = -10;
@@ -194,11 +245,15 @@ export default class Background {
 
         // Render Clouds/Fog (Optimized)
         if (this.currentStage !== 'Menu' && this.currentStage !== 'Menu7') {
+            const ctx = renderer.ctx; // Ensure we use local ctx context
             ctx.save();
             ctx.fillStyle = '#fff';
+
+            // Batch same-alpha clouds roughly or just draw
+            // Optimization: Skip very faint clouds or use simple rects if performance is key
+            // For now, standard optimization
             this.clouds.forEach(cloud => {
-                ctx.globalAlpha = cloud.alpha * 0.5; // Simpler alpha
-                // No gradient for performance
+                ctx.globalAlpha = cloud.alpha * 0.4; // Reduced opacity
                 ctx.beginPath();
                 ctx.arc(cloud.x | 0, cloud.y | 0, cloud.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -298,15 +353,18 @@ export default class Background {
 
         const ctx = renderer.ctx;
         ctx.save();
-        ctx.fillStyle = '#ffccee'; // Soft pink
+        ctx.fillStyle = '#ffccee';
+        ctx.globalAlpha = 0.4; // Very transparent to distinguish from bullets
 
         this.petals.forEach(p => {
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rotation);
-            // Draw petal shape (simple oval-ish)
+            // Draw petal shape - simple rhombus/leaf shape for distinct look
             ctx.beginPath();
-            ctx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
+            ctx.moveTo(0, -p.size);
+            ctx.quadraticCurveTo(p.size * 0.6, -p.size * 0.5, 0, p.size);
+            ctx.quadraticCurveTo(-p.size * 0.6, -p.size * 0.5, 0, -p.size);
             ctx.fill();
             ctx.restore();
         });

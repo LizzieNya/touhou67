@@ -76,7 +76,10 @@ export default class CollisionSystem {
         // Loop enemies first if fewer? No, usually fewer enemies, but many P-bullets.
         // O(Pb * E) is fine.
 
-        for (let i = 0; i < playerBullets.length; i++) {
+        // 2. Player Bullets vs Enemies - Optimized loop
+        const activePlayerBullets = scene.playerBulletManager.activeCount;
+
+        for (let i = 0; i < activePlayerBullets; i++) {
             const pb = playerBullets[i];
             if (!pb.active) continue;
 
