@@ -57,6 +57,7 @@ export const StageExtraEvents = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const patchouli = new Boss(scene.game, centerX, -50, "Patchouli Knowledge");
+                patchouli.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 patchouli.color = '#a0f';
 
                 // Phase 1: Moon Sign "Silent Selene"
@@ -157,14 +158,14 @@ export const StageExtraEvents = (character) => [
                 flandre.addPhase(2000, 50, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224) + Math.sin(t * 2) * 50;
                     enemy.y = 100 + Math.cos(t * 1.5) * 20;
-                    
+
                     if (Math.floor(t * 60) % 4 === 0) {
                         // High density aimed spray
                         PatternLibrary.aimedNWay(scene, enemy, 3, 0.5, 400, '#f00', 3);
-                        
+
                         // Random bats
                         if (Math.random() < 0.3) {
-                             PatternLibrary.randomSpray(scene, enemy.x, enemy.y, 2, Math.PI/2, Math.PI, 200, 400, '#000', 3);
+                            PatternLibrary.randomSpray(scene, enemy.x, enemy.y, 2, Math.PI / 2, Math.PI, 200, 400, '#000', 3);
                         }
                     }
                 });
@@ -176,14 +177,14 @@ export const StageExtraEvents = (character) => [
 
                     // Authentic: Blue waves then aim red
                     const cycle = t % 4; // 4 second cycle?
-                    
+
                     if (Math.floor(t * 60) % 5 === 0) {
-                         // Blue Spiral
-                         const angle = t * 3;
-                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 300, Math.sin(angle) * 300, '#00f', 4);
-                         scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle + Math.PI) * 300, Math.sin(angle + Math.PI) * 300, '#00f', 4);
+                        // Blue Spiral
+                        const angle = t * 3;
+                        scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 300, Math.sin(angle) * 300, '#00f', 4);
+                        scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle + Math.PI) * 300, Math.sin(angle + Math.PI) * 300, '#00f', 4);
                     }
-                    
+
                     if (Math.floor(t * 60) % 15 === 0) {
                         // Red Aimed
                         PatternLibrary.aimed(scene, enemy, 450, '#f00', 5);
@@ -194,19 +195,19 @@ export const StageExtraEvents = (character) => [
                 flandre.addPhase(3000, 70, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224);
                     enemy.y = 100;
-                    
+
                     // Giant Sword Swipe
                     // We simulate this by spawning a line of bullets that rotates
                     const swipeSpeed = 0.5; // Radians per second
                     const angle = Math.PI / 2 + Math.sin(t * swipeSpeed) * 2.0; // Oscillate
-                    
+
                     if (Math.floor(t * 60) % 2 === 0) {
                         PatternLibrary.laevateinnBeam(scene, enemy.x, enemy.y, angle, 300, 100, '#f00', 10);
                     }
-                    
+
                     // Additional chaos
                     if (Math.floor(t * 60) % 20 === 0) {
-                         PatternLibrary.ring(scene, enemy.x, enemy.y, 20, 200, '#ff0', 3);
+                        PatternLibrary.ring(scene, enemy.x, enemy.y, 20, 200, '#ff0', 3);
                     }
                 }, "Taboo 'Laevateinn'");
 
@@ -216,34 +217,34 @@ export const StageExtraEvents = (character) => [
                     const cy = 100;
                     enemy.x = cx;
                     enemy.y = cy;
-                    
+
                     // 4 Virtual Sources
                     const sources = [
-                        {x: cx, y: cy},
-                        {x: cx - 60, y: cy + 20},
-                        {x: cx + 60, y: cy + 20},
-                        {x: cx, y: cy - 40}
+                        { x: cx, y: cy },
+                        { x: cx - 60, y: cy + 20 },
+                        { x: cx + 60, y: cy + 20 },
+                        { x: cx, y: cy - 40 }
                     ];
-                    
+
                     if (Math.floor(t * 60) % 10 === 0) {
                         sources.forEach((s, i) => {
-                            PatternLibrary.aimed(scene, s, 300 + i*20, '#f00', 4);
+                            PatternLibrary.aimed(scene, s, 300 + i * 20, '#f00', 4);
                             if (Math.random() < 0.5) {
-                                scene.bulletManager.spawn(s.x, s.y, (Math.random()-0.5)*200, 200, '#f00', 3);
+                                scene.bulletManager.spawn(s.x, s.y, (Math.random() - 0.5) * 200, 200, '#f00', 3);
                             }
                         });
                     }
                 }, "Taboo 'Four of a Kind'");
-                
+
                 // Phase 5: Taboo "Starbow Break"
                 flandre.addPhase(3000, 80, (enemy, dt, t) => {
                     enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224);
                     enemy.y = 120;
-                    
+
                     if (Math.floor(t * 60) % 60 === 0) { // Every second
-                         PatternLibrary.starbow(scene, enemy.x, enemy.y, 200, 4);
+                        PatternLibrary.starbow(scene, enemy.x, enemy.y, 200, 4);
                     }
-                    
+
                     // Dangerous rain
                     if (Math.floor(t * 60) % 5 === 0) {
                         scene.bulletManager.spawn(Math.random() * (scene.game.playAreaWidth || scene.game.width), 0, 0, 300, '#fff', 2);
@@ -252,14 +253,14 @@ export const StageExtraEvents = (character) => [
 
                 // Phase 6: Taboo "Kagome, Kagome"
                 flandre.addPhase(3000, 90, (enemy, dt, t) => {
-                     // Cage pattern
-                     if (Math.floor(t * 60) % 30 === 0) {
-                         // Surround player
-                         PatternLibrary.ring(scene, scene.player.x, scene.player.y, 16, 0, '#0f0', 3);
-                         // Note: They need to accelerate inwards? 
-                         // For now, let's just create a dense web from boss
-                         PatternLibrary.scarletWeb(scene, enemy.x, enemy.y, 6, 5, 200, '#0f0', 3);
-                     }
+                    // Cage pattern
+                    if (Math.floor(t * 60) % 30 === 0) {
+                        // Surround player
+                        PatternLibrary.ring(scene, scene.player.x, scene.player.y, 16, 0, '#0f0', 3);
+                        // Note: They need to accelerate inwards? 
+                        // For now, let's just create a dense web from boss
+                        PatternLibrary.scarletWeb(scene, enemy.x, enemy.y, 6, 5, 200, '#0f0', 3);
+                    }
                 }, "Taboo 'Kagome, Kagome'");
 
                 // Phase 7: Q.E.D. "Ripples of 495 Years"
@@ -273,10 +274,10 @@ export const StageExtraEvents = (character) => [
                         const angle = (t * 2) % (Math.PI * 2);
                         const colors = ['#f00', '#00f', '#0f0', '#ff0'];
                         const color = colors[Math.floor(t) % 4];
-                        
+
                         // Spawn a ring that expands
-                         PatternLibrary.ring(scene, enemy.x, enemy.y, 4, 300, color, 4, angle + t);
-                         PatternLibrary.ring(scene, enemy.x, enemy.y, 4, 250, color, 4, -angle - t);
+                        PatternLibrary.ring(scene, enemy.x, enemy.y, 4, 300, color, 4, angle + t);
+                        PatternLibrary.ring(scene, enemy.x, enemy.y, 4, 250, color, 4, -angle - t);
                     }
                 }, "Q.E.D. 'Ripples of 495 Years'");
 

@@ -5,6 +5,8 @@ export default class LeitmotifManager {
         this.isPlaying = false;
         this.currentTheme = null;
         this.tempo = 120;
+        this.themeIndices = {}; // Save playback positions
+        this.currentIndex = 0;
     }
 
     stop() {
@@ -21,6 +23,9 @@ export default class LeitmotifManager {
 
     reset() {
         this.stop();
+        this.themeIndices = {};
+        this.currentIndex = 0;
+        this.currentTheme = null;
     }
 
     update(dt) {
@@ -29,6 +34,12 @@ export default class LeitmotifManager {
 
     async playTheme(characterName) {
         if (this.currentTheme === characterName && this.isPlaying) return;
+
+        // Save current index for the OLD theme
+        if (this.currentTheme) {
+            this.themeIndices[this.currentTheme] = this.currentIndex;
+        }
+
         this.stop();
         this.currentTheme = characterName;
         this.isPlaying = true;
@@ -37,11 +48,16 @@ export default class LeitmotifManager {
         if (!themeData) return;
 
         if (themeData.audioUrl) {
-            // ... (Audio URL logic preserved just in case)
+            // ...
         }
 
         this.tempo = themeData.tempo || 120;
-        this.playSequence(themeData.sequence, 0);
+        // Resume from saved index or 0
+        const startIndex = this.themeIndices[characterName] || 0;
+        this.currentIndex = startIndex;
+        this.playSequence(themeData.sequence, startIndex);
+
+        console.log(`Playing theme: ${characterName} from index ${startIndex}`);
     }
 
     playSequence(sequence, index) {
@@ -63,6 +79,8 @@ export default class LeitmotifManager {
             if (freq) this.playNote(freq, stepDuration * 0.9, type, vol);
         });
 
+        this.currentIndex = index; // Track current index
+
         this.timeoutId = setTimeout(() => {
             this.playSequence(sequence, index + 1);
         }, stepDuration * 1000);
@@ -81,7 +99,7 @@ export default class LeitmotifManager {
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(now + duration + 0.1);
-        
+
         // Clean up after playback to prevent memory leaks
         osc.onended = () => {
             try {
@@ -91,7 +109,7 @@ export default class LeitmotifManager {
             const idx = this.activeNodes.indexOf(osc);
             if (idx > -1) this.activeNodes.splice(idx, 1);
         };
-        
+
         this.activeNodes.push(osc);
     }
 
@@ -106,6 +124,9 @@ export default class LeitmotifManager {
     }
 
     getTheme(name) {
+        if (this.cachedThemes && this.cachedThemes[name.toLowerCase()]) {
+            return this.cachedThemes[name.toLowerCase()];
+        }
         const s = (notes, duration) => ({ notes, duration });
         const n = (note, type = 'square', vol = 0.1) => ({ note, type, vol });
         const lead = (note) => n(note, 'square', 0.15);
@@ -344,6 +365,7 @@ export default class LeitmotifManager {
         themes['kaguya'] = { tempo: 130, sequence: [s(piano('C5'), 0.5)] };
         themes['mokou'] = { tempo: 170, sequence: [s(guitar('E3'), 0.5)] };
         themes['utsuho'] = themes['okuu'];
+        if (!this.cachedThemes) this.cachedThemes = themes;
         return themes[name.toLowerCase()] || null;
     }
 }

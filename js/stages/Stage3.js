@@ -151,6 +151,7 @@ export const Stage3Events = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const meiling = new Boss(scene.game, centerX, -50, "Hong Meiling");
+                meiling.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 meiling.color = '#0a0'; // Green
 
                 // Phase 1: Rainbow spread

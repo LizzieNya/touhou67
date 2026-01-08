@@ -66,6 +66,10 @@ export default class SoundManager {
         this._playSound('triangle', 440, 220, 0.1, 0.1);
     }
 
+    playMenuCancel() {
+        this.playMenuBack();
+    }
+
     playShoot() {
         this._playSound('square', 800, 100, 0.1, 0.1);
     }
@@ -273,22 +277,22 @@ export default class SoundManager {
 
     playGameStartJingle() {
         if (!this.enabled) return;
-        
+
         const now = this.ctx.currentTime;
         const playNote = (freq, time, duration = 0.2, type = 'sine', vol = 0.2) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            
+
             osc.type = type;
             osc.frequency.setValueAtTime(freq, time);
-            
+
             gain.gain.setValueAtTime(0, time);
             gain.gain.linearRampToValueAtTime(vol * this.masterVolume, time + 0.01);
             gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-            
+
             osc.connect(gain);
             gain.connect(this.compressor);
-            
+
             osc.start(time);
             osc.stop(time + duration + 0.1);
         };
@@ -297,7 +301,7 @@ export default class SoundManager {
         playNote(659.25, now, 0.3, 'triangle', 0.4); // E5
         playNote(493.88, now + 0.08, 0.3, 'sine', 0.3); // B4
         playNote(1318.51, now + 0.16, 0.6, 'sine', 0.3); // E6 (Sparkle)
-        
+
         // Slight bass pluck
         playNote(164.81, now, 0.4, 'triangle', 0.4); // E3
     }

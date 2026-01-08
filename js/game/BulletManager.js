@@ -184,8 +184,8 @@ export default class BulletManager {
         const ctx = renderer.ctx;
 
         ctx.save();
-        // Additive blending makes overlapping bullets glow intensely WHITE
-        ctx.globalCompositeOperation = 'lighter';
+        // Use source-over for better visibility on all backgrounds (fixes invisible bullets)
+        ctx.globalCompositeOperation = 'source-over';
 
         for (let i = 0; i < this.activeCount; i++) {
             const b = this.pool[i];

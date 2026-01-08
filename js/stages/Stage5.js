@@ -149,6 +149,7 @@ export const Stage5Events = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const sakuya = new Boss(scene.game, centerX, -50, "Sakuya Izayoi");
+                sakuya.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 sakuya.color = '#aaa'; // Silver
 
                 // Phase 1: Knife Throw

@@ -138,6 +138,7 @@ export const Stage4Events = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const koakuma = new Boss(scene.game, centerX, -50, "Koakuma");
+                koakuma.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 koakuma.color = '#a00'; // Reddish
 
                 // Phase 1: Random aimed

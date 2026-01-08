@@ -137,6 +137,7 @@ export const Stage6Events = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const sakuya = new Boss(scene.game, centerX, -50, "Sakuya Izayoi");
+                sakuya.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 sakuya.color = '#aaa';
 
                 // Phase 1: Killing Doll

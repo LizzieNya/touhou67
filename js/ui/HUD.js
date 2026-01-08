@@ -26,11 +26,11 @@ export default class HUD {
         const player = scene ? scene.player : null;
         const ctx = renderer.ctx;
 
-        // Hide DOM sidebar if it exists
-        const domSidebar = document.getElementById('sidebar');
-        if (domSidebar && domSidebar.style.display !== 'none') {
-            domSidebar.style.display = 'none';
-        }
+        // Hide DOM sidebar if it exists - DISABLED to prevent flickering if GameScene enables it
+        // const domSidebar = document.getElementById('sidebar');
+        // if (domSidebar && domSidebar.style.display !== 'none') {
+        //     domSidebar.style.display = 'none';
+        // }
 
         // Draw canvas-based sidebar (Touhou style)
         ctx.save();
@@ -48,7 +48,7 @@ export default class HUD {
         grad.addColorStop(1, '#222');
         ctx.fillStyle = grad;
         ctx.fillRect(sidebarX, sidebarY, sidebarW, sidebarH);
-        
+
         // Subtle pattern/texture overlay could be added here if desired, 
         // but a gradient is clean and fresh.
 
@@ -136,7 +136,7 @@ export default class HUD {
             ctx.save();
             ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.fillRect(0, 100, sidebarX, 50); // Band across play area
-            
+
             ctx.font = 'italic bold 30px "Times New Roman", serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -154,31 +154,31 @@ export default class HUD {
             const boss = scene.enemies.find(e => e.constructor.name === 'Boss' && e.active && e.isSpellCard);
             if (boss) {
                 const t = boss.stateTimer !== undefined ? boss.stateTimer : 100;
-                
+
                 // Animation Params
                 // 1. Initial Slide In: fast ease-out
                 // 2. Sustain: steady
                 // 3. End: handled by boss phase switch
-                
+
                 const slideDuration = 0.5;
                 const slideProgress = Math.min(1, t / slideDuration);
                 const ease = 1 - Math.pow(1 - slideProgress, 3); // Cubic ease out
-                
+
                 const playWidth = this.game.playAreaWidth || this.game.width;
                 const playHeight = this.game.height;
-                
+
                 // --- 1. Spell Background Strip (Top Right) ---
                 ctx.save();
                 const stripHeight = 30;
                 const stripY = 40;
                 const stripWidth = 400;
                 const stripX = playWidth - (stripWidth * ease); // Slide from right
-                
+
                 // Clip to play area
                 ctx.beginPath();
                 ctx.rect(0, 0, playWidth, playHeight);
                 ctx.clip();
-                
+
                 // Gradient Strip
                 const grad = ctx.createLinearGradient(stripX, 0, playWidth, 0);
                 grad.addColorStop(0, 'rgba(0,0,0,0)');
@@ -186,25 +186,25 @@ export default class HUD {
                 grad.addColorStop(1, 'rgba(50,0,50,0.8)');
                 ctx.fillStyle = grad;
                 ctx.fillRect(stripX, stripY, stripWidth, stripHeight);
-                
+
                 // --- 2. Spell Name Text ---
                 ctx.textAlign = 'right';
                 ctx.font = 'italic bold 22px "Times New Roman", serif';
                 const textX = playWidth - 20;
                 const textY = stripY + 22;
-                
+
                 if (slideProgress > 0) {
-                     // Outline instead of Shadow
+                    // Outline instead of Shadow
                     ctx.fillStyle = '#fff';
                     ctx.fillText(boss.spellCardName, textX - (1 - ease) * 100, textY);
-                    
+
                     // Optional: Cheap outline
                     // ctx.strokeStyle = '#f0f';
                     // ctx.lineWidth = 1;
                     // ctx.strokeText(boss.spellCardName, textX - (1 - ease) * 100, textY);
                 }
                 ctx.restore();
-                
+
                 // --- 3. SPELL BONUS Counter (Top Right, below name) ---
                 // Only show if we have a real bonus system, but let's fake/prep it
                 ctx.save();
@@ -213,26 +213,26 @@ export default class HUD {
                 ctx.fillStyle = '#ff8';
                 // Decrementing bonus based on timer (fake visual)
                 const maxBonus = 10000000;
-                const currentBonus = Math.floor(maxBonus - (boss.phaseTimer * 1000)); 
+                const currentBonus = Math.floor(maxBonus - (boss.phaseTimer * 1000));
                 const displayBonus = Math.max(0, currentBonus); // Placeholder logic
-                
+
                 // Hide for now if annoying, but user requested 'cool effects'. 
                 // Let's settle for a "Spell Card" label
                 ctx.font = '10px Arial';
                 ctx.fillStyle = '#aaa';
                 ctx.fillText("SPELL CARD", textX, stripY - 5);
                 ctx.restore();
-                
+
                 // --- 4. Portrait Cut-In (Optional / Future) ---
                 // If t < 1.0 (just started), show a flash or cut-in
                 if (t < 1.0) {
-                     // Quick flash line
-                     const flashAlpha = 1.0 - t;
-                     ctx.save();
-                     ctx.globalCompositeOperation = 'lighter';
-                     ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha * 0.5})`;
-                     ctx.fillRect(0, stripY, playWidth, stripHeight);
-                     ctx.restore();
+                    // Quick flash line
+                    const flashAlpha = 1.0 - t;
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha * 0.5})`;
+                    ctx.fillRect(0, stripY, playWidth, stripHeight);
+                    ctx.restore();
                 }
             }
         }

@@ -108,6 +108,7 @@ export const Stage2Events = (character) => [
                 const Boss = module.default;
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const daiyousei = new Boss(scene.game, centerX, -50, "Daiyousei");
+                daiyousei.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
                 daiyousei.color = '#0f0';
 
                 // Phase 1: Simple Spread
@@ -129,12 +130,12 @@ export const Stage2Events = (character) => [
     },
     // --- WAVE 2: More Fairies ---
     {
-        time: 80.0,
+        time: 65.0, // Reduced from 80.0
         action: (scene) => {
-            // Resume Stage Theme
-            if (scene.game.soundManager) {
+            // Resume Stage Theme - Commented out
+            /*if (scene.game.soundManager) {
                 scene.game.soundManager.playBossTheme('stage2');
-            }
+            }*/
             for (let i = 0; i < 16; i++) {
                 setTimeout(() => {
                     const e = new Enemy(scene.game, (i % 2 === 0 ? 0 : (scene.game.playAreaWidth || 448)), 50 + i * 20);
@@ -150,7 +151,7 @@ export const Stage2Events = (character) => [
     },
     // --- WAVE 2.5: Diamond Dust (Small Fast Bullets) ---
     {
-        time: 90.0,
+        time: 75.0, // Reduced from 90.0
         action: (scene) => {
             for (let i = 0; i < 12; i++) {
                 setTimeout(() => {
@@ -169,7 +170,7 @@ export const Stage2Events = (character) => [
     },
     // --- WAVE 3: Snowball Swarm ---
     {
-        time: 100.0,
+        time: 85.0, // Reduced from 100.0
         action: (scene) => {
             for (let i = 0; i < 12; i++) {
                 setTimeout(() => {
@@ -188,7 +189,7 @@ export const Stage2Events = (character) => [
     },
     // --- WAVE 3.5: Aimed Ice Rush ---
     {
-        time: 110.0,
+        time: 95.0, // Reduced from 110.0
         action: (scene) => {
             for (let i = 0; i < 10; i++) {
                 setTimeout(() => {
@@ -207,7 +208,7 @@ export const Stage2Events = (character) => [
     },
     // --- WAVE 3.8: Heavy Snowfall ---
     {
-        time: 120.0,
+        time: 105.0, // Reduced from 120.0
         action: (scene) => {
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => {
@@ -226,7 +227,7 @@ export const Stage2Events = (character) => [
     },
     // --- BOSS: Cirno ---
     {
-        time: 130.0,
+        time: 115.0, // Reduced from 130.0
         action: (scene) => {
             if (scene.game.soundManager) {
                 scene.game.soundManager.playBossTheme('cirno');
@@ -269,7 +270,7 @@ export const Stage2Events = (character) => [
         }
     },
     {
-        time: 131.0,
+        time: 116.0,
         action: (scene) => {
             import('../game/Boss.js').then(module => {
                 const Boss = module.default;

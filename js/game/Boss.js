@@ -19,6 +19,7 @@ export default class Boss extends Enemy {
         this.isBoss = true;
         this.invulnerableTimer = 0;
         this.breakTimer = 0; // Delay between phases
+        this.stopMusicOnDeath = true; // Default: Stop music when boss dies (set to false for midbosses)
     }
 
     addPhase(hp, duration, patternFunc, spellName = null) {
@@ -42,7 +43,7 @@ export default class Boss extends Enemy {
         super.die();
         // Prevent silence gap by NOT stopping theme immediately if next stage handles it.
         // But for boss death (result screen), we usually want to stop or fade out.
-        if (this.game.soundManager && typeof this.game.soundManager.stopBossTheme === 'function') {
+        if (this.stopMusicOnDeath && this.game.soundManager && typeof this.game.soundManager.stopBossTheme === 'function') {
             this.game.soundManager.stopBossTheme();
         }
         // Boss death explosion
@@ -115,6 +116,14 @@ export default class Boss extends Enemy {
         // Cache Name Width for UI
         this.nameWidth = 0;
         this.needsMeasure = true;
+
+        // Spell Card Declaration Cut-in
+        if (this.isSpellCard) {
+            this.spellCardTimer = 3.0; // Show for 3 seconds
+            this.game.soundManager.playSpellCard();
+        } else {
+            this.spellCardTimer = 0;
+        }
     }
 
     takeDamage(amount) {
@@ -136,6 +145,7 @@ export default class Boss extends Enemy {
 
         this.phaseTimer -= dt;
         this.stateTimer += dt;
+        if (this.spellCardTimer > 0) this.spellCardTimer -= dt;
 
         // Timer run out or HP depleted
         if ((this.phaseTimer <= 0 || this.hp <= 0) && this.breakTimer <= 0) {
@@ -202,43 +212,53 @@ export default class Boss extends Enemy {
 
             // Draw Magic Circle (if spell card)
             if (this.isSpellCard) {
-                // Aura Effect
                 const time = Date.now() / 200;
+
+                // Back Aura (Spinning Runes)
                 ctx.save();
                 ctx.globalCompositeOperation = 'lighter';
+                ctx.translate(0, 0);
+                ctx.rotate(-time * 0.5); // Counter-spin
 
-                // Pulsing aura
-                const scale = 1 + Math.sin(time) * 0.1;
-                ctx.globalAlpha = 0.3;
-                ctx.fillStyle = this.color;
+                // Outer Ring
+                ctx.strokeStyle = this.color;
+                ctx.globalAlpha = 0.4;
+                ctx.lineWidth = 4;
+                ctx.setLineDash([20, 10, 5, 10]);
                 ctx.beginPath();
-                ctx.arc(0, 0, 80 * scale, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.arc(0, 0, 90 + Math.sin(time) * 5, 0, Math.PI * 2);
+                ctx.stroke();
 
-                // Rotating squares (Magical effect)
+                // Runes (Simulated by messy shapes)
                 ctx.rotate(time);
-                for (let i = 0; i < 4; i++) {
-                    ctx.rotate(Math.PI / 2);
+                for (let i = 0; i < 6; i++) {
+                    ctx.rotate(Math.PI / 3);
                     ctx.fillStyle = this.color;
-                    ctx.globalAlpha = 0.2;
-                    ctx.fillRect(-60, -60, 120, 120);
+                    ctx.globalAlpha = 0.15;
+                    ctx.fillRect(40, -5, 30, 10);
                 }
-
                 ctx.restore();
 
-                // Original Magic Circle
+                // Inner Magic Circle
+                ctx.save();
                 ctx.strokeStyle = this.color;
                 ctx.lineWidth = 2;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+
                 ctx.beginPath();
                 ctx.arc(0, 0, 60, 0, Math.PI * 2);
                 ctx.stroke();
 
-                // Rotating inner circle
-                ctx.save();
-                ctx.rotate(Date.now() / 500);
-                ctx.setLineDash([10, 10]);
+                // Rotating inner geometry (Hexagram)
+                ctx.rotate(time * 0.8);
                 ctx.beginPath();
-                ctx.arc(0, 0, 50, 0, Math.PI * 2);
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3;
+                    // Draw Star/Hexagon lines
+                    ctx.moveTo(Math.cos(angle) * 50, Math.sin(angle) * 50);
+                    ctx.lineTo(Math.cos(angle + 2 * Math.PI / 3) * 50, Math.sin(angle + 2 * Math.PI / 3) * 50);
+                }
                 ctx.stroke();
                 ctx.restore();
             }
@@ -330,6 +350,53 @@ export default class Boss extends Enemy {
             const remainingPhases = this.phases.length - 1 - this.currentPhaseIndex;
             for (let i = 0; i < remainingPhases; i++) {
                 renderer.drawText("★", barX + (this.nameWidth || 100) + 20 + i * 20, barY - 8, 16, '#ff0');
+            }
+
+            // --- Spell Card Declaration (Cut-in) ---
+            if (this.spellCardTimer > 0) {
+                ctx.save();
+                // Slide in from right
+                const screenW = this.game.playAreaWidth || this.game.width;
+                const slide = Math.min(1.0, (3.0 - this.spellCardTimer) * 2); // 0 to 1 quickly
+                const slideOut = Math.max(0, (this.spellCardTimer - 0.5) * 2); // Fades out at end
+                const alpha = Math.min(1.0, this.spellCardTimer);
+
+                const renderY = this.game.height - 100;
+                const renderX = screenW - 20;
+
+                ctx.globalAlpha = alpha;
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+
+                // Background Strip
+                const visibleW = 400 * slide;
+                if (visibleW > 0) {
+                    const grad = ctx.createLinearGradient(screenW, 0, screenW - 400, 0);
+                    grad.addColorStop(0, this.color);
+                    grad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(screenW - visibleW, renderY - 40, visibleW, 50);
+                }
+
+                // Text
+                if (slide > 0.8) {
+                    ctx.font = 'italic bold 24px "Times New Roman", serif';
+                    ctx.fillStyle = '#fff';
+                    ctx.shadowColor = '#000';
+                    ctx.shadowBlur = 4;
+                    ctx.fillText(this.spellCardName, renderX, renderY);
+
+                    // "Spell Card" Label
+                    ctx.font = '16px "Arial", sans-serif';
+                    ctx.fillStyle = '#ffeda0';
+                    ctx.fillText("SPELL CARD", renderX, renderY - 28);
+                }
+
+                // Character Portrait Cut-in (Optional - simple tinted sprite for now)
+                ctx.globalAlpha = alpha * 0.3;
+                renderer.drawSprite((this.name.split(' ')[0]).toLowerCase(), screenW - 100, renderY - 50, 128, 192);
+
+                ctx.restore();
             }
         } catch (e) {
             console.error("Boss Render Error:", e);

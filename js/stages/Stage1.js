@@ -223,6 +223,7 @@ export const Stage1Events = (character) => [
                 // Fix: Ensure we spawn in the center of the PLAY AREA (224), not the screen (320)
                 const centerX = scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224;
                 const rumia = new Boss(scene.game, centerX, -50, "Rumia");
+                rumia.stopMusicOnDeath = false; // Midboss shouldn't stop stage music
 
                 // Phase 1: Non-spell (flower-like pattern)
                 rumia.addPhase(400, 50, (enemy, dt, t) => {
@@ -239,9 +240,8 @@ export const Stage1Events = (character) => [
             });
         }
     },
-    // --- WAVE 3.8: Laser Fairies ---
     {
-        time: 90.0,
+        time: 75.0, // Reduced from 90.0
         action: (scene) => {
             for (let i = 0; i < 10; i++) {
                 setTimeout(() => {
@@ -260,12 +260,12 @@ export const Stage1Events = (character) => [
     },
     // --- WAVE 4: Post-Midboss Rush ---
     {
-        time: 100.0,
+        time: 80.0, // Reduced from 100.0
         action: (scene) => {
-            // Resume Stage Theme
-            if (scene.game.soundManager) {
+            // Resume Stage Theme - Commented out to prevent reset
+            /*if (scene.game.soundManager) {
                 scene.game.soundManager.playBossTheme('stage1');
-            }
+            }*/
 
             // Massive swarm
             for (let i = 0; i < 15; i++) {
@@ -284,7 +284,7 @@ export const Stage1Events = (character) => [
     },
     // --- WAVE 4.5: Great Fairy Rush ---
     {
-        time: 110.0,
+        time: 90.0, // Reduced from 110.0
         action: (scene) => {
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
@@ -304,7 +304,7 @@ export const Stage1Events = (character) => [
     },
     // --- WAVE 4.8: Popcorn Rush (No Bullets) ---
     {
-        time: 120.0,
+        time: 95.0, // Reduced from 120.0
         action: (scene) => {
             for (let i = 0; i < 30; i++) {
                 setTimeout(() => {
@@ -320,7 +320,7 @@ export const Stage1Events = (character) => [
     },
     // --- BOSS: Rumia (Full) ---
     {
-        time: 130.0,
+        time: 105.0, // Reduced from 130.0
         action: (scene) => {
             if (scene.game.soundManager) {
                 scene.game.soundManager.playBossTheme('rumia');
@@ -359,7 +359,7 @@ export const Stage1Events = (character) => [
         }
     },
     {
-        time: 131.0,
+        time: 106.0,
         action: (scene) => {
             import('../game/Boss.js').then(module => {
                 const Boss = module.default;
@@ -389,14 +389,14 @@ export const Stage1Events = (character) => [
 
                     // Moonlight Ray: Lasers crossing near player
                     if (Math.floor(t * 60) % 120 === 0) {
-                         // Horizontal Lasers
+                        // Horizontal Lasers
                         scene.bulletManager.spawn(0, scene.player.y, 300, 0, '#fff', 3, 0, 0, 'laser');
                         scene.bulletManager.spawn((scene.game.playAreaWidth || 448), scene.player.y, -300, 0, '#fff', 3, 0, 0, 'laser');
                     }
 
                     // Random Blue Spray
                     if (Math.floor(t * 60) % 10 === 0) {
-                         PatternLibrary.randomSpray(scene, enemy.x, enemy.y, 1, Math.PI / 2, Math.PI, 100, 200, '#00f', 4);
+                        PatternLibrary.randomSpray(scene, enemy.x, enemy.y, 1, Math.PI / 2, Math.PI, 100, 200, '#00f', 4);
                     }
                 }, "Moon Sign 'Moonlight Ray'");
 
