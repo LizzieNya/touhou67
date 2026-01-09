@@ -141,6 +141,35 @@ export default class SoundManager {
         this._playSound('sine', 2000, 1000, 0.1, 0.05);
     }
 
+    playSpellCard() {
+        // Dramatic "Spell Card" declaration sound (Sharp magical chime)
+        if (!this.enabled) return;
+
+        // Primary Tone
+        this._playSound('triangle', 880, 440, 0.5, 0.3);
+
+        // Secondary Harmonics (Sparkle effect)
+        const now = this.ctx.currentTime;
+        const playSparkle = (freq, delay) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + delay);
+            gain.gain.setValueAtTime(0, now + delay);
+            gain.gain.linearRampToValueAtTime(0.1 * this.masterVolume, now + delay + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.3);
+
+            osc.connect(gain);
+            gain.connect(this.compressor);
+            osc.start(now + delay);
+            osc.stop(now + delay + 0.4);
+        };
+
+        playSparkle(1200, 0);
+        playSparkle(1500, 0.1);
+        playSparkle(1800, 0.2);
+    }
+
     playBossTheme(bossName) {
         if (!this.enabled) return;
         let key = bossName.toLowerCase();
