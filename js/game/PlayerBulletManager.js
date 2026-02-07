@@ -340,13 +340,15 @@ class PlayerBullet extends Entity {
         if (!scene || !scene.enemies) return;
 
         let closest = null;
-        let minDist = Infinity;
+        let minDistSq = Infinity;
 
         for (const enemy of scene.enemies) {
             if (!enemy.active) continue;
-            const dist = Math.hypot(enemy.x - this.x, enemy.y - this.y);
-            if (dist < minDist) {
-                minDist = dist;
+            const dx = enemy.x - this.x;
+            const dy = enemy.y - this.y;
+            const distSq = dx*dx + dy*dy;
+            if (distSq < minDistSq) {
+                minDistSq = distSq;
                 closest = enemy;
             }
         }
@@ -402,9 +404,8 @@ class PlayerBullet extends Entity {
                     renderer.ctx.globalAlpha = trailAlpha;
                     renderer.ctx.fillStyle = this.color;
                     const size = (i / this.trail.length) * (this.type === 'homing' ? 8 : 6);
-                    renderer.ctx.beginPath();
-                    renderer.ctx.arc(t.x, t.y, size, 0, Math.PI * 2);
-                    renderer.ctx.fill();
+                    // Optimized: Use fillRect instead of arc
+                    renderer.ctx.fillRect(t.x - size/2, t.y - size/2, size, size);
                 }
             });
         }
@@ -436,8 +437,9 @@ class PlayerBullet extends Entity {
             renderer.ctx.rotate(angle + Math.PI / 2);
 
             // Subtle glow
-            renderer.ctx.shadowBlur = 6;
-            renderer.ctx.shadowColor = '#8cf';
+            // Subtle glow - Optimized (No ShadowBlur)
+            // renderer.ctx.shadowBlur = 0;
+            // renderer.ctx.shadowColor = 'transparent';
 
             // Very subtle motion blur (only 2 frames)
             renderer.ctx.globalAlpha = 0.15;
@@ -447,7 +449,7 @@ class PlayerBullet extends Entity {
             }
 
             // Main knife body - crisp and visible
-            renderer.ctx.shadowBlur = 4;
+            renderer.ctx.shadowBlur = 0;
             renderer.ctx.globalAlpha = 0.9;
             renderer.ctx.fillStyle = '#ddd';
             renderer.ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
@@ -475,7 +477,7 @@ class PlayerBullet extends Entity {
             renderer.ctx.fill();
 
             // Main star - clear and bright
-            renderer.ctx.shadowBlur = 6;
+            renderer.ctx.shadowBlur = 0;
             renderer.ctx.globalAlpha = 0.95;
             renderer.ctx.fillStyle = this.color;
             renderer.ctx.beginPath();
@@ -522,8 +524,8 @@ class PlayerBullet extends Entity {
                 renderer.ctx.translate(drawX, drawY);
 
                 // Spear Head
-                renderer.ctx.shadowBlur = 10;
-                renderer.ctx.shadowColor = '#f00';
+                renderer.ctx.shadowBlur = 0;
+                renderer.ctx.shadowColor = 'transparent';
                 renderer.ctx.fillStyle = '#f00';
                 renderer.ctx.globalAlpha = 0.8; // Slightly transparent
 
@@ -551,7 +553,7 @@ class PlayerBullet extends Entity {
                 renderer.ctx.fill();
 
                 // Inner Core (White)
-                renderer.ctx.shadowBlur = 5;
+                renderer.ctx.shadowBlur = 0;
                 renderer.ctx.fillStyle = '#fff';
                 renderer.ctx.beginPath();
                 renderer.ctx.moveTo(0, -this.height / 2 + 5);
@@ -564,14 +566,14 @@ class PlayerBullet extends Entity {
             } else {
                 // Standard Laser (Marisa/Okuu) - Beam
                 // Soft outer glow
-                renderer.ctx.shadowBlur = 12;
-                renderer.ctx.shadowColor = this.color;
+                renderer.ctx.shadowBlur = 0;
+                renderer.ctx.shadowColor = 'transparent';
                 renderer.ctx.globalAlpha = pulse * 0.4;
                 renderer.ctx.fillStyle = this.color;
                 renderer.ctx.fillRect(drawX - this.width / 2 - 2, drawY - this.height / 2, this.width + 4, this.height);
 
                 // Main beam
-                renderer.ctx.shadowBlur = 6;
+                renderer.ctx.shadowBlur = 0;
                 renderer.ctx.globalAlpha = pulse;
                 renderer.ctx.fillRect(drawX - this.width / 2, drawY - this.height / 2, this.width, this.height);
 
@@ -588,8 +590,8 @@ class PlayerBullet extends Entity {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.rotation);
 
-            renderer.ctx.shadowBlur = 8;
-            renderer.ctx.shadowColor = '#fff';
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = '#fff';
             renderer.ctx.beginPath();
             renderer.ctx.arc(0, 0, this.width / 2, 0, Math.PI * 2);
@@ -607,8 +609,8 @@ class PlayerBullet extends Entity {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.rotation);
 
-            renderer.ctx.shadowBlur = 6;
-            renderer.ctx.shadowColor = '#8bc34a';
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = '#8bc34a';
             renderer.ctx.beginPath();
             renderer.ctx.arc(0, 0, this.width / 2, 0, Math.PI * 2);
@@ -628,8 +630,8 @@ class PlayerBullet extends Entity {
         } else if (this.type === 'butterfly') {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.rotation);
-            renderer.ctx.shadowBlur = 10;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = this.color;
 
             // Wings
@@ -663,8 +665,8 @@ class PlayerBullet extends Entity {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI / 2);
 
-            renderer.ctx.shadowBlur = 15;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = this.color;
 
             // Long spear shape
@@ -685,8 +687,8 @@ class PlayerBullet extends Entity {
 
         } else if (this.type === 'bubble') {
             renderer.ctx.translate(drawX, drawY);
-            renderer.ctx.shadowBlur = 5;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.strokeStyle = this.color;
             renderer.ctx.lineWidth = 1.5;
             renderer.ctx.beginPath();
@@ -713,8 +715,8 @@ class PlayerBullet extends Entity {
         } else if (this.type === 'ice' || this.type === 'freeze' || this.type === 'icicle') {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.type === 'freeze' ? this.rotation : Math.atan2(this.vy, this.vx) + Math.PI / 2);
-            renderer.ctx.shadowBlur = 8;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = 'rgba(200, 240, 255, 0.8)';
 
             // Diamond/Crystal shape
@@ -738,8 +740,8 @@ class PlayerBullet extends Entity {
         } else if (this.type === 'ufo' || this.type === 'chimera') {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.rotation);
-            renderer.ctx.shadowBlur = 10;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
 
             // Dome
             renderer.ctx.fillStyle = this.color;
@@ -756,8 +758,8 @@ class PlayerBullet extends Entity {
         } else if (this.type === 'spirit') {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI / 2);
-            renderer.ctx.shadowBlur = 10;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
 
             // Wisp shape
             renderer.ctx.fillStyle = this.color;
@@ -769,8 +771,8 @@ class PlayerBullet extends Entity {
 
         } else if (this.type === 'note') {
             renderer.ctx.translate(drawX, drawY);
-            renderer.ctx.shadowBlur = 5;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = this.color;
             renderer.ctx.font = '20px serif';
             renderer.ctx.textAlign = 'center';
@@ -799,8 +801,8 @@ class PlayerBullet extends Entity {
         } else if (this.type === 'crystal') {
             renderer.ctx.translate(drawX, drawY);
             renderer.ctx.rotate(this.rotation + this.timer * 5);
-            renderer.ctx.shadowBlur = 5;
-            renderer.ctx.shadowColor = this.color;
+            renderer.ctx.shadowBlur = 0;
+            renderer.ctx.shadowColor = 'transparent';
             renderer.ctx.fillStyle = this.color;
 
             renderer.ctx.beginPath();
@@ -842,7 +844,7 @@ export default class PlayerBulletManager {
     constructor(game) {
         this.game = game;
         this.pool = [];
-        this.poolSize = 500; // Increased pool
+        this.poolSize = 1000; // Increased pool for better performance
         this.activeCount = 0;
 
         for (let i = 0; i < this.poolSize; i++) {

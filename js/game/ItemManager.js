@@ -184,10 +184,10 @@ class Item extends Entity {
              ctx.rotate(this.game.accumulator * 2);
         }
 
-        // Drop Shadow
-        ctx.shadowColor = 'rgba(0,0,0,0.5)';
-        ctx.shadowBlur = 5;
-        ctx.shadowOffsetY = 3;
+        // Drop Shadow - Optimized (Removed blur)
+        // ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        // ctx.shadowBlur = 5;
+        // ctx.shadowOffsetY = 3;
 
         // Draw Shape
         if (shape === 'box') {
@@ -212,6 +212,8 @@ class Item extends Entity {
             ctx.closePath();
             
             // LED Glow for power items
+            // Optimized: No shadowBlur
+            /*
             if (this.type === 'power' || this.type === 'big_power') {
                 ctx.shadowColor = '#f00';
                 ctx.shadowBlur = 15;
@@ -220,6 +222,7 @@ class Item extends Entity {
                 ctx.shadowColor = 'rgba(0,0,0,0.5)';
                 ctx.shadowBlur = 5;
             }
+            */
             
             ctx.fill();
             ctx.shadowBlur = 0; // Reset for border/inner

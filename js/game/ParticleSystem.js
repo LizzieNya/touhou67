@@ -51,8 +51,15 @@ class Particle {
         this.friction = options.friction || 1;
         this.scaleSpeed = options.scaleSpeed || 0;
 
-        this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = options.rotationSpeed || 0;
+        
+        if (options.rotation !== undefined) {
+            this.rotation = options.rotation;
+        } else if ((this.type === 'circle' || this.type === 'square') && this.rotationSpeed === 0) {
+            this.rotation = 0; // Optimization: Zero rotation for fast-path rendering
+        } else {
+            this.rotation = Math.random() * Math.PI * 2;
+        }
 
         this.active = true;
     }
