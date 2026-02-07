@@ -243,8 +243,9 @@ export default class Boss extends Enemy {
                 ctx.save();
                 ctx.strokeStyle = this.color;
                 ctx.lineWidth = 2;
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = 10;
+                // Optimized: No shadowBlur
+                // ctx.shadowColor = this.color;
+                // ctx.shadowBlur = 10;
 
                 ctx.beginPath();
                 ctx.arc(0, 0, 60, 0, Math.PI * 2);
@@ -331,10 +332,15 @@ export default class Boss extends Enemy {
             ctx.save();
             ctx.font = 'bold 20px "Times New Roman", serif';
             ctx.fillStyle = '#fff';
-            ctx.shadowColor = '#000';
-            ctx.shadowBlur = 4;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
+            // Optimized: No shadowBlur on text every frame
+            // ctx.shadowColor = '#000';
+            // ctx.shadowBlur = 4;
+            // ctx.shadowOffsetX = 2;
+            // ctx.shadowOffsetY = 2;
+            // Simple outline instead if needed
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#000';
+            ctx.strokeText(this.name, barX, barY - 8);
             ctx.textAlign = 'left'; // Fix for cut-off names
 
             // Measure while font is set
@@ -382,8 +388,11 @@ export default class Boss extends Enemy {
                 if (slide > 0.8) {
                     ctx.font = 'italic bold 24px "Times New Roman", serif';
                     ctx.fillStyle = '#fff';
-                    ctx.shadowColor = '#000';
-                    ctx.shadowBlur = 4;
+                    // ctx.shadowColor = '#000';
+                    // ctx.shadowBlur = 4;
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#000';
+                    ctx.strokeText(this.spellCardName, renderX, renderY);
                     ctx.fillText(this.spellCardName, renderX, renderY);
 
                     // "Spell Card" Label

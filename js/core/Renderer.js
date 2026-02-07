@@ -8,21 +8,26 @@ export default class Renderer {
 
     drawSprite(key, x, y, w, h, rotation = 0) {
         const img = this.resourceManager ? this.resourceManager.getImage(key) : null;
-        // Check if it's an Image with data, or a Canvas (which is always ready)
-        const isReady = img && (
-            (img instanceof HTMLCanvasElement && img.width > 0) || 
-            (img.complete && img.naturalWidth !== 0)
-        );
+        
+        if (!img) {
+            // Check if resource manager is even loaded
+            this.drawRect(x - w / 2, y - h / 2, w, h, '#f00');
+            return;
+        }
 
-        if (isReady) {
+        // Optimization: Check for rotation
+        if (rotation === 0) {
+            // Fast path: No save/restore/translate needed
+            const drawX = (x - w / 2) | 0; // Bitwise OR 0 for fast floor/int
+            const drawY = (y - h / 2) | 0;
+            this.ctx.drawImage(img, drawX, drawY, w, h);
+        } else {
+            // Rotation path
             this.ctx.save();
             this.ctx.translate(x, y);
             this.ctx.rotate(rotation);
             this.ctx.drawImage(img, -w / 2, -h / 2, w, h);
             this.ctx.restore();
-        } else {
-            // Fallback - Draw placeholder if image is not ready
-             this.drawRect(x - w / 2, y - h / 2, w, h, '#f00');
         }
     }
 

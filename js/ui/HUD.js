@@ -3,13 +3,6 @@ export default class HUD {
         this.game = game;
         this.score = 0;
         this.graze = 0;
-
-        // Cache DOM elements
-        this.scoreEl = document.getElementById('score-display');
-        this.livesEl = document.getElementById('lives-display');
-        this.bombsEl = document.getElementById('bombs-display');
-        this.powerEl = document.getElementById('power-display');
-        this.grazeEl = document.getElementById('graze-display');
     }
 
     update(dt) {
