@@ -346,26 +346,193 @@ export default class LeitmotifManager {
         };
 
         themes['hong'] = themes['meiling'];
-        themes['parsee'] = { tempo: 150, sequence: [s(piano('A4'), 0.5), s(piano('C5'), 0.5), s(piano('E5'), 0.5)] };
-        themes['nue'] = { tempo: 160, sequence: [s(bass('E2'), 0.25), s(bass('E2'), 0.25), s(guitar('E3'), 0.5)] };
-        themes['okuu'] = { tempo: 180, sequence: [s(bass('C2'), 1.0), s(bass('C2'), 1.0), s(zunpet('C5'), 0.5)] };
-        themes['remilia'] = { tempo: 140, sequence: [s(violin('A4'), 0.5), s(violin('C5'), 0.5), s(violin('E5'), 0.5)] };
-        themes['flandre'] = { tempo: 200, sequence: [s(piano('G5'), 0.25), s(piano('A5'), 0.25), s(piano('B5'), 0.25)] };
+        themes['parsee'] = {
+            tempo: 156,
+            sequence: [
+                s([piano('A4'), piano('E4')], 0.5), s(piano('C5'), 0.25), s(piano('B4'), 0.25), s(piano('A4'), 0.5),
+                s([piano('F4'), piano('D4')], 0.5), s(piano('E4'), 0.25), s(piano('G#4'), 0.25), s([piano('A4'), piano('C4')], 1.0)
+            ]
+        };
+        themes['nue'] = {
+            tempo: 165,
+            sequence: [
+                s([bass('E2'), zunpet('E5')], 0.25), s(bass('E2'), 0.25), s(zunpet('A#4'), 0.25), s(zunpet('G4'), 0.25),
+                s([bass('E2'), zunpet('E5')], 0.25), s(bass('E2'), 0.25), s(zunpet('D5'), 0.25), s(zunpet('F#5'), 0.25),
+                s([bass('C2'), guitar('C3')], 0.5), s(zunpet('B4'), 0.5), s([bass('B1'), guitar('B2')], 0.5), s(zunpet('A#4'), 0.5)
+            ]
+        };
+        themes['okuu'] = {
+            tempo: 180,
+            sequence: [
+                s([bass('C2'), guitar('C3')], 0.25), s(bass('C2'), 0.25), s([guitar('G3'), zunpet('G4')], 0.25), s(bass('C2'), 0.25),
+                s([bass('A#1'), guitar('A#2')], 0.25), s(bass('A#1'), 0.25), s([guitar('F3'), zunpet('F4')], 0.5),
+                s([bass('C2'), guitar('C3')], 0.25), s(bass('C2'), 0.25), s([guitar('G3'), zunpet('C5')], 0.25), s(bass('C2'), 0.25),
+                s([bass('G1'), guitar('G2')], 0.5), s([zunpet('D#5'), zunpet('C5')], 0.5)
+            ]
+        };
+        themes['remilia'] = {
+            tempo: 155,
+            sequence: [
+                s([violin('C5'), bass('C3')], 0.75), s(violin('B4'), 0.25), s([violin('C5'), violin('G4')], 0.5), s(violin('D#5'), 0.5),
+                s([violin('F5'), bass('F3')], 0.75), s(violin('C5'), 0.25), s([violin('G#4'), bass('G#2')], 0.5), s(violin('G4'), 0.5),
+                s([violin('C5'), bass('C3')], 0.5), s(violin('G5'), 0.5), s([violin('D#5'), bass('G2')], 0.5), s(violin('C5'), 0.5)
+            ]
+        };
+        themes['flandre'] = {
+            tempo: 195,
+            sequence: [
+                s([piano('G#5'), piano('F5')], 0.25), s(piano('G#5'), 0.25), s(piano('F5'), 0.25), s([piano('B5'), piano('G#5')], 0.25),
+                s(piano('G#5'), 0.25), s(piano('F5'), 0.25), s(piano('G#5'), 0.25), s(piano('B5'), 0.25),
+                s([piano('C6'), bass('C#3')], 0.25), s(piano('G#5'), 0.25), s(piano('F5'), 0.25), s(piano('G#5'), 0.25),
+                s([piano('D#6'), bass('D#3')], 0.5), s(piano('C#6'), 0.25), s(piano('C6'), 0.25)
+            ]
+        };
         themes['meiling'] = { tempo: 130, sequence: [s(guitar('C3'), 0.5), s(guitar('E3'), 0.5), s(guitar('G3'), 0.5)] };
         themes['patchouli'] = { tempo: 120, sequence: [s(piano('E4'), 0.5), s(piano('G4'), 0.5), s(piano('B4'), 0.5)] };
         themes['sakuya'] = { tempo: 160, sequence: [s(violin('D5'), 0.25), s(violin('F#5'), 0.25), s(violin('A5'), 0.5)] };
         themes['cirno'] = { tempo: 175, sequence: [s(piano('G4'), 0.25), s(piano('F#4'), 0.25), s(piano('E4'), 0.5)] };
-        themes['koishi'] = { tempo: 150, sequence: [s(piano('C5'), 0.5), s(piano('B4'), 0.5)] };
-        themes['aya'] = { tempo: 180, sequence: [s(zunpet('A4'), 0.25), s(zunpet('A4'), 0.25)] };
-        themes['junko'] = { tempo: 160, sequence: [s(bass('D2'), 1.0)] };
-        themes['yuyuko'] = { tempo: 140, sequence: [s(violin('F4'), 0.5), s(violin('A4'), 0.5)] };
-        themes['tewi'] = { tempo: 140, sequence: [s(piano('E5'), 0.25)] };
-        themes['reisen'] = { tempo: 150, sequence: [s(violin('G4'), 0.5)] };
-        themes['eirin'] = { tempo: 140, sequence: [s(piano('B4'), 0.5)] };
-        themes['kaguya'] = { tempo: 130, sequence: [s(piano('C5'), 0.5)] };
-        themes['mokou'] = { tempo: 170, sequence: [s(guitar('E3'), 0.5)] };
-        themes['utsuho'] = themes['okuu'];
-        if (!this.cachedThemes) this.cachedThemes = themes;
-        return themes[name.toLowerCase()] || null;
-    }
+        themes['koishi'] = {
+            tempo: 150,
+            sequence: [
+                s([piano('G4'), piano('B4')], 0.5), s([piano('F#4'), piano('A#4')], 0.5), s(piano('F4'), 0.25), s(piano('E4'), 0.25), s(piano('D#4'), 0.5),
+                s([piano('E4'), piano('G#4')], 0.5), s([piano('F#4'), piano('A#4')], 0.5), s(piano('G4'), 0.5), s(piano('G#4'), 0.5)
+            ]
+        },
+        aya: {
+            tempo: 170,
+            sequence: [
+                s([zunpet('A4'), guitar('A3')], 0.25), s(zunpet('C5'), 0.25), s(zunpet('D5'), 0.25), s(zunpet('E5'), 0.25),
+                s([zunpet('G5'), guitar('G3')], 0.5), s(zunpet('E5'), 0.25), s(zunpet('D5'), 0.25),
+                s([zunpet('C5'), guitar('C3')], 0.25), s(zunpet('A4'), 0.25), s(zunpet('C5'), 0.25), s(zunpet('D5'), 0.25),
+                s([zunpet('E5'), guitar('E3')], 0.5), s(zunpet('A4'), 0.5)
+            ]
+        },
+        junko: {
+            tempo: 160,
+            sequence: [
+                s([bass('D2'), zunpet('D4')], 0.75), s(zunpet('D4'), 0.25), s([bass('D2'), zunpet('A4')], 0.5), s(zunpet('F4'), 0.5),
+                s([bass('A#1'), zunpet('G4')], 0.75), s(zunpet('F4'), 0.25), s([bass('A#1'), zunpet('D4')], 0.5), s(zunpet('C4'), 0.5)
+            ]
+        },
+        yuyuko: {
+            tempo: 138,
+            sequence: [
+                s([violin('D4'), violin('F4'), violin('A4')], 0.75), s(violin('E4'), 0.25), s(violin('F4'), 0.5), s(violin('G4'), 0.5),
+                s([violin('A4'), violin('C5'), violin('E5')], 1.0), s(violin('G4'), 0.5), s(violin('F4'), 0.5),
+                s([violin('E4'), violin('G4'), violin('B4')], 0.75), s(violin('D4'), 0.25), s(violin('E4'), 0.5), s(violin('F4'), 0.5),
+                s([violin('G4'), violin('B4'), violin('D5')], 1.0), s(violin('F4'), 0.5), s(violin('E4'), 0.5)
+            ]
+        },
+        tewi: {
+            tempo: 160,
+            sequence: [
+                s([zunpet('E5'), guitar('E3')], 0.5), s(zunpet('G#5'), 0.5), s(zunpet('F#5'), 0.5), s([zunpet('E5'), guitar('B2')], 0.5),
+                s([zunpet('B4'), guitar('G#3')], 0.5), s(zunpet('C#5'), 0.5), s(zunpet('D#5'), 0.5), s([zunpet('E5'), guitar('E3')], 0.5)
+            ]
+        },
+        reisen: {
+            tempo: 150,
+            sequence: [
+                s([zunpet('G4'), guitar('G3')], 0.75), s(zunpet('A#4'), 0.25), s([zunpet('D5'), guitar('D3')], 0.5), s(zunpet('C5'), 0.5),
+                s([zunpet('A#4'), guitar('G3')], 0.5), s(zunpet('A4'), 0.5), s([zunpet('G4'), bass('G2')], 1.0)
+            ]
+        },
+        eirin: {
+            tempo: 145,
+            sequence: [
+                s([piano('B4'), guitar('E3')], 0.5), s(piano('C#5'), 0.5), s([piano('D#5'), guitar('F#3')], 0.5), s(piano('E5'), 0.5),
+                s([piano('F#5'), guitar('G#3')], 0.5), s(piano('G#5'), 0.5), s([piano('F#5'), guitar('B3')], 1.0)
+            ]
+        },
+        kaguya: {
+            tempo: 155,
+            sequence: [
+                s([zunpet('C5'), zunpet('E5')], 0.5), s(zunpet('G5'), 0.5), s([zunpet('C6'), bass('C3')], 0.5), s(zunpet('G5'), 0.5),
+                s([zunpet('E5'), bass('G2')], 0.5), s(zunpet('C5'), 0.5), s([zunpet('G4'), bass('E2')], 0.5), s(zunpet('C5'), 0.5)
+            ]
+        },
+        mokou: {
+            tempo: 175,
+            sequence: [
+                s([guitar('E3'), bass('E2')], 0.25), s(guitar('E3'), 0.25), s(guitar('E3'), 0.25), s(guitar('G3'), 0.25),
+                s([guitar('A3'), bass('E2')], 0.25), s(guitar('E3'), 0.25), s(guitar('A#3'), 0.25), s(guitar('B3'), 0.25),
+                s([zunpet('E5'), guitar('E3')], 0.5), s(zunpet('D5'), 0.5), s(zunpet('B4'), 0.5), s(zunpet('A4'), 0.5)
+            ]
+        },
+        ns_stage1: {
+            tempo: 142,
+            sequence: [
+                s([lead('E4'), bass('E2')], 0.375), s(lead('B3'), 0.125), s(lead('E4'), 0.25), s(lead('G4'), 0.25), s([lead('F#4'), bass('B1')], 0.375), s(lead('D4'), 0.125), s(lead('A3'), 0.5),
+                s([lead('G4'), bass('C2')], 0.375), s(lead('E4'), 0.125), s(lead('C4'), 0.25), s(lead('E4'), 0.25), s([lead('D#4'), bass('B1')], 1.0)
+            ]
+        },
+        ns_boss1: {
+            tempo: 165,
+            sequence: [
+                s([lead('F5'), zunpet('A5'), bass('F2')], 0.25), s(lead('C5'), 0.25), s(lead('F5'), 0.25), s(lead('A5'), 0.25),
+                s([lead('G5'), zunpet('B5'), bass('G2')], 0.25), s(lead('D5'), 0.25), s(lead('G5'), 0.25), s(lead('B5'), 0.25),
+                s([lead('A5'), zunpet('C6'), bass('A2')], 0.5), s(zunpet('E6'), 0.25), s(zunpet('D6'), 0.25),
+                s([lead('C6'), bass('C3')], 0.5), s(lead('G5'), 0.5)
+            ]
+        },
+        ns_stage2: {
+            tempo: 132,
+            sequence: [
+                s([pad('A3'), bass('A1')], 1.0), s([pad('C4'), bass('C2')], 1.0),
+                s([pad('E4'), bass('E2')], 0.75), s(bell('B4'), 0.25),
+                s([pad('D4'), bass('G1')], 0.5), s(bell('A4'), 0.5)
+            ]
+        },
+        ns_boss2: {
+            tempo: 156,
+            sequence: [
+                s([bass('A1'), bass('A2')], 0.25), s([bass('A1'), bass('A2')], 0.25), s(lead('C5'), 0.25), s(lead('E5'), 0.25),
+                s([bass('F1'), bass('F2')], 0.25), s([bass('F1'), bass('F2')], 0.25), s(lead('A4'), 0.25), s(lead('C5'), 0.25),
+                s([bass('G1'), bass('G2')], 0.25), s([bass('G1'), bass('G2')], 0.25), s(lead('B4'), 0.25), s(lead('D5'), 0.25),
+                s([bass('E1'), bass('E2')], 0.5), s(lead('G#4'), 0.5)
+            ]
+        },
+        th7_stage1: {
+            tempo: 128,
+            sequence: [
+                s([lead('D4'), bass('D2')], 0.5), s(lead('F#4'), 0.5), s([lead('A4'), bass('A2')], 0.5), s(lead('F#4'), 0.5),
+                s([lead('G4'), bass('G2')], 0.5), s(lead('B4'), 0.5), s([lead('D5'), bass('D3')], 1.0)
+            ]
+        },
+        th7_boss1: {
+            tempo: 140,
+            sequence: [
+                s([lead('E5'), bass('E3')], 0.25), s(lead('B4'), 0.25), s(lead('G4'), 0.25), s(lead('E4'), 0.25),
+                s([lead('A4'), bass('A2')], 0.5), s(lead('C5'), 0.5), s([lead('B4'), bass('B2')], 1.0)
+            ]
+        },
+        th7_stage2: {
+            tempo: 120,
+            sequence: [
+                s([lead('D4'), bass('G2')], 0.5), s(lead('G4'), 0.25), s(lead('A4'), 0.25), s([lead('B4'), bass('B2')], 0.5), s(lead('G4'), 0.5),
+                s([lead('A4'), bass('D2')], 0.5), s(lead('D4'), 0.5), s([lead('G4'), bass('G2')], 1.0)
+            ]
+        },
+        th7_chen: {
+            tempo: 160,
+            sequence: [
+                s([lead('A4'), bass('A2')], 0.25), s(lead('C5'), 0.25), s(lead('E5'), 0.25), s(lead('A5'), 0.25),
+                s([lead('G5'), bass('G2')], 0.25), s(lead('D5'), 0.25), s(lead('B4'), 0.25), s(lead('G4'), 0.25),
+                s([lead('A4'), bass('A2')], 0.25), s(lead('E4'), 0.25), s(lead('A4'), 0.25), s(lead('C5'), 0.25),
+                s([lead('B4'), bass('E2')], 0.5), s(lead('G#4'), 0.5)
+            ]
+        }
+    };
+
+    // Aliases
+    themes['lumina'] = themes['ns_boss1'];
+    themes['midnight'] = themes['ns_boss2'];
+    themes['ns_midnight'] = themes['ns_boss2']; // Alias for consisteny
+    themes['letty'] = themes['th7_boss1'];
+    themes['chen'] = themes['th7_chen'];
+    themes['utsuho'] = themes['okuu'];
+
+    if(!this.cachedThemes) this.cachedThemes = themes;
+    return themes[name.toLowerCase()] || null;
+}
 }

@@ -54,7 +54,7 @@ export const Touhou6Assets = {
 
 export const Touhou7Assets = {
     images: [
-        { key: 'youmu', path: 'assets/portrait/youmu.png' }, // Use portrait as fallback
+        { key: 'youmu', path: 'assets/sprites/player/youmu.png' }, // Pixel art sprite
         { key: 'mainmenu7_bg', path: 'assets/backgrounds/mainmenu7.png' },
         { key: 'portrait_youmu', path: 'assets/portrait/youmu.png' },
         // Add more Touhou 7 specific assets here
@@ -111,6 +111,7 @@ export const NocturnalSunlightAssets = {
 
         // NS New Specific Sprites
         { key: 'nocturnal_sunlight_title', path: 'assets/backgrounds/nocturnal_sunlight_title.png' },
+        { key: 'midnight', path: 'assets/sprites/bosses/midnight.png' },
         { key: 'prism', path: 'assets/sprites/bosses/prism.png' },
         { key: 'chronos', path: 'assets/sprites/bosses/chronos.png' },
 

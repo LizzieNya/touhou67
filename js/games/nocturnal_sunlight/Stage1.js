@@ -92,7 +92,7 @@ export const Stage1Events = (character) => {
             time: 0.1,
             action: (scene) => {
                 if (scene.game.soundManager) {
-                    scene.game.soundManager.playBossTheme('ns_midnight'); // Nocturnal sunlight theme
+                    scene.game.soundManager.playBossTheme('ns_stage1'); // Nocturnal sunlight theme
                 }
                 scene.dialogueManager.startDialogue([
                     { name: "System", text: "Stage 1: The Sun at Midnight", side: "left" },
@@ -216,6 +216,9 @@ export const Stage1Events = (character) => {
             time: 47.0,
             action: (scene) => {
                 import('../../game/Boss.js').then(module => {
+                    if (scene.game.soundManager) {
+                        scene.game.soundManager.playBossTheme('ns_boss1');
+                    }
                     const Boss = module.default;
                     const boss = new Boss(scene.game, (scene.game.playAreaWidth || scene.game.width) / 2, -50, "Lumina");
                     boss.color = '#fb0'; // Gold

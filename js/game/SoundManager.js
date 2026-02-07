@@ -279,7 +279,22 @@ export default class SoundManager {
             'okuu': 'Solar Sect of Mystic Wisdom ~ Nuclear Fusion',
             'parsee': 'Green-Eyed Jealousy',
             // Touhou 12 - Undefined Fantastic Object
-            'nue': 'Heian Alien'
+            'nue': 'Heian Alien',
+
+            // Nocturnal Sunlight
+            'ns_stage1': 'The Sun at Midnight',
+            'ns_boss1': 'Sun Sign ~ Morning Glory',
+            'ns_stage2': 'The Midnight Hour',
+            'ns_boss2': 'Star Sign ~ Meteor Shower',
+            'ns_stage3': 'Illusionary Night',
+            'ns_boss3': 'Dream Sign ~ Nightmare',
+
+            // Touhou 7
+            'th7_stage1': 'Spring Where?',
+            'th7_boss1': 'Crystallized Silver',
+            'th7_stage2': 'The Fantastic Tales from Tono',
+            'th7_boss2': 'Diao Ye Zong',
+            'letty': 'Crystallized Silver'
         };
         this.currentTrackName = names[key] || bossName;
         this.notificationTimer = 3.0; // Show for 3 seconds

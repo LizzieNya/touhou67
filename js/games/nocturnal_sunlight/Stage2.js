@@ -202,6 +202,9 @@ export const Stage2Events = (character) => {
             time: 67.0,
             action: (scene) => {
                 import('../../game/Boss.js').then(module => {
+                    if (scene.game.soundManager) {
+                        scene.game.soundManager.playBossTheme('ns_boss2');
+                    }
                     const Boss = module.default;
                     const midnight = new Boss(scene.game, (scene.game.playAreaWidth || scene.game.width) / 2, -50, "Midnight");
                     midnight.color = '#008';
