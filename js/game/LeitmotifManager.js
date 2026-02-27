@@ -391,7 +391,8 @@ export default class LeitmotifManager {
         themes['patchouli'] = { tempo: 120, sequence: [s(piano('E4'), 0.5), s(piano('G4'), 0.5), s(piano('B4'), 0.5)] };
         themes['sakuya'] = { tempo: 160, sequence: [s(violin('D5'), 0.25), s(violin('F#5'), 0.25), s(violin('A5'), 0.5)] };
         themes['cirno'] = { tempo: 175, sequence: [s(piano('G4'), 0.25), s(piano('F#4'), 0.25), s(piano('E4'), 0.5)] };
-        themes['koishi'] = {
+        Object.assign(themes, {
+        koishi: {
             tempo: 150,
             sequence: [
                 s([piano('G4'), piano('B4')], 0.5), s([piano('F#4'), piano('A#4')], 0.5), s(piano('F4'), 0.25), s(piano('E4'), 0.25), s(piano('D#4'), 0.5),
@@ -522,7 +523,7 @@ export default class LeitmotifManager {
                 s([lead('B4'), bass('E2')], 0.5), s(lead('G#4'), 0.5)
             ]
         }
-    };
+    });
 
     // Aliases
     themes['lumina'] = themes['ns_boss1'];
