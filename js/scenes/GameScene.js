@@ -14,8 +14,7 @@ import { BossRushEvents } from '../stages/BossRushStage.js';
 import {
     BossRumiaEvents, BossParseeEvents, BossNueEvents, BossOkuuEvents, BossRemiliaEvents,
     BossCirnoEvents, BossMeilingEvents, BossPatchouliEvents, BossSakuyaEvents, BossFlandreEvents,
-    BossSansEvents, BossPepeEvents, BossKoishiEvents, BossAyaEvents, BossJunkoEvents, BossYuyukoEvents,
-    BossTewīEvents, BossReisenEvents, BossEirinEvents, BossKaguyaEvents, BossMokouEvents
+    BossKoishiEvents, BossAyaEvents, BossJunkoEvents, BossYuyukoEvents
 } from '../stages/IndividualBossStages.js';
 
 import PlayerBulletManager from '../game/PlayerBulletManager.js';
@@ -160,11 +159,11 @@ export default class GameScene {
             case 'BossAya': getEvents = BossAyaEvents; break;
             case 'BossJunko': getEvents = BossJunkoEvents; break;
             case 'BossYuyuko': getEvents = BossYuyukoEvents; break;
-            case 'BossTewi': getEvents = BossTewīEvents; break;
-            case 'BossReisen': getEvents = BossReisenEvents; break;
-            case 'BossEirin': getEvents = BossEirinEvents; break;
-            case 'BossKaguya': getEvents = BossKaguyaEvents; break;
-            case 'BossMokou': getEvents = BossMokouEvents; break;
+            case 'BossTewi': 
+            case 'BossReisen': 
+            case 'BossEirin': 
+            case 'BossKaguya': 
+            case 'BossMokou': getEvents = Stage1Events; break; // Stubs until added
             default: getEvents = Stage1Events;
         }
 
