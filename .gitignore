@@ -4,3 +4,8 @@ node_modules/
 dist/
 .agent/
 *.log
+
+# Keep local AI generated MD files off Github
+*.md
+!README.md
+!CONTRIBUTING.md
