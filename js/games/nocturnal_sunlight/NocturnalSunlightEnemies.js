@@ -12,14 +12,14 @@ export class SunFairy extends Enemy {
         super.update(dt, player, bulletManager);
 
         // Simple movement: Down then slow
-        if (this.time < 1.0) {
+        if (this.timer < 1.0) {
             this.y += 150 * dt;
         } else {
             this.y += 20 * dt;
         }
 
         // Pattern: Radial burst
-        if (Math.floor(this.time * 60) % 60 === 0) {
+        if (Math.floor(this.timer * 60) % 60 === 0) {
             PatternLibrary.ring(this.game.sceneManager.currentScene, this.x, this.y, 8, 150, '#ff0', 3);
         }
     }
@@ -37,10 +37,10 @@ export class MoonSpirit extends Enemy {
 
         // Movement: Sine wave down
         this.y += 80 * dt;
-        this.x += Math.sin(this.time * 3) * 100 * dt;
+        this.x += Math.sin(this.timer * 3) * 100 * dt;
 
         // Pattern: Aimed curve
-        if (Math.floor(this.time * 60) % 45 === 0) {
+        if (Math.floor(this.timer * 60) % 45 === 0) {
             PatternLibrary.aimed(this.game.sceneManager.currentScene, this, 200, '#aaf', 3);
         }
     }
@@ -58,10 +58,10 @@ export class StarKedama extends Enemy {
 
         // Movement: Fast diagonal
         this.y += 120 * dt;
-        this.x += Math.cos(this.time * 2) * 50 * dt;
+        this.x += Math.cos(this.timer * 2) * 50 * dt;
 
         // Pattern: 3-way spread
-        if (Math.floor(this.time * 60) % 40 === 0) {
+        if (Math.floor(this.timer * 60) % 40 === 0) {
             PatternLibrary.aimedNWay(this.game.sceneManager.currentScene, this, 3, 0.5, 180, '#ff0', 3);
         }
     }
@@ -79,10 +79,10 @@ export class ShadowBat extends Enemy {
 
         // Movement: Swoop
         this.y += 150 * dt;
-        this.x += Math.sin(this.time * 5) * 150 * dt;
+        this.x += Math.sin(this.timer * 5) * 150 * dt;
 
         // Pattern: Single fast aimed shot
-        if (Math.floor(this.time * 60) % 30 === 0) {
+        if (Math.floor(this.timer * 60) % 30 === 0) {
             PatternLibrary.aimed(this.game.sceneManager.currentScene, this, 300, '#f0f', 4);
         }
     }

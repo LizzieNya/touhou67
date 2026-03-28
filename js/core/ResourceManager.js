@@ -24,6 +24,10 @@ export default class ResourceManager {
         };
         img.onerror = (e) => {
             console.error(`Failed to load image: ${key}`, e);
+            const generated = this.generateFallbackSprite(key);
+            if (!generated) {
+                delete this.images[key];
+            }
             this.activeLoads--;
         };
         // Pre-assign to avoid null checks
@@ -88,12 +92,40 @@ export default class ResourceManager {
         this.spriteGenerator = generator;
     }
 
-    getImage(key) {
-        if (!this.images[key] && this.spriteGenerator && this.spriteGenerator.isSupported(key)) {
-            // Lazy load sprite
-            this.images[key] = this.spriteGenerator.generateSprite(key);
+    generateFallbackSprite(key) {
+        if (!this.spriteGenerator?.isSupported(key)) {
+            return null;
         }
-        return this.images[key];
+
+        const generated = this.spriteGenerator.generateSprite(key);
+        if (generated) {
+            this.images[key] = generated;
+            return generated;
+        }
+
+        return null;
+    }
+
+    getImage(key) {
+        let img = this.images[key];
+        if (!img) {
+            img = this.generateFallbackSprite(key);
+            if (!img) return null;
+        }
+
+        // Only return HTMLImageElement instances once they are fully loaded.
+        if ('complete' in img && 'naturalWidth' in img) {
+            if (!img.complete) {
+                return null;
+            }
+
+            if (img.naturalWidth === 0) {
+                const generated = this.generateFallbackSprite(key);
+                return generated || null;
+            }
+        }
+
+        return img;
     }
 
     generateSprites() {

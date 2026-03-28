@@ -22,6 +22,14 @@ export const Stage4Events = (character) => {
         'Sanae': [
             { name: "Sanae", text: "It's so shiny! Like a disco ball!", side: "left" },
             { name: "Sanae", text: "But these lasers are dangerous!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Remilia", text: "A sky of shattered mirrors... how vulgar.", side: "left" },
+            { name: "Remilia", text: "I will break this false brilliance and restore my night.", side: "left" }
+        ],
+        'Flandre': [
+            { name: "Flandre", text: "So many shiny pieces! They look fun to break!", side: "left" },
+            { name: "Flandre", text: "Hehe, let's make this sky even more shattered!", side: "left" }
         ]
     };
 
@@ -46,6 +54,16 @@ export const Stage4Events = (character) => {
         'Sanae': [
             { name: "Prism", text: "Faith is but a reflection of desire.", side: "right" },
             { name: "Sanae", text: "My faith is real! And powerful!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Prism", text: "Every truth reflects within my light.", side: "right" },
+            { name: "Remilia", text: "Then reflect this: you stand before the Scarlet Devil.", side: "left" },
+            { name: "Prism", text: "Even scarlet fades in pure radiance.", side: "right" }
+        ],
+        'Flandre': [
+            { name: "Prism", text: "Careful, child. My beams cut deeper than glass.", side: "right" },
+            { name: "Flandre", text: "Yay! Then this game is dangerous enough to be fun!", side: "left" },
+            { name: "Flandre", text: "Let's see if your light survives my toys! Kyuu~", side: "left" }
         ]
     };
 

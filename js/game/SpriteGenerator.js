@@ -98,9 +98,14 @@ export default class SpriteGenerator {
             case 'maid': this.drawMaid(); break;
         }
 
-        const img = new Image();
-        img.src = this.canvas.toDataURL();
-        return img;
+        const out = document.createElement('canvas');
+        out.width = this.canvas.width;
+        out.height = this.canvas.height;
+        const outCtx = out.getContext('2d', { alpha: true });
+        if (outCtx) {
+            outCtx.drawImage(this.canvas, 0, 0);
+        }
+        return out;
     }
 
     drawPixelRect(x, y, w, h, color) {

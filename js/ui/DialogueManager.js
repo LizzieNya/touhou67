@@ -8,12 +8,28 @@ export default class DialogueManager {
         this.leftPortrait = null;
         this.rightPortrait = null;
         this.inputCooldown = 0;
+        this.flashSafeBounds = null;
     }
 
     startDialogue(lines) {
         this.lines = lines;
         this.currentLineIndex = 0;
         this.active = true;
+        this.flashSafeBounds = null;
+
+        // Prime portrait lookups so first rendered line is less likely to pop-in.
+        if (this.game.resourceManager) {
+            for (const line of lines) {
+                if (!line?.name || line.name === 'System') continue;
+                const lower = line.name.toLowerCase();
+                const first = lower.split(' ')[0];
+                this.game.resourceManager.getImage(`portrait_${lower}`);
+                this.game.resourceManager.getImage(`portrait_${first}`);
+                this.game.resourceManager.getImage(lower);
+                this.game.resourceManager.getImage(first);
+            }
+        }
+
         this.game.sceneManager.currentScene.paused = true; // Pause game logic
     }
 
@@ -26,6 +42,7 @@ export default class DialogueManager {
 
     endDialogue() {
         this.active = false;
+        this.flashSafeBounds = null;
         this.game.sceneManager.currentScene.paused = false; // Resume game logic
     }
 
@@ -60,6 +77,11 @@ export default class DialogueManager {
         const boxY = h - 120;
         const boxW = w - 20;
         const boxH = 110;
+        const hasName = !!line.name && line.name !== 'System';
+        const nameBoxW = 150;
+        const nameBoxH = 30;
+        const nameBoxX = line.side === 'left' ? boxX + 10 : boxX + boxW - nameBoxW - 10;
+        const nameBoxY = boxY - 47; // Raise 12px from previous position.
 
         // Draw semi-transparent black background ONLY if not system message or if explicitly needed
         // Actually, system messages might need a box too, but maybe different style?
@@ -77,30 +99,6 @@ export default class DialogueManager {
         ctx.strokeStyle = '#888';
         ctx.lineWidth = 1;
         ctx.strokeRect(boxX + 5, boxY + 5, boxW - 10, boxH - 10);
-
-        // Draw character name box (EoSD style)
-        if (line.name && line.name !== 'System') {
-            const nameBoxW = 150;
-            const nameBoxH = 30;
-            const nameBoxX = line.side === 'left' ? boxX + 10 : boxX + boxW - nameBoxW - 10;
-            const nameBoxY = boxY - 35; // Moved up from -15 to prevent collision
-
-            // Name box background
-            ctx.fillStyle = line.side === 'left' ? 'rgba(255, 0, 0, 0.9)' : 'rgba(128, 0, 128, 0.9)';
-            ctx.fillRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
-
-            // Name box border
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
-
-            // Draw name text
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(line.name, nameBoxX + nameBoxW / 2, nameBoxY + nameBoxH / 2);
-        }
 
         // Draw dialogue text (word wrap)
         ctx.fillStyle = '#fff';
@@ -146,7 +144,16 @@ export default class DialogueManager {
 
         // Draw character portraits
         const portraitSize = 128; // Larger portraits
-        const portraitY = boxY - portraitSize + 20; // Slightly overlapping the box
+        const portraitY = boxY - portraitSize - 12; // Raise 12px from current position.
+
+        // Exclude dialogue UI from screen flash overlay in GameScene.
+        const safeTop = hasName ? Math.min(portraitY - 8, nameBoxY - 8) : (portraitY - 8);
+        this.flashSafeBounds = {
+            x: 10,
+            y: Math.max(0, safeTop),
+            width: Math.max(0, w - 20),
+            height: Math.max(0, (boxY + boxH + 8) - safeTop)
+        };
 
         // Left Portrait (Player/Ally)
         if (line.side === 'left') {
@@ -155,18 +162,33 @@ export default class DialogueManager {
 
             // Check if portrait exists
             const hasPortrait = this.game.resourceManager.getImage(portraitKey);
-            const keyToUse = hasPortrait ? portraitKey : charName;
+            const fallbackPortraitKey = `portrait_${charName.split(' ')[0]}`;
+            let keyToUse = null;
+            if (hasPortrait) {
+                keyToUse = portraitKey;
+            } else if (this.game.resourceManager.getImage(fallbackPortraitKey)) {
+                keyToUse = fallbackPortraitKey;
+            } else if (this.game.resourceManager.getImage(charName)) {
+                keyToUse = charName;
+            } else {
+                const shortName = charName.split(' ')[0];
+                if (this.game.resourceManager.getImage(shortName)) {
+                    keyToUse = shortName;
+                }
+            }
 
-            ctx.save();
-            const x = 80;
-            const y = portraitY + portraitSize / 2;
+            if (keyToUse) {
+                ctx.save();
+                const x = 80;
+                const y = portraitY + portraitSize / 2;
 
-            // Glow effect for active speaker
-            ctx.shadowColor = '#f00';
-            ctx.shadowBlur = 20;
+                // Glow effect for active speaker
+                ctx.shadowColor = '#f00';
+                ctx.shadowBlur = 20;
 
-            renderer.drawSprite(keyToUse, x, y, portraitSize, portraitSize);
-            ctx.restore();
+                renderer.drawSprite(keyToUse, x, y, portraitSize, portraitSize);
+                ctx.restore();
+            }
         }
         // Right Portrait (Enemy/Boss)
         else {
@@ -175,18 +197,44 @@ export default class DialogueManager {
 
             // Check if portrait exists
             const hasPortrait = this.game.resourceManager.getImage(portraitKey);
-            const keyToUse = hasPortrait ? portraitKey : charName;
+            let keyToUse = null;
+            if (hasPortrait) {
+                keyToUse = portraitKey;
+            } else if (this.game.resourceManager.getImage(charName)) {
+                keyToUse = charName;
+            }
 
-            ctx.save();
-            const x = w - 80;
-            const y = portraitY + portraitSize / 2;
+            if (keyToUse) {
+                ctx.save();
+                const x = w - 80;
+                const y = portraitY + portraitSize / 2;
 
-            // Glow effect for active speaker
-            ctx.shadowColor = '#f0f';
-            ctx.shadowBlur = 20;
+                // Glow effect for active speaker
+                ctx.shadowColor = '#f0f';
+                ctx.shadowBlur = 20;
 
-            renderer.drawSprite(keyToUse, x, y, portraitSize, portraitSize);
-            ctx.restore();
+                renderer.drawSprite(keyToUse, x, y, portraitSize, portraitSize);
+                ctx.restore();
+            }
+        }
+
+        // Draw character name box over portrait so it never appears behind it.
+        if (hasName) {
+            // Name box background
+            ctx.fillStyle = line.side === 'left' ? 'rgba(255, 0, 0, 0.9)' : 'rgba(128, 0, 128, 0.9)';
+            ctx.fillRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
+
+            // Name box border
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(nameBoxX, nameBoxY, nameBoxW, nameBoxH);
+
+            // Draw name text
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(line.name, nameBoxX + nameBoxW / 2, nameBoxY + nameBoxH / 2);
         }
     }
 }

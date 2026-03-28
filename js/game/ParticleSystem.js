@@ -109,6 +109,8 @@ class Particle {
                 ctx.arc(drawX, drawY, this.size / 2, 0, Math.PI * 2);
                 ctx.fill();
             }
+            // Prevent alpha from leaking into later draws in the same frame.
+            ctx.globalAlpha = 1;
             return;
         }
 
