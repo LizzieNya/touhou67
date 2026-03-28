@@ -112,6 +112,7 @@ export const NocturnalSunlightAssets = {
         // NS New Specific Sprites
         { key: 'nocturnal_sunlight_title', path: 'assets/backgrounds/nocturnal_sunlight_title.png' },
         { key: 'midnight', path: 'assets/sprites/bosses/midnight.png' },
+        { key: 'eclipse', path: 'assets/sprites/bosses/eclipse.png' },
         { key: 'prism', path: 'assets/sprites/bosses/prism.png' },
         { key: 'chronos', path: 'assets/sprites/bosses/chronos.png' },
 

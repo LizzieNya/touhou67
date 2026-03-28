@@ -22,6 +22,14 @@ export const Stage3Events = (character) => {
         'Sanae': [
             { name: "Sanae", text: "It's spooky! But I'm not scared!", side: "left" },
             { name: "Sanae", text: "I have the power of miracles on my side!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Remilia", text: "No moon, no stars... this void insults the beauty of my night.", side: "left" },
+            { name: "Remilia", text: "I will reclaim this sky by force.", side: "left" }
+        ],
+        'Flandre': [
+            { name: "Flandre", text: "Whoa... it's super dark. Even I can barely see!", side: "left" },
+            { name: "Flandre", text: "Good! I'll just blow up whatever is hiding in it!", side: "left" }
         ]
     };
 
@@ -48,6 +56,16 @@ export const Stage3Events = (character) => {
         'Sanae': [
             { name: "Eclipse", text: "Faith is meaningless in the dark.", side: "right" },
             { name: "Sanae", text: "My faith shines brighter than any sun!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Eclipse", text: "Light and moon are gone. Only emptiness remains.", side: "right" },
+            { name: "Remilia", text: "Emptiness? I am the ruler of the night, not your void.", side: "left" },
+            { name: "Eclipse", text: "Then vanish along with the heavens.", side: "right" }
+        ],
+        'Flandre': [
+            { name: "Eclipse", text: "There is nothing here for you to destroy.", side: "right" },
+            { name: "Flandre", text: "Then I'll destroy NOTHING too! I'm good at impossible things!", side: "left" },
+            { name: "Flandre", text: "Come on, let's see which breaks first! Kyuu~", side: "left" }
         ]
     };
 

@@ -58,20 +58,22 @@ export const Stage5Events = (character) => [
         time: 20.0,
         action: (scene) => {
             for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0 ? 0 : (scene.game.playAreaWidth || scene.game.width)), 100 + i * 20, 20, 'spirit');
-                    e.color = '#0ff';
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.x += (i % 2 === 0 ? 100 : -100) * dt;
-                        if (Math.floor(t * 60) % 30 === 0) {
-                            // Fast bullet that slows down? Not easily done without bullet update logic.
-                            // Instead, spawn bullets of different speeds
-                            scene.bulletManager.spawn(enemy.x, enemy.y, 0, 400, '#0ff', 3);
-                            scene.bulletManager.spawn(enemy.x, enemy.y, 0, 200, '#0ff', 3);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 300);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0 ? 0 : (scene.game.playAreaWidth || scene.game.width)), 100 + idx * 20, 20, 'spirit');
+                        e.color = '#0ff';
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.x += (idx % 2 === 0 ? 100 : -100) * dt;
+                            if (Math.floor(t * 60) % 30 === 0) {
+                                // Fast bullet that slows down? Not easily done without bullet update logic.
+                                // Instead, spawn bullets of different speeds
+                                scene.bulletManager.spawn(enemy.x, enemy.y, 0, 400, '#0ff', 3);
+                                scene.bulletManager.spawn(enemy.x, enemy.y, 0, 200, '#0ff', 3);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 300);
+                })(i);
             }
         }
     },

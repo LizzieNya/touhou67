@@ -42,6 +42,7 @@ export default class Game {
 
         this.virtualControls = new VirtualControls(this);
         this.resourceManager = new ResourceManager();
+        this.loadedGameAssets = new Set();
         this.soundManager = new SoundManager();
         this.spriteGenerator = new SpriteGenerator();
         this.resourceManager.setSpriteGenerator(this.spriteGenerator);
@@ -80,6 +81,11 @@ export default class Game {
 
     async loadGameAssets(gameId) {
         console.log(`Loading assets for ${gameId}...`);
+
+        if (this.loadedGameAssets.has(gameId)) {
+            console.log(`Assets for ${gameId} already loaded. Skipping duplicate load.`);
+            return;
+        }
         
         if (!this.assetManifests) {
             console.error("AssetManifests not loaded yet! Waiting or failing.");
@@ -95,6 +101,7 @@ export default class Game {
 
         if (manifest) {
             this.loadAssets(manifest);
+            this.loadedGameAssets.add(gameId);            
         }
 
         // Lazy generation handles the rest via ResourceManager

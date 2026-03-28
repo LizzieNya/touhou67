@@ -22,6 +22,14 @@ export const Stage5Events = (character) => {
         'Sanae': [
             { name: "Sanae", text: "Is this time travel? Can I see the dinosaurs?", side: "left" },
             { name: "Sanae", text: "Wait, focus! Incident first, dinosaurs later.", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Remilia", text: "Time itself stumbles here... irritating.", side: "left" },
+            { name: "Remilia", text: "I will not allow this distortion to taint my night further.", side: "left" }
+        ],
+        'Flandre': [
+            { name: "Flandre", text: "Everything is sloooow and weird! I hate it!", side: "left" },
+            { name: "Flandre", text: "I'll speed things up by blowing up the cause!", side: "left" }
         ]
     };
 
@@ -48,6 +56,16 @@ export const Stage5Events = (character) => {
         'Sanae': [
             { name: "Chronos", text: "A miracle cannot reverse time.", side: "right" },
             { name: "Sanae", text: "Maybe not, but it can defeat you!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Chronos", text: "Even immortals kneel before time.", side: "right" },
+            { name: "Remilia", text: "I kneel to no one. Not mortals, not gods, not clocks.", side: "left" },
+            { name: "Chronos", text: "Then be erased between seconds.", side: "right" }
+        ],
+        'Flandre': [
+            { name: "Chronos", text: "Speed means nothing. All ends in stillness.", side: "right" },
+            { name: "Flandre", text: "Nope! I am faster than your boring stillness!", side: "left" },
+            { name: "Flandre", text: "Try to stop me if you can! Kyuu~", side: "left" }
         ]
     };
 

@@ -37,18 +37,20 @@ export const Stage3Events = (character) => [
         time: 10.0,
         action: (scene) => {
             for (let i = 0; i < 6; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224), -20, 15, 'maid');
-                    e.color = '#fff';
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 60 * dt;
-                        enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224) + Math.sin(t * 2 + i) * 100;
-                        if (Math.floor(t * 60) % 20 === 0) {
-                            PatternLibrary.spiral(scene, enemy.x, enemy.y, t, 150, '#0f0', 3, 2, 3);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 500);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224), -20, 15, 'maid');
+                        e.color = '#fff';
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 60 * dt;
+                            enemy.x = (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224) + Math.sin(t * 2 + idx) * 100;
+                            if (Math.floor(t * 60) % 20 === 0) {
+                                PatternLibrary.spiral(scene, enemy.x, enemy.y, t, 150, '#0f0', 3, 2, 3);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 500);
+                })(i);
             }
         }
     },
@@ -84,19 +86,21 @@ export const Stage3Events = (character) => [
         time: 30.0,
         action: (scene) => {
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224), -20);
-                    e.color = '#0f0';
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 100 * dt;
-                        enemy.x += Math.sin(t * 3 + i) * 100 * dt;
-                        if (Math.floor(t * 30) % 20 === 0) {
-                            const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
-                            scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 200, Math.sin(angle) * 200, '#0f0', 3);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 400);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (scene.game.playAreaWidth ? scene.game.playAreaWidth / 2 : 224), -20);
+                        e.color = '#0f0';
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 100 * dt;
+                            enemy.x += Math.sin(t * 3 + idx) * 100 * dt;
+                            if (Math.floor(t * 30) % 20 === 0) {
+                                const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
+                                scene.bulletManager.spawn(enemy.x, enemy.y, Math.cos(angle) * 200, Math.sin(angle) * 200, '#0f0', 3);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 400);
+                })(i);
             }
         }
     },

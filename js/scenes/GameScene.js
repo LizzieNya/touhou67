@@ -262,7 +262,13 @@ export default class GameScene {
         }
 
         if (this.screenFlash > 0) {
-            this.screenFlash -= dt * 2.0;
+            if (this.dialogueManager.active) {
+                // Keep a subtle flash during dialogue, but prevent full-screen white wash.
+                this.screenFlash = Math.min(this.screenFlash, 0.25);
+                this.screenFlash -= dt * 6.0;
+            } else {
+                this.screenFlash -= dt * 2.0;
+            }
             if (this.screenFlash < 0) this.screenFlash = 0;
         }
     }
@@ -390,6 +396,15 @@ export default class GameScene {
         if (this.screenFlash > 0) {
             const ctx = renderer.ctx;
             ctx.save();
+
+            const safe = this.dialogueManager.flashSafeBounds;
+            if (this.dialogueManager.active && safe && safe.width > 0 && safe.height > 0) {
+                ctx.beginPath();
+                ctx.rect(0, 0, this.game.width, this.game.height);
+                ctx.rect(safe.x, safe.y, safe.width, safe.height);
+                ctx.clip('evenodd');
+            }
+
             ctx.fillStyle = `rgba(255, 255, 255, ${this.screenFlash})`;
             ctx.globalCompositeOperation = 'lighter'; // Keep lighter for pure brightness
             ctx.fillRect(0, 0, this.game.width, this.game.height);
