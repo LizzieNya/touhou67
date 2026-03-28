@@ -121,20 +121,22 @@ export const Stage1Events = (character) => [
         time: 40.0,
         action: (scene) => {
             for (let i = 0; i < 8; i++) {
-                setTimeout(() => {
-                    const xPos = (i % 2 === 0) ? 50 : (scene.game.playAreaWidth || 448) - 50;
-                    const e = new Enemy(scene.game, xPos, -20, 20); // HP: 20 (Hard)
-                    e.color = '#f0f'; // Magenta
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 80 * dt;
-                        enemy.x += (i % 2 === 0 ? 1 : -1) * 20 * dt;
+                ((idx) => {
+                    setTimeout(() => {
+                        const xPos = (idx % 2 === 0) ? 50 : (scene.game.playAreaWidth || 448) - 50;
+                        const e = new Enemy(scene.game, xPos, -20, 20); // HP: 20 (Hard)
+                        e.color = '#f0f'; // Magenta
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 80 * dt;
+                            enemy.x += (idx % 2 === 0 ? 1 : -1) * 20 * dt;
 
-                        if (t > 1.0 && Math.floor(t * 60) % 40 === 0) {
-                            PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 150, '#f0f', 4, t);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 400);
+                            if (t > 1.0 && Math.floor(t * 60) % 40 === 0) {
+                                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 150, '#f0f', 4, t);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 400);
+                })(i);
             }
         }
     },
@@ -287,18 +289,20 @@ export const Stage1Events = (character) => [
         time: 90.0, // Reduced from 110.0
         action: (scene) => {
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0) ? 100 : (scene.game.playAreaWidth || 448) - 100, -20, 30);
-                    e.radius = 20;
-                    e.color = '#f00';
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 50 * dt;
-                        if (t > 1 && Math.floor(t * 60) % 10 === 0) {
-                            PatternLibrary.spiral(scene, enemy.x, enemy.y, t, 150, '#f00', 4, 2, 3);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 1000);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0) ? 100 : (scene.game.playAreaWidth || 448) - 100, -20, 30);
+                        e.radius = 20;
+                        e.color = '#f00';
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 50 * dt;
+                            if (t > 1 && Math.floor(t * 60) % 10 === 0) {
+                                PatternLibrary.spiral(scene, enemy.x, enemy.y, t, 150, '#f00', 4, 2, 3);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 1000);
+                })(i);
             }
         }
     },

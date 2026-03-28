@@ -55,18 +55,20 @@ export const Stage4Events = (character) => [
         time: 20.0,
         action: (scene) => {
             for (let i = 0; i < 8; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0 ? 50 : (scene.game.playAreaWidth || scene.game.width) - 50), -20, 15, 'book');
-                    e.color = '#0a0'; // Dark Green
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 80 * dt;
-                        enemy.x += Math.cos(t * 3) * 50 * dt;
-                        if (Math.floor(t * 60) % 20 === 0) {
-                            PatternLibrary.aimedNWay(scene, enemy, 3, 0.5, 200, '#0a0', 3);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 400);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0 ? 50 : (scene.game.playAreaWidth || scene.game.width) - 50), -20, 15, 'book');
+                        e.color = '#0a0'; // Dark Green
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 80 * dt;
+                            enemy.x += Math.cos(t * 3) * 50 * dt;
+                            if (Math.floor(t * 60) % 20 === 0) {
+                                PatternLibrary.aimedNWay(scene, enemy, 3, 0.5, 200, '#0a0', 3);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 400);
+                })(i);
             }
         }
     },
@@ -95,18 +97,20 @@ export const Stage4Events = (character) => [
         time: 40.0,
         action: (scene) => {
             for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0 ? 20 : (scene.game.playAreaWidth || scene.game.width) - 20), -20, 10, 'book');
-                    e.color = '#aaa'; // Silver
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 100 * dt;
-                        enemy.x += (i % 2 === 0 ? 1 : -1) * 30 * dt;
-                        if (Math.floor(t * 30) % 15 === 0) {
-                            PatternLibrary.aimed(scene, enemy, 350, '#aaa', 2);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 250);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0 ? 20 : (scene.game.playAreaWidth || scene.game.width) - 20), -20, 10, 'book');
+                        e.color = '#aaa'; // Silver
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 100 * dt;
+                            enemy.x += (idx % 2 === 0 ? 1 : -1) * 30 * dt;
+                            if (Math.floor(t * 30) % 15 === 0) {
+                                PatternLibrary.aimed(scene, enemy, 350, '#aaa', 2);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 250);
+                })(i);
             }
         }
     },

@@ -361,7 +361,6 @@ class PlayerBullet extends Entity {
         const drawX = this.prevX + (this.x - this.prevX) * alpha;
         const drawY = this.prevY + (this.y - this.prevY) * alpha;
 
-        renderer.ctx.save();
         // Translate to interpolated position is tricky with many types, but most use translate(t.x, t.y)
         // For simple types, we can just replace this.x/y references or set a flag?
         // Ah, most render logic here uses `renderer.ctx.translate(this.x, this.y)` or `this.x`.

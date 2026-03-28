@@ -22,6 +22,14 @@ export const Stage2Events = (character) => {
         'Sanae': [
             { name: "Sanae", text: "So many stars! It's like a planetarium.", side: "left" },
             { name: "Sanae", text: "But why aren't they moving?", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Remilia", text: "The stars are frozen? Even the night sky dares to disobey me.", side: "left" },
+            { name: "Remilia", text: "Whoever halted them will learn what true darkness is.", side: "left" }
+        ],
+        'Flandre': [
+            { name: "Flandre", text: "Sis, sis! The stars stopped moving! Did someone break them first?", side: "left" },
+            { name: "Flandre", text: "Hehe... then I'll just break whatever froze them! Kyuu~", side: "left" }
         ]
     };
 
@@ -48,6 +56,16 @@ export const Stage2Events = (character) => {
         'Sanae': [
             { name: "Midnight", text: "A priestess of wind? You disturb the calm.", side: "right" },
             { name: "Sanae", text: "I'll blow away your darkness!", side: "left" }
+        ],
+        'Remilia': [
+            { name: "Midnight", text: "Silence is eternal. Submit to stillness.", side: "right" },
+            { name: "Remilia", text: "Stillness is for corpses. My night lives and rules.", side: "left" },
+            { name: "Midnight", text: "Then let your pride freeze with the stars.", side: "right" }
+        ],
+        'Flandre': [
+            { name: "Midnight", text: "Be quiet, little one. The night must remain still.", side: "right" },
+            { name: "Flandre", text: "No way! Quiet is boring! I like loud exploding nights!", side: "left" },
+            { name: "Flandre", text: "So I'll smash your stillness into pieces! Kyuu~", side: "left" }
         ]
     };
 

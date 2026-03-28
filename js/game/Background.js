@@ -253,9 +253,16 @@ export default class Background {
             // Optimization: Skip very faint clouds or use simple rects if performance is key
             // For now, standard optimization
             this.clouds.forEach(cloud => {
+                const r = cloud.size;
+                const cx = cloud.x | 0;
+                const cy = cloud.y | 0;
+
+                // Skip clouds fully off-screen to reduce draw cost.
+                if (cx + r < 0 || cx - r > w || cy + r < 0 || cy - r > h) return;
+
                 ctx.globalAlpha = cloud.alpha * 0.4; // Reduced opacity
                 ctx.beginPath();
-                ctx.arc(cloud.x | 0, cloud.y | 0, cloud.size, 0, Math.PI * 2);
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.restore();
@@ -274,13 +281,14 @@ export default class Background {
 
         // Global Darkening (to make bullets pop)
         if (this.currentStage !== 'Menu' && this.currentStage !== 'Menu7') {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Increased from 0.3
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Increased from 0.3
             ctx.fillRect(0, 0, w, this.game.height);
 
             // Bottom Half Gradient Overlay
             const bottomGradient = ctx.createLinearGradient(0, this.game.height / 2, 0, this.game.height);
             bottomGradient.addColorStop(0, 'rgba(0, 0, 0, 0.0)');
-            bottomGradient.addColorStop(1, 'rgba(0, 0, 0, 0.85)'); // Darkened from 0.7
+            bottomGradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)'); // Darkened from 0.7
             ctx.fillStyle = bottomGradient;
             ctx.fillRect(0, this.game.height / 2, w, this.game.height / 2);
         }

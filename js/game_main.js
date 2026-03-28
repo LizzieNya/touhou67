@@ -14,8 +14,12 @@ window.addEventListener('DOMContentLoaded', () => {
         // Wait for user interaction
         const startOverlay = document.getElementById('start-overlay');
         const startBtn = document.getElementById('tap-to-start');
+        let started = false;
         
         const startGame = () => {
+            if (started) return; // Prevent multiple starts
+            started = true;
+
              console.log("User interaction detected. Starting...");
              startOverlay.style.display = 'none';
              
@@ -34,11 +38,11 @@ window.addEventListener('DOMContentLoaded', () => {
         };
 
         if (startOverlay && startBtn) {
-            startBtn.addEventListener('click', startGame);
+            startBtn.addEventListener('click', startGame, { once: true });
             startBtn.addEventListener('touchstart', (e) => {
                 e.preventDefault(); // Prevent double firing
                 startGame();
-            }, { passive: false });
+            }, { passive: false }, { once: true });
         } else {
             // Fallback for dev mode without overlay
             const game = new Game(canvas);

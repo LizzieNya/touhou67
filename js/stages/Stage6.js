@@ -56,17 +56,19 @@ export const Stage6Events = (character) => [
         time: 20.0,
         action: (scene) => {
             for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0 ? 0 : (scene.game.playAreaWidth || scene.game.width)), 100 + i * 20, 20, 'maid');
-                    e.color = '#800';
-                    e.setPattern((enemy, dt, t) => {
-                        // Homing movement
-                        const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
-                        enemy.x += Math.cos(angle) * 150 * dt;
-                        enemy.y += Math.sin(angle) * 150 * dt;
-                    });
-                    scene.enemies.push(e);
-                }, i * 300);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0 ? 0 : (scene.game.playAreaWidth || scene.game.width)), 100 + idx * 20, 20, 'maid');
+                        e.color = '#800';
+                        e.setPattern((enemy, dt, t) => {
+                            // Homing movement
+                            const angle = Math.atan2(scene.player.y - enemy.y, scene.player.x - enemy.x);
+                            enemy.x += Math.cos(angle) * 150 * dt;
+                            enemy.y += Math.sin(angle) * 150 * dt;
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 300);
+                })(i);
             }
         }
     },
@@ -95,18 +97,20 @@ export const Stage6Events = (character) => [
         time: 40.0,
         action: (scene) => {
             for (let i = 0; i < 8; i++) {
-                setTimeout(() => {
-                    const e = new Enemy(scene.game, (i % 2 === 0 ? 20 : (scene.game.playAreaWidth || scene.game.width) - 20), -20, 20, 'maid');
-                    e.color = '#f00';
-                    e.setPattern((enemy, dt, t) => {
-                        enemy.y += 80 * dt;
-                        enemy.x += (i % 2 === 0 ? 1 : -1) * 20 * dt;
-                        if (Math.floor(t * 60) % 20 === 0) {
-                            PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 200, '#f00', 4, t);
-                        }
-                    });
-                    scene.enemies.push(e);
-                }, i * 400);
+                ((idx) => {
+                    setTimeout(() => {
+                        const e = new Enemy(scene.game, (idx % 2 === 0 ? 20 : (scene.game.playAreaWidth || scene.game.width) - 20), -20, 20, 'maid');
+                        e.color = '#f00';
+                        e.setPattern((enemy, dt, t) => {
+                            enemy.y += 80 * dt;
+                            enemy.x += (idx % 2 === 0 ? 1 : -1) * 20 * dt;
+                            if (Math.floor(t * 60) % 20 === 0) {
+                                PatternLibrary.circle(scene, enemy.x, enemy.y, 12, 200, '#f00', 4, t);
+                            }
+                        });
+                        scene.enemies.push(e);
+                    }, idx * 400);
+                })(i);
             }
         }
     },
